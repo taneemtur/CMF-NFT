@@ -11,28 +11,14 @@ const Footer = () => {
       <footer className="bg-footer">
         <div className="py-5">
           <div className="container">
-            <div className="row">
-              <div className="col-xl-8 col-lg-7 col-md-6">
-                <h5 className="text-light fw-normal title-dark">
-                  Download the Chain Master Finance app to explore any NFTs
-                </h5>
-
-                <div className="mt-4">
-                  <a href="">
-                    <img src={app} height="40" alt="" />
-                  </a>
-                  <a href="" className="ms-2">
-                    <img src={playStore} height="40" alt="" />
-                  </a>
-                </div>
-              </div>
+            <div className="row d-flex justify-content-center">
 
               <div className="col-xl-4 col-lg-5 col-md-6 mt-4 mt-sm-0">
-                <h5 className="text-light fw-normal title-dark">
+                <h5 className="text-light fw-normal title-dark text-center">
                   Join the CMF communities
                 </h5>
 
-                <ul className="list-unstyled social-icon foot-social-icon mb-0 mt-4 text-lg-end">
+                <ul className="list-unstyled social-icon foot-social-icon d-flex justify-content-center mb-0 mt-4 text-lg-end">
 
                   <li
                     className="list-inline-item lh-1"
@@ -174,18 +160,6 @@ const Footer = () => {
                       </li>
                       <li>
                         <a
-                          href="/blogs"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/blogs')
-                          }}
-                          className="text-foot"
-                        >
-                          <i className="uil uil-angle-right-b me-1"></i> Blog
-                        </a>
-                      </li>
-                      <li>
-                        <a
                           href="/terms"
                           onClick={e => {
                             e.preventDefault()
@@ -208,18 +182,6 @@ const Footer = () => {
                         >
                           <i className="uil uil-angle-right-b me-1"></i> Privacy
                           Policy
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/login"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/login')
-                          }}
-                          className="text-foot"
-                        >
-                          <i className="uil uil-angle-right-b me-1"></i> Login
                         </a>
                       </li>
                       <li>

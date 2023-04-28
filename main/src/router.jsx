@@ -1,18 +1,12 @@
 import React from 'react'
-import Login from './pages/Login'
 import Error from './pages/Error'
-import SignUp from './pages/SignUp'
-import ResetPassword from './pages/ResetPassword'
 import AboutUs from './pages/AboutUs'
 import ComingSoon from './pages/ComingSoon'
 import Maintenance from './pages/Maintenance'
-import LockScreen from './pages/LockScreen'
 import Support from './pages/Support'
 import OverView from './pages/Overview'
 import Guides from './pages/Guides'
 import Faqs from './pages/Faqs'
-import BlogDetail from './pages/BlogDetail'
-import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import UploadWork from './pages/UploadWork'
 import Collections from './pages/Collections'
@@ -33,7 +27,6 @@ import DarkVersionTwo from './pages/DarkVersionTwo'
 import DarkVersionFive from './pages/DarkVersionFive'
 import DarkVersionThree from './pages/DarkVersionThree'
 import DarkVersionFour from './pages/DarkVersionFour'
-import BlogSidebar from './pages/BlogSidebar'
 import ExploreOne from './pages/ExploreOne'
 import CreatorProfileEdit from './pages/CreatorProfileEdit'
 import Terms from './pages/Terms'
@@ -46,10 +39,6 @@ export default function Router() {
       <Routes>
    
         {/* auth router  */}
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/signup" element={<SignUp />} />
-        <Route exact path="/reset-password" element={<ResetPassword />} />
-        <Route exact path="/lock-screen" element={<LockScreen />} />
 
         {/* special router page  */}
         <Route exact path="/error" element={<Error />} />
@@ -63,10 +52,7 @@ export default function Router() {
         <Route exact path="/helpcenter-faqs" element={<Faqs />} />
 
         {/* template page routes  */}
-        <Route exact path="/blog-detail" element={<BlogDetail />} />
         <Route exact path="/aboutus" element={<AboutUs />} />
-        <Route exact path="/blogs" element={<Blog />} />
-        <Route exact path="/blog-sidebar" element={<BlogSidebar />} />
         <Route exact path="/contact" element={<Contact />} />
         <Route exact path="/upload-work" element={<UploadWork />} />
         <Route exact path="/collections" element={<Collections />} />
@@ -91,12 +77,13 @@ export default function Router() {
         <Route exact path="/index-dark" element={<DarkVersionOne />} />
         <Route exact path="/index-dark-rtl" element={<DarkVersionOne />} />
         <Route exact path="/index" element={<DarkVersionOne />} />
-        <Route exact path="/" element={<DarkVersionOne />} />
+        {/* <Route exact path="/" element={<DarkVersionOne />} /> */}
         <Route exact path="/index-rtl" element={<DarkVersionOne />} />
 
         <Route exact path="/index-two-dark" element={<DarkVersionTwo />} />
         <Route exact path="/index-two-dark-rtl" element={<DarkVersionTwo />} />
         <Route exact path="/index-two" element={<DarkVersionTwo />} />
+        <Route exact path="/" element={<DarkVersionTwo />} />
         <Route exact path="/index-two-rtl" element={<DarkVersionTwo />} />
 
         <Route exact path="/index-three-dark" element={<DarkVersionThree />} />

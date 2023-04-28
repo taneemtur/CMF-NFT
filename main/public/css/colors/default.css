@@ -55,19 +55,11 @@
 .activity.activity-primary .link,
 .wallet.wallet-primary .link,
 .team.team-primary .title:hover,
-.blog.blog-primary .title:hover,
-.blog.blog-primary .link,
-.blog.blog-primary .btn-link:hover,
-.blog.blog-primary .btn-link:focus,
-.blog.blog-primary .btn-link:active,
-.blog.blog-primary .btn-link.active,
-.blog.blog-primary .btn-link.focus,
-.blog.blog-primary .btn-link:not(:disabled):not(.disabled):active,
 .sidebar .widget .title:hover,
 .filter-search-form .icons,
 .accordion .accordion-item .accordion-button:not(.collapsed),
 .accordion .accordion-item .accordion-button:after {
-    color: #1066e7 !important;
+    color: #ffa432 !important;
 }
 
 .bg-primary,
@@ -99,13 +91,12 @@
 .tns-controls button[data-controls="prev"]:hover,
 .tns-controls button[data-controls="next"]:hover,
 .team.team-primary .btn,
-.blog.blog-primary .tag,
-.blog.blog-primary .btn-link:after,
+
 .tagcloud>a:hover,
 .contact-show-btn:before,
 .qs-datepicker-container .qs-squares .qs-square:not(.qs-empty):not(.qs-disabled):not(.qs-day):not(.qs-active):hover,
 .qs-datepicker-container .qs-squares .qs-square.qs-current {
-    background-color: #1066e7 !important;
+    background-color: #ffa432 !important;
 }
 
 
@@ -137,20 +128,20 @@
 .tns-nav button.tns-nav-active,
 .team.team-primary .btn,
 .nft-items.nft-primary .btn {
-    border-color: #1066e7 !important;
+    border-color: #ffa432 !important;
 }
 
 .social-icon li a:hover .fea-social {
-    fill: #1066e7 !important;
+    fill: #ffa432 !important;
 }
 
 .play-btn .icons {
-    -webkit-text-stroke: 2px #1066e7 !important;
+    -webkit-text-stroke: 2px #ffa432 !important;
 }
 
 .play-btn .icons:hover {
-    -webkit-text-stroke: 2px #1066e7 !important;
-    -webkit-text-fill-color: #1066e7 !important;
+    -webkit-text-stroke: 2px #ffa432 !important;
+    -webkit-text-fill-color: #ffa432 !important;
 }
 
 .btn-soft-primary,
@@ -231,11 +222,11 @@
 }
 
 #topnav.gradient {
-    background: linear-gradient(to right, #1066e7 0%, #ffa432 100%);
+    background: linear-gradient(to right, #ffa432 0%, #1066e7 100%);
 }
 
 .bg-primary-gradient-overlay {
-    background: linear-gradient(to bottom, rgba(16, 102, 231, 0) 0%, rgba(16, 102, 231, 0.25) 25%, rgba(16, 102, 231, 0.5) 50%, rgba(16, 102, 231, 0.75) 75%, #1066e7 100%) !important;
+    background: linear-gradient(to bottom, rgba(16, 102, 231, 0) 0%, rgba(16, 102, 231, 0.25) 25%, rgba(16, 102, 231, 0.5) 50%, rgba(16, 102, 231, 0.75) 75%, #ffa432 100%) !important;
 }
 
 .background-lines .line:after {
@@ -248,11 +239,11 @@
 
 .bg-gradient-primary,
 .blog.blog-primary .tag.gradient {
-    background: linear-gradient(to right, #1066e7 0%, #ffa432 100%) !important;
+    background: linear-gradient(to right, #ffa432 0%, #1066e7 100%) !important;
 }
 
 .text-gradient-primary {
-    background: linear-gradient(to right, #1066e7 0%, #ffa432 100%) !important;
+    background: linear-gradient(to right, #ffa432 0%, #1066e7 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
 }

@@ -13,7 +13,6 @@
         "../scss/_features.scss",
         "../scss/_testi.scss",
         "../scss/_team.scss",
-        "../scss/_blog.scss",
         "../scss/_contact.scss",
         "../scss/_footer.scss",
         "../scss/_switcher.scss",

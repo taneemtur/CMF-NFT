@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { character, client01, lightLogo, logoDark } from '../imageImport'
 
+
 const Navbar = () => {
   const [myPublicAddress, setMyPublicAddress] = useState('qhut0...hfteh45')
   const location = useLocation()
@@ -44,7 +45,6 @@ const Navbar = () => {
   const closeModal = () => {
     //   metamask modal
     const modal = document.getElementById('modal-metamask')
-
     modal.classList.remove('show')
     modal.style.display = 'none'
   }
@@ -58,6 +58,7 @@ const Navbar = () => {
   const checkWalletConnet = useCallback(async () => {
     if (isMetaMaskInstalled()) {
       const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+      // const balance = await window.ethereum.request({method: 'eth_getBalance', params: [acconutAddress, 'latest']})
       if (!!accounts[0]) {
         const walletAddress =
           accounts[0].split('').slice(0, 6).join('') +
@@ -67,6 +68,7 @@ const Navbar = () => {
             .slice(accounts[0].length - 7, accounts[0].length)
             .join('')
         setMyPublicAddress(walletAddress)
+        console.log(JSON.stringify(accounts[0]).slice(1,accounts[0].length+1))
       }
     }
   }, [isMetaMaskInstalled])
@@ -74,6 +76,7 @@ const Navbar = () => {
   useEffect(() => {
     checkWalletConnet()
   }, [checkWalletConnet])
+
 
   const _handleConnectWallet = useCallback(async () => {
     const modal = document.getElementById('modal-metamask')
@@ -185,11 +188,12 @@ const Navbar = () => {
         <div className="container">
           {/* Logo Start*/}
           <a
+
             className="logo"
-            href="/index"
+            href="/index-two"
             onClick={e => {
               e.preventDefault()
-              navigate('/index')
+              navigate('/index-two')
               setTimeout(() => {
                 activateMenu()
                 toggleSwitcher(false)
@@ -1214,149 +1218,6 @@ const Navbar = () => {
                     >
                       Collections
                     </a>
-                  </li>
-                  <li className="has-submenu parent-menu-item">
-                    <a href="" onClick={e => mobileHandler(e, 'blog')}>
-                      {' '}
-                      Blog{' '}
-                    </a>
-                    <span className="submenu-arrow"></span>
-                    <ul
-                      className={`submenu ${mobile.includes('blog') ? 'open' : ''
-                        }`}
-                    >
-                      <li>
-                        <a
-                          href="/blogs"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/blogs')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Blogs
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/blog-sidebar"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/blog-sidebar')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Blog with sidebar
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/blog-detail"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/blog-detail')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Blog Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className="has-submenu parent-menu-item">
-                    <a href="" onClick={e => mobileHandler(e, 'auth')}>
-                      {' '}
-                      Auth Pages{' '}
-                    </a>
-                    <span className="submenu-arrow"></span>
-                    <ul
-                      className={`submenu ${mobile.includes('auth') ? 'open' : ''
-                        }`}
-                    >
-                      <li>
-                        <a
-                          href="/login"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/login')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Login
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/signup"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/signup')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Signup
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/reset-password"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/reset-password')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Forgot Password
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/lock-screen"
-                          onClick={e => {
-                            e.preventDefault()
-                            setTimeout(() => {
-                              activateMenu()
-                              toggleSwitcher(false)
-                            }, 1000)
-                            navigate('/lock-screen')
-                          }}
-                          className="sub-menu-item"
-                        >
-                          {' '}
-                          Lock Screen
-                        </a>
-                      </li>
-                    </ul>
                   </li>
                   <li className="has-submenu parent-menu-item">
                     <a href="" onClick={e => mobileHandler(e, 'special')}>

@@ -1,0 +1,10 @@
+Testnet deployment links for ERC1155 (Marketplace)
+
+https://goerli.etherscan.io/address/0xf1ae16992400838d153fbeaa83ed1ac7ba6f6aa7
+
+https://testnet.bscscan.com/address/0x919ede9b3f30567a53caa06340f25267af9367f9
+
+https://mumbai.polygonscan.com/address/0xec87bbd47468eab39d531083722685809d2533e1
+
+
+Testnet deployment links for ERC721 (Minting)

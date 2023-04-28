@@ -49,7 +49,7 @@ const CreatorProfileEdit = () => {
           </div>
           {/*end row*/}
 
-          <div className="position-middle-bottom">
+          <div className="position-middle-bottom">sdfs
             <nav aria-label="breadcrumb" className="d-block">
               <ul
                 className="breadcrumb breadcrumb-muted mb-0 p-0"
@@ -57,10 +57,10 @@ const CreatorProfileEdit = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="index"
+                    href="index-two"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/index-two')
                     }}
                   >
                     Chain Master Finance
