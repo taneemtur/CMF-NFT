@@ -84,24 +84,13 @@ const Privacy = () => {
                 <div className="card-body">
                   <h5 className="card-title">Overview :</h5>
                   <p className="text-muted mt-4">
-                    It seems that only fragments of the original text remain in
-                    the Lorem Ipsum texts used today. One may speculate that
-                    over the course of time certain letters were added or
-                    deleted at various positions within the text.
+                    CMF Privacy Policy
                   </p>
                   <p className="text-muted">
-                    In the 1960s, the text suddenly became known beyond the
-                    professional circle of typesetters and layout designers when
-                    it was used for Letraset sheets (adhesive letters on
-                    transparent film, popular until the 1980s) Versions of the
-                    text were subsequently included in DTP programmes such as
-                    PageMaker etc.
+                    CMF Privacy Policy
                   </p>
                   <p className="text-muted">
-                    There is now an abundance of readable dummy texts. These are
-                    usually used when a text is required purely to fill a space.
-                    These alternatives to the classic Lorem Ipsum texts are
-                    often amusing and tell short, funny or nonsensical stories.
+                    CMF Privacy Policy
                   </p>
 
                   <h5 className="card-title mt-5">
@@ -113,55 +102,50 @@ const Privacy = () => {
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Digital Marketing Solutions for Tomorrow
+                      CMF point 1
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Our Talented & Experienced Marketing Agency
+                      CMF point 2
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Create your own skin to match your brand
+                      CMF point 3
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Digital Marketing Solutions for Tomorrow
+                      CMF point 4
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Our Talented & Experienced Marketing Agency
+                      CMF point 5
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Create your own skin to match your brand
+                      CMF point 6
                     </li>
                   </ul>
 
                   <h5 className="card-title mt-5">
-                    Information Provided Voluntarily :
+                    Information Provided Voluntarily:
                   </h5>
                   <p className="text-muted mt-4 mb-0">
-                    In the 1960s, the text suddenly became known beyond the
-                    professional circle of typesetters and layout designers when
-                    it was used for Letraset sheets (adhesive letters on
-                    transparent film, popular until the 1980s) Versions of the
-                    text were subsequently included in DTP programmes such as
-                    PageMaker etc.
+                    CMF point 7
                   </p>
 
                   <div className="mt-4">
