@@ -81,7 +81,7 @@ const Contact = () => {
                   Contact CMF
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
-                  Write to us with any queries and the team will write back to you!
+                  Write to us with any queries and the team will get back to you shortly!
                 </p>
               </div>
             </div>
@@ -107,7 +107,7 @@ const Contact = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  About CMF
+                  Reach out to CMF
                 </li>
               </ul>
             </nav>
@@ -142,12 +142,12 @@ const Contact = () => {
                   <i className="uil uil-phone d-block rounded-md h3 mb-0"></i>
                 </div>
                 <div className="content mt-4 px-4">
-                  <h5 className="fw-bold">Phone</h5>
+                  <h5 className="fw-bold">Telegram</h5>
                   <p className="text-muted">
-                    Contact Chain Master Finance and get help
+                    Contact Chain Master Finance on Telegram
                   </p>
-                  <a href="tel:+152534-468-854" className="text-primary">
-                    +152 534-468-854
+                  <a href="https://t.me/Chainmasterfinance" className="text-primary">
+                    @Chainmasterfinance
                   </a>
                 </div>
               </div>
@@ -228,7 +228,7 @@ const Contact = () => {
                               id="name"
                               type="text"
                               className="form-control"
-                              placeholder="Enter Your Name :"
+                              placeholder="John..."
                             />
                           </div>
                         </div>
@@ -243,7 +243,7 @@ const Contact = () => {
                               id="email"
                               type="email"
                               className="form-control"
-                              placeholder="Enter Your Email :"
+                              placeholder="myemail@cmf.com"
                             />
                           </div>
                         </div>
@@ -256,7 +256,7 @@ const Contact = () => {
                               name="subject"
                               id="subject"
                               className="form-control"
-                              placeholder="Type Subject :"
+                              placeholder="I need help with..."
                             />
                           </div>
                         </div>
@@ -272,7 +272,7 @@ const Contact = () => {
                               id="comments"
                               rows="4"
                               className="form-control"
-                              placeholder="Enter Your Message :"
+                              placeholder="Enter Your Message to CMF..."
                             ></textarea>
                           </div>
                         </div>
