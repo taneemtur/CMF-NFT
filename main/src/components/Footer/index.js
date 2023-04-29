@@ -66,8 +66,7 @@ const Footer = () => {
                       <img src={iconLogo} alt="" />
                     </a>
                     <p className="para-desc mb-0 mt-4">
-                      Buy, sell and discover exclusive digital assets by the best artists of NFTs in the globe. exclusive digital assets by the best
-                      artists of NFTs in the globe.
+                      Buy, sell and discover exclusive digital assets by the best artists of NFTs in the globe on CMF.
                     </p>
                   </div>
                   {/*end col*/}
