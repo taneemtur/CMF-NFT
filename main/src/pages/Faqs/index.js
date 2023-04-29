@@ -28,7 +28,7 @@ const Faqs = () => {
                   Frequently Asked Questions
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
-                  Please check How it works in digital arts?
+                  Find many answers to the most asked questions
                 </p>
               </div>
             </div>
@@ -112,12 +112,12 @@ const Faqs = () => {
                   </li>
                   <li className={`navbar-item mt-3 p-0 ${active === "3" ? "active" : ''}`} onClick={() => setActive('3')}>
                     <a href="#use" className="h6 text-dark navbar-link">
-                      Using Chain Master Finance NFT
+                      Using Chain Master Finance
                     </a>
                   </li>
                   <li className={`navbar-item mt-3 p-0 ${active === "4" ? "active" : ''}`} onClick={() => setActive('4')}>
                     <a href="#support" className="h6 text-dark navbar-link">
-                      Support Questions
+                      General Support Questions
                     </a>
                   </li>
                 </ul>
@@ -142,7 +142,7 @@ const Faqs = () => {
                       aria-expanded="true"
                       aria-controls="collapseOne"
                     >
-                      How does it work ?
+                      How does it work?
                     </button>
                   </h2>
                   <div
@@ -152,9 +152,7 @@ const Faqs = () => {
                     data-bs-parent="#buyingquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 1
                     </div>
                   </div>
                 </div>
@@ -170,7 +168,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseTwo"
                     >
-                      Do I need a designer to use Chain Master Finance ?
+                      Do I need a designer to use Chain Master Finance?
                     </button>
                   </h2>
                   <div
@@ -180,9 +178,7 @@ const Faqs = () => {
                     data-bs-parent="#buyingquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 2
                     </div>
                   </div>
                 </div>
@@ -198,7 +194,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseThree"
                     >
-                      What do I need to do to start selling ?
+                      What do I need to do to start selling?
                     </button>
                   </h2>
                   <div
@@ -208,9 +204,7 @@ const Faqs = () => {
                     data-bs-parent="#buyingquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 3
                     </div>
                   </div>
                 </div>
@@ -226,7 +220,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseFour"
                     >
-                      What happens when I receive an order ?
+                      What happens when I sell an NFT?
                     </button>
                   </h2>
                   <div
@@ -236,9 +230,7 @@ const Faqs = () => {
                     data-bs-parent="#buyingquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 4
                     </div>
                   </div>
                 </div>
@@ -260,7 +252,7 @@ const Faqs = () => {
                       aria-expanded="true"
                       aria-controls="collapsefive"
                     >
-                      How does it work ?
+                      How does it work?
                     </button>
                   </h2>
                   <div
@@ -270,9 +262,7 @@ const Faqs = () => {
                     data-bs-parent="#generalquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 5
                     </div>
                   </div>
                 </div>
@@ -288,7 +278,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapsesix"
                     >
-                      Do I need a designer to use Chain Master Finance ?
+                      Do I need a designer to use Chain Master Finance?
                     </button>
                   </h2>
                   <div
@@ -298,9 +288,7 @@ const Faqs = () => {
                     data-bs-parent="#generalquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 2
                     </div>
                   </div>
                 </div>
@@ -316,7 +304,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseseven"
                     >
-                      What do I need to do to start selling ?
+                      What do I need to do to start selling?
                     </button>
                   </h2>
                   <div
@@ -326,9 +314,7 @@ const Faqs = () => {
                     data-bs-parent="#generalquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 3
                     </div>
                   </div>
                 </div>
@@ -344,7 +330,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseeight"
                     >
-                      What happens when I receive an order ?
+                      What happens when I sell an NFT?
                     </button>
                   </h2>
                   <div
@@ -354,9 +340,7 @@ const Faqs = () => {
                     data-bs-parent="#generalquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 4
                     </div>
                   </div>
                 </div>
@@ -378,7 +362,7 @@ const Faqs = () => {
                       aria-expanded="true"
                       aria-controls="collapsenine"
                     >
-                      How does it work ?
+                      How does it work?
                     </button>
                   </h2>
                   <div
@@ -388,9 +372,7 @@ const Faqs = () => {
                     data-bs-parent="#paymentquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 1
                     </div>
                   </div>
                 </div>
@@ -406,7 +388,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseten"
                     >
-                      Do I need a designer to use Chain Master Finance ?
+                      Do I need a designer to use Chain Master Finance?
                     </button>
                   </h2>
                   <div
@@ -416,9 +398,7 @@ const Faqs = () => {
                     data-bs-parent="#paymentquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 2
                     </div>
                   </div>
                 </div>
@@ -434,7 +414,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapseeleven"
                     >
-                      What do I need to do to start selling ?
+                      What do I need to do to start selling?
                     </button>
                   </h2>
                   <div
@@ -444,9 +424,7 @@ const Faqs = () => {
                     data-bs-parent="#paymentquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 3
                     </div>
                   </div>
                 </div>
@@ -462,7 +440,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapsetwelve"
                     >
-                      What happens when I receive an order ?
+                      What happens when I sell an NFT?
                     </button>
                   </h2>
                   <div
@@ -472,9 +450,7 @@ const Faqs = () => {
                     data-bs-parent="#paymentquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 4
                     </div>
                   </div>
                 </div>
@@ -496,7 +472,7 @@ const Faqs = () => {
                       aria-expanded="true"
                       aria-controls="collapsethirteen"
                     >
-                      How does it work ?
+                      How does it work?
                     </button>
                   </h2>
                   <div
@@ -506,9 +482,7 @@ const Faqs = () => {
                     data-bs-parent="#supportquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 1
                     </div>
                   </div>
                 </div>
@@ -524,7 +498,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapsefourteen"
                     >
-                      Do I need a designer to use Chain Master Finance ?
+                      Do I need a designer to use Chain Master Finance?
                     </button>
                   </h2>
                   <div
@@ -534,9 +508,7 @@ const Faqs = () => {
                     data-bs-parent="#supportquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 2
                     </div>
                   </div>
                 </div>
@@ -552,7 +524,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapsefifteen"
                     >
-                      What do I need to do to start selling ?
+                      What do I need to do to start selling?
                     </button>
                   </h2>
                   <div
@@ -562,9 +534,7 @@ const Faqs = () => {
                     data-bs-parent="#supportquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 3
                     </div>
                   </div>
                 </div>
@@ -580,7 +550,7 @@ const Faqs = () => {
                       aria-expanded="false"
                       aria-controls="collapsesixteen"
                     >
-                      What happens when I receive an order ?
+                      What happens when I sell an NFT?
                     </button>
                   </h2>
                   <div
@@ -590,9 +560,7 @@ const Faqs = () => {
                     data-bs-parent="#supportquestion"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 4
                     </div>
                   </div>
                 </div>
@@ -609,9 +577,9 @@ const Faqs = () => {
             <div className="col-12">
               <div className="section-title text-center">
                 <h6 className="text-muted fw-normal mb-3">
-                  Contact us and we'll get back to you as soon as we can.
+                  Contact CMF and we'll get back to you as soon as we can.
                 </h6>
-                <h4 className="title mb-4">Can't find your answer?</h4>
+                <h4 className="title mb-4">Can't find your answer on the CMF Q&A?</h4>
                 <div className="mt-4 pt-2">
                   <a
                     href=""
@@ -620,7 +588,7 @@ const Faqs = () => {
                     data-bs-target="#contactform"
                     className="btn btn-primary rounded-md"
                   >
-                    Help Center
+                    CMF Help Center
                   </a>
                 </div>
               </div>
