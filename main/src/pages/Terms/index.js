@@ -82,52 +82,25 @@ const Terms = () => {
             <div className="col-lg-9">
               <div className="card shadow border-0 rounded">
                 <div className="card-body">
-                  <h5 className="card-title">Introduction :</h5>
+                  <h5 className="card-title">Introduction:</h5>
                   <p className="text-muted mt-4">
-                    It seems that only fragments of the original text remain in
-                    the Lorem Ipsum texts used today. One may speculate that
-                    over the course of time certain letters were added or
-                    deleted at various positions within the text.
+                    CMF Terms & Conditions 1
                   </p>
 
-                  <h5 className="card-title mt-5">User Agreements :</h5>
+                  <h5 className="card-title mt-5">User & Usage Agreements:</h5>
                   <p className="text-muted mt-4">
-                    The most well-known dummy text is the 'Lorem Ipsum', which
-                    is said to have <b className="text-danger">originated</b> in
-                    the 16th century. Lorem Ipsum is{' '}
-                    <b className="text-danger">composed</b> in a pseudo-Latin
-                    language which more or less{' '}
-                    <b className="text-danger">corresponds</b> to 'proper'
-                    Latin. It contains a series of real Latin words. This
-                    ancient dummy text is also{' '}
-                    <b className="text-danger">incomprehensible</b>, but it
-                    imitates the rhythm of most European languages in Latin
-                    script. The <b className="text-danger">advantage</b> of its
-                    Latin origin and the relative{' '}
-                    <b className="text-danger">meaninglessness</b> of Lorum
-                    Ipsum is that the text does not attract attention to itself
-                    or distract the viewer's{' '}
-                    <b className="text-danger">attention</b> from the layout.
+                    CMF Terms & Conditions 2
                   </p>
                   <p className="text-muted">
-                    There is now an <b className="text-danger">abundance</b> of
-                    readable dummy texts. These are usually used when a text is{' '}
-                    <b className="text-danger">required purely</b> to fill a
-                    space. These alternatives to the classic Lorem Ipsum texts
-                    are often amusing and tell short, funny or{' '}
-                    <b className="text-danger">nonsensical</b> stories.
+                    CMF Terms & Conditions 3
                   </p>
                   <p className="text-muted">
-                    It seems that only <b className="text-danger">fragments</b>{' '}
-                    of the original text remain in the Lorem Ipsum texts used
-                    today. One may speculate that over the course of time
-                    certain letters were added or deleted at various positions
-                    within the text.
+                    CMF Terms & Conditions 4
                   </p>
 
-                  <h5 className="card-title mt-5">Restrictions :</h5>
+                  <h5 className="card-title mt-5">Restrictions:</h5>
                   <p className="text-muted mt-4">
-                    You are specifically restricted from all of the following :
+                    You are specifically agreeing to the following:
                   </p>
                   <ul className="list-unstyled text-muted">
                     <li className="mt-2">
@@ -135,46 +108,46 @@ const Terms = () => {
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Digital Marketing Solutions for Tomorrow
+                      CMF Terms & Conditions 5
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Our Talented & Experienced Marketing Agency
+                      CMF Terms & Conditions 6
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Create your own skin to match your brand
+                      CMF Terms & Conditions 7
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Digital Marketing Solutions for Tomorrow
+                      CMF Terms & Conditions 8
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Our Talented & Experienced Marketing Agency
+                      CMF Terms & Conditions 9
                     </li>
                     <li className="mt-2">
                       <i
                         data-feather="arrow-right"
                         className="fea icon-sm me-2"
                       ></i>
-                      Create your own skin to match your brand
+                      CMF Terms & Conditions 10
                     </li>
                   </ul>
 
-                  <h5 className="card-title mt-5">Users Question & Answer :</h5>
+                  <h5 className="card-title mt-5">General Questions & Answers:</h5>
 
                   <div className="accordion mt-4 pt-2" id="buyingquestion">
                     <div className="accordion-item rounded">
@@ -188,7 +161,7 @@ const Terms = () => {
                           aria-expanded="true"
                           aria-controls="collapseOne"
                         >
-                          How does it work ?
+                          How does it work?
                         </button>
                       </h2>
                       <div
@@ -198,9 +171,7 @@ const Terms = () => {
                         data-bs-parent="#buyingquestion"
                       >
                         <div className="accordion-body text-muted bg-white">
-                          There are many variations of passages of Lorem Ipsum
-                          available, but the majority have suffered alteration
-                          in some form.
+                          Q&A 1
                         </div>
                       </div>
                     </div>
@@ -216,7 +187,7 @@ const Terms = () => {
                           aria-expanded="false"
                           aria-controls="collapseTwo"
                         >
-                          Do I need a designer to use Chain Master Finance ?
+                          Do I need a designer to use Chain Master Finance?
                         </button>
                       </h2>
                       <div
@@ -226,9 +197,7 @@ const Terms = () => {
                         data-bs-parent="#buyingquestion"
                       >
                         <div className="accordion-body text-muted bg-white">
-                          There are many variations of passages of Lorem Ipsum
-                          available, but the majority have suffered alteration
-                          in some form.
+                          Q&A 2
                         </div>
                       </div>
                     </div>
@@ -244,7 +213,7 @@ const Terms = () => {
                           aria-expanded="false"
                           aria-controls="collapseThree"
                         >
-                          What do I need to do to start selling ?
+                          What do I need to do to start selling?
                         </button>
                       </h2>
                       <div
@@ -254,9 +223,7 @@ const Terms = () => {
                         data-bs-parent="#buyingquestion"
                       >
                         <div className="accordion-body text-muted bg-white">
-                          There are many variations of passages of Lorem Ipsum
-                          available, but the majority have suffered alteration
-                          in some form.
+                          Q&A 3
                         </div>
                       </div>
                     </div>
@@ -272,7 +239,7 @@ const Terms = () => {
                           aria-expanded="false"
                           aria-controls="collapseFour"
                         >
-                          What happens when I receive an order ?
+                          What happens when I sell an NFT?
                         </button>
                       </h2>
                       <div
@@ -282,9 +249,7 @@ const Terms = () => {
                         data-bs-parent="#buyingquestion"
                       >
                         <div className="accordion-body text-muted bg-white">
-                          There are many variations of passages of Lorem Ipsum
-                          available, but the majority have suffered alteration
-                          in some form.
+                          Q&A 4
                         </div>
                       </div>
                     </div>
@@ -296,14 +261,14 @@ const Terms = () => {
                       onClick={e => e.preventDefault()}
                       className="btn btn-primary rounded-md mt-2 me-2"
                     >
-                      Accept
+                      Accept CMF T&C's
                     </a>
                     <a
                       href=""
                       onClick={e => e.preventDefault()}
                       className="btn btn-outline-primary rounded-md mt-2"
                     >
-                      Decline
+                      Decline CMF T&C's
                     </a>
                   </div>
                 </div>
