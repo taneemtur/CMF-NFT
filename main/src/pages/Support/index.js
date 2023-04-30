@@ -105,7 +105,7 @@ const Support = () => {
                               id="name"
                               type="text"
                               className="form-control"
-                              placeholder="First Name :"
+                              placeholder="John..."
                             />
                           </div>
                         </div>
@@ -120,7 +120,7 @@ const Support = () => {
                               id="email"
                               type="email"
                               className="form-control"
-                              placeholder="Your email :"
+                              placeholder="support@cmf.io..."
                             />
                           </div>
                         </div>
@@ -132,7 +132,7 @@ const Support = () => {
                               name="subject"
                               id="subject"
                               className="form-control"
-                              placeholder="Your subject :"
+                              placeholder="I need help with..."
                             />
                           </div>
                         </div>
@@ -145,7 +145,7 @@ const Support = () => {
                               id="comments"
                               rows="4"
                               className="form-control"
-                              placeholder="Your Message :"
+                              placeholder="Summary of request..."
                             ></textarea>
                           </div>
                         </div>
@@ -194,7 +194,7 @@ const Support = () => {
                     data-bs-target="#contactform"
                     className="btn btn-primary rounded-md"
                   >
-                    Help Center
+                    CMF Help Center
                   </a>
                 </div>
               </div>
