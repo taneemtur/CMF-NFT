@@ -36,7 +36,7 @@ const OverView = () => {
                         name="name"
                         className="border bg-white rounded-pill opacity-7"
                         required=""
-                        placeholder="Search your questions or topic..."
+                        placeholder="Search your questions or topics on CMF..."
                       />
                       <button
                         type="submit"
@@ -131,8 +131,7 @@ const OverView = () => {
                     FAQs
                   </a>
                   <p className="text-muted mt-3 mb-0">
-                    Due to its widespread use as filler text for layouts,
-                    non-readability is of great importance.
+                    All useful questions & answers
                   </p>
                 </div>
               </div>
@@ -153,11 +152,10 @@ const OverView = () => {
                     }}
                     className="title h5 text-dark"
                   >
-                    Guides / Support
+                    Guides & Support
                   </a>
                   <p className="text-muted mt-3 mb-0">
-                    Due to its widespread use as filler text for layouts,
-                    non-readability is of great importance.
+                    Articles & tutorials for the CMF NFT marketplace
                   </p>
                 </div>
               </div>
@@ -181,8 +179,7 @@ const OverView = () => {
                     Support Request
                   </a>
                   <p className="text-muted mt-3 mb-0">
-                    Due to its widespread use as filler text for layouts,
-                    non-readability is of great importance.
+                    Submit a request by filling a simple form
                   </p>
                 </div>
               </div>
@@ -223,7 +220,7 @@ const OverView = () => {
                       aria-expanded="true"
                       aria-controls="collapseOne"
                     >
-                      How does it work ?
+                      How does it work?
                     </button>
                   </h2>
                   <div
@@ -233,9 +230,7 @@ const OverView = () => {
                     data-bs-parent="#accordionExample"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 1
                     </div>
                   </div>
                 </div>
@@ -251,7 +246,7 @@ const OverView = () => {
                       aria-expanded="false"
                       aria-controls="collapseTwo"
                     >
-                      Do I need a designer to use Chain Master Finance ?
+                      Do I need a designer to use Chain Master Finance?
                     </button>
                   </h2>
                   <div
@@ -261,9 +256,7 @@ const OverView = () => {
                     data-bs-parent="#accordionExample"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 2
                     </div>
                   </div>
                 </div>
@@ -279,7 +272,7 @@ const OverView = () => {
                       aria-expanded="false"
                       aria-controls="collapseThree"
                     >
-                      What do I need to do to start selling ?
+                      What do I need to do to start selling?
                     </button>
                   </h2>
                   <div
@@ -289,9 +282,7 @@ const OverView = () => {
                     data-bs-parent="#accordionExample"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 3
                     </div>
                   </div>
                 </div>
@@ -307,7 +298,7 @@ const OverView = () => {
                       aria-expanded="false"
                       aria-controls="collapseFour"
                     >
-                      What happens when I receive an order ?
+                      What happens when someone buys my NFT?
                     </button>
                   </h2>
                   <div
@@ -317,9 +308,7 @@ const OverView = () => {
                     data-bs-parent="#accordionExample"
                   >
                     <div className="accordion-body text-muted bg-white">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form.
+                      Q&A 4
                     </div>
                   </div>
                 </div>
@@ -336,7 +325,7 @@ const OverView = () => {
             <div className="col-12">
               <div className="section-title text-center">
                 <h6 className="text-muted fw-normal mb-3">
-                  Contact us and we'll get back to you as soon as we can.
+                  Contact CMF and we'll get back to you as soon as we can.
                 </h6>
                 <h4 className="title mb-4">Can't find your answer?</h4>
                 <div className="mt-4 pt-2">
@@ -347,7 +336,7 @@ const OverView = () => {
                     data-bs-target="#contactform"
                     className="btn btn-primary rounded-md"
                   >
-                    Help Center
+                    CMF Help Center
                   </a>
                 </div>
               </div>
