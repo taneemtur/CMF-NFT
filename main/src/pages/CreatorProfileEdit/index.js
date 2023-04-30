@@ -8,10 +8,10 @@ import { FiCamera } from 'react-icons/fi'
 
 const CreatorProfileEdit = () => {
   const navigate = useNavigate()
-  const [name, setName] = useState('streetboyyy')
-  const [url, setUrl] = useState('https://Chain Master Finance.exe/streetboyyy')
-  const [twitter, _twitter] = useState('https://twitter.com/streetboyyy')
-  const [website, setWebsite] = useState('https://streetboyyy.com/')
+  const [name, setName] = useState('CMF')
+  const [url, setUrl] = useState('https://ChainMasterFinance.io/CMF')
+  const [twitter, _twitter] = useState('https://twitter.com/chainmasterfin')
+  const [website, setWebsite] = useState('https://www.chainmaster.io')
   const [email, setEmail] = useState('streetboyyy@example.com')
   const [follow, setFollow] = useState(true)
   const [job, setJob] = useState(true)
@@ -98,8 +98,8 @@ const CreatorProfileEdit = () => {
           <div className="row">
             <div className="col-lg-9">
               <h5>
-                You can set preferred display name, create your branded profile
-                URL and manage other personal settings.
+                You can set your display name, add your branded profile
+                URL and manage other profile options here.
               </h5>
             </div>
           </div>
@@ -107,14 +107,14 @@ const CreatorProfileEdit = () => {
             <div className="col-lg-8 col-md-7 col-12 order-2 order-md-1 mt-4 pt-2">
               <div className="rounded-md shadow">
                 <div className="p-4 border-bottom">
-                  <h5 className="mb-0">Edit Profile :</h5>
+                  <h5 className="mb-0">Edit Your Profile:</h5>
                 </div>
 
                 <div className="p-4">
                   <form className="profile-edit">
                     <div className="row">
                       <div className="col-12 mb-4">
-                        <label className="form-label h6">Display Name</label>
+                        <label className="form-label h6">Display Name:</label>
                         <input
                           name="name"
                           id="first"
@@ -127,7 +127,7 @@ const CreatorProfileEdit = () => {
                       {/*end col*/}
 
                       <div className="col-12 mb-4">
-                        <label className="form-label h6">URL</label>
+                        <label className="form-label h6">URL:</label>
                         <div className="form-icon">
                           <input
                             name="url"
@@ -142,21 +142,21 @@ const CreatorProfileEdit = () => {
                       {/*end col*/}
 
                       <div className="col-12 mb-4">
-                        <label className="form-label h6">Bio</label>
+                        <label className="form-label h6">Your Bio:</label>
                         <textarea
                           name="comments"
                           id="comments"
                           rows="3"
                           className="form-control"
-                          placeholder="I'm a Digital Artist. Digital Art with over 3 years of experience. Experienced with all stages of the Art cycle for dynamic projects."
+                          placeholder="I'm a Digital Artist. I create Digital Art with over 3 years of experience. Experienced with all stages of the Art cycle for dynamic NFT projects."
                         ></textarea>
                       </div>
                       {/*end col*/}
 
                       <div className="col-12 mb-4">
-                        <label className="form-label h6">Twitter Account</label>
+                        <label className="form-label h6">Twitter Account:</label>
                         <p className="text-muted">
-                          Link your twitter account to gain more trust on the
+                          Link your twitter account to gain more traction on the CMF
                           Marketplace
                         </p>
                         <div className="form-icon">
@@ -173,7 +173,7 @@ const CreatorProfileEdit = () => {
                       {/*end col*/}
 
                       <div className="col-12 mb-4">
-                        <label className="form-label h6">Website</label>
+                        <label className="form-label h6">Website:</label>
                         <div className="form-icon">
                           <input
                             name="url"
@@ -188,7 +188,7 @@ const CreatorProfileEdit = () => {
                       {/*end col*/}
 
                       <div className="col-12 mb-4">
-                        <label className="form-label h6">Email</label>
+                        <label className="form-label h6">Email:</label>
                         <input
                           name="email"
                           id="email"
@@ -222,7 +222,7 @@ const CreatorProfileEdit = () => {
 
               <div className="rounded-md shadow mt-4">
                 <div className="p-4 border-bottom">
-                  <h5 className="mb-0">Account Notifications :</h5>
+                  <h5 className="mb-0">Account Notifications:</h5>
                 </div>
 
                 <div className="p-4">
@@ -259,7 +259,7 @@ const CreatorProfileEdit = () => {
                     </div>
                   </div>
                   <div className="d-flex justify-content-between py-4 border-top">
-                    <h6 className="mb-0">When shares my activity</h6>
+                    <h6 className="mb-0">When my activity is shared</h6>
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -293,7 +293,7 @@ const CreatorProfileEdit = () => {
 
               <div className="rounded-md shadow mt-4">
                 <div className="p-4 border-bottom">
-                  <h5 className="mb-0">Marketing Notifications :</h5>
+                  <h5 className="mb-0">CMF Marketing Notifications:</h5>
                 </div>
 
                 <div className="p-4">
@@ -313,7 +313,7 @@ const CreatorProfileEdit = () => {
                     </div>
                   </div>
                   <div className="d-flex justify-content-between py-4 border-top">
-                    <h6 className="mb-0">Company news</h6>
+                    <h6 className="mb-0">General CMF news</h6>
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -328,7 +328,7 @@ const CreatorProfileEdit = () => {
                     </div>
                   </div>
                   <div className="d-flex justify-content-between py-4 border-top">
-                    <h6 className="mb-0">Weekly jobs</h6>
+                    <h6 className="mb-0">NFT Releases</h6>
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -345,7 +345,7 @@ const CreatorProfileEdit = () => {
                     </div>
                   </div>
                   <div className="d-flex justify-content-between py-4 border-top">
-                    <h6 className="mb-0">Unsubscribe News</h6>
+                    <h6 className="mb-0">Unsubscribe From News</h6>
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -413,7 +413,7 @@ const CreatorProfileEdit = () => {
 
                 <div className="mt-4">
                   <p className="text-muted mb-0">
-                    We recommend an image of at least 400X400. GIFs work too.
+                    We recommend an image of at least 400X400, GIFs work too.
                   </p>
                 </div>
               </div>
