@@ -53,7 +53,7 @@ const AboutUs = () => {
             <div className="col-12">
               <div className="title-heading text-center">
                 <h5 className="heading fw-semibold sub-heading text-white title-dark">
-                  Meet Chani 
+                  About Chain Master Finance
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
                   NFT marketplace where anything is possible and all are welcome
