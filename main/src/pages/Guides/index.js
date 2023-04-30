@@ -26,7 +26,7 @@ const Guides = () => {
                   NFTs Guidance
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
-                  Please check How to buy & Sell NFTs?
+                  All the answers to help you on the CMF NFT marketplace
                 </p>
               </div>
             </div>
@@ -122,7 +122,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Landing an experience or adventure
+                    How to create a profile
                   </a>
                 </li>
                 <li className="mt-2">
@@ -131,8 +131,8 @@ const Guides = () => {
                     onClick={e => e.preventDefault()}
                     className="text-muted"
                   >
-                    <i className="mdi mdi-arrow-right text-primary me-2"></i>Top
-                    uses questions
+                    <i className="mdi mdi-arrow-right text-primary me-2"></i>Edit
+                    your profile
                   </a>
                 </li>
               </ul>
@@ -140,7 +140,7 @@ const Guides = () => {
             {/*end col*/}
 
             <div className="col-lg-4 col-md-6 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-              <h5>Your calendar</h5>
+              <h5>Your Auctions</h5>
               <ul className="list-unstyled mt-4 mb-0">
                 <li className="mt-2">
                   <a
@@ -149,7 +149,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Pricing & availability
+                    Listing an auction
                   </a>
                 </li>
                 <li className="mt-2">
@@ -159,7 +159,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Booking settings
+                    Editing an auction
                   </a>
                 </li>
                 <li className="mt-2">
@@ -169,7 +169,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Responding to enquiries & requests
+                    How auctions work
                   </a>
                 </li>
                 <li className="mt-2">
@@ -179,7 +179,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Snoozing or deactivating your listing
+                    Deactivating an auction
                   </a>
                 </li>
               </ul>
@@ -206,7 +206,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Neighbourhoods
+                    Editing you listing
                   </a>
                 </li>
                 <li className="mt-2">
@@ -236,7 +236,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    API-connected software
+                    CMF Subscriptions
                   </a>
                 </li>
               </ul>
@@ -301,7 +301,7 @@ const Guides = () => {
             {/*end col*/}
 
             <div className="col-lg-4 col-md-6 col-12 mt-4 pt-2">
-              <h5>Your reservations</h5>
+              <h5>Safety & Security</h5>
               <ul className="list-unstyled mt-4 mb-0">
                 <li className="mt-2">
                   <a
@@ -310,7 +310,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Chain Master Finance safely
+                    Chain Master Finance safety
                   </a>
                 </li>
                 <li className="mt-2">
@@ -320,7 +320,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Chain Master Finance Experiences and Adventures
+                    Staying safe
                   </a>
                 </li>
                 <li className="mt-2">
@@ -330,7 +330,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Changing a reservation
+                    keeping your account secure
                   </a>
                 </li>
                 <li className="mt-2">
@@ -340,7 +340,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Cancelling a reservation
+                    Deleting your account
                   </a>
                 </li>
                 <li className="mt-2">
@@ -350,7 +350,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Long-term reservations
+                    Your CMF account settings
                   </a>
                 </li>
               </ul>
@@ -358,7 +358,7 @@ const Guides = () => {
             {/*end col*/}
 
             <div className="col-lg-4 col-md-6 col-12 mt-4 pt-2">
-              <h5>Reservation help</h5>
+              <h5>CMF Ecosystem</h5>
               <ul className="list-unstyled mt-4 mb-0">
                 <li className="mt-2">
                   <a
@@ -367,7 +367,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Help with a reservation or guest
+                    Staking
                   </a>
                 </li>
                 <li className="mt-2">
@@ -377,7 +377,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Guest cancellations
+                    Lotteries
                   </a>
                 </li>
               </ul>
@@ -434,7 +434,7 @@ const Guides = () => {
                     className="text-muted"
                   >
                     <i className="mdi mdi-arrow-right text-primary me-2"></i>
-                    Superhost status
+                    Super Account
                   </a>
                 </li>
               </ul>
@@ -450,7 +450,7 @@ const Guides = () => {
             <div className="col-12">
               <div className="section-title text-center">
                 <h6 className="text-muted fw-normal mb-3">
-                  Contact us and we'll get back to you as soon as we can.
+                  Contact CMF and we'll get back to you as soon as we can.
                 </h6>
                 <h4 className="title mb-4">Can't find your answer?</h4>
                 <div className="mt-4 pt-2">
@@ -461,7 +461,7 @@ const Guides = () => {
                     data-bs-target="#contactform"
                     className="btn btn-primary rounded-md"
                   >
-                    Help Center
+                    CMF Help Center
                   </a>
                 </div>
               </div>
