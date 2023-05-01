@@ -591,7 +591,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"erc1155marketplace.sol": "ERC1155Marketplace"
+			"Contracts/erc1155marketplace.sol": "ERC1155Marketplace"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -605,7 +605,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"erc1155marketplace.sol": {
+		"Contracts/erc1155marketplace.sol": {
 			"keccak256": "0x31f4361d3eeae902c4b2816b83ed6a42b139073e41f9792dc53f3b4b00d375a2",
 			"license": "MIT",
 			"urls": [
