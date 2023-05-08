@@ -2,7 +2,6 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import { item1, item2, item3, item4, item5, gif1, gif2, gif3, gif4, gif5, bg01 } from '../../components/imageImport'
 
 const Activity = () => {
@@ -317,9 +316,6 @@ const Activity = () => {
       {/* End Activities */}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

@@ -2,9 +2,14 @@ import React from 'react'
 import { FiArrowLeft } from 'react-icons/fi'
 import Loading from '../../components/Loading'
 import { bg03, lightLogo } from '../../components/imageImport'
-import StyleSwitcher from '../../components/StyleSwitcher'
+
+import { useEffect } from 'react'
 
 const ComingSoon = () => {
+  useEffect(() => {
+    // 👇️ scroll to top on page load
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+  }, []);
   return (
     <>
       <Loading />
@@ -98,9 +103,6 @@ const ComingSoon = () => {
         {/*end container*/}
       </section>
       {/*end section*/}
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
       {/* End */}
     </>
   )

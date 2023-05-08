@@ -1,9 +1,13 @@
 import React from 'react'
 import { FiArrowLeft } from 'react-icons/fi'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import { logoDark, ErrorImage } from '../../components/imageImport'
+import { useEffect } from 'react'
 
 const Error = () => {
+  useEffect(() => {
+  // 👇️ scroll to top on page load
+  window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+}, []);
   return (
     <>
       <div className="back-to-home">
@@ -75,9 +79,6 @@ const Error = () => {
       </section>
       {/* end section */}
       {/* End  */}
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

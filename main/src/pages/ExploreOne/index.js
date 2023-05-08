@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import {
   bg01, item1, item2, item3, item4, item5, item6,
   gif1, gif2, gif3, gif4, gif5, gif6,
@@ -410,9 +409,6 @@ const ExploreOne = () => {
       {/*end section*/}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

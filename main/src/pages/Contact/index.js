@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { bg01, office } from '../../components/imageImport'
-import StyleSwitcher from '../../components/StyleSwitcher'
+
 
 const Contact = () => {
   const navigate = useNavigate()
@@ -135,11 +135,11 @@ const Contact = () => {
       {/* Start Section */}
       <section className="section">
         <div className="container">
-          <div className="row">
+          <div className="row justify-content-center">
             <div className="col-lg-4 col-md-6">
               <div className="card border-0 text-center features feature-primary feature-clean">
                 <div className="icons text-center mx-auto">
-                  <i className="uil uil-phone d-block rounded-md h3 mb-0"></i>
+                <i className="uil uil-telegram d-block rounded-md h3 mb-0"></i>
                 </div>
                 <div className="content mt-4 px-4">
                   <h5 className="fw-bold">Telegram</h5>
@@ -166,29 +166,6 @@ const Contact = () => {
                   </p>
                   <a href="mailto:support@chainmaster.io" className="text-primary">
                     support@chainmaster.io
-                  </a>
-                </div>
-              </div>
-            </div>
-            {/*end col*/}
-
-            <div className="col-lg-4 col-md-6 mt-4 mt-lg-0 pt-2 pt-lg-0">
-              <div className="card border-0 text-center features feature-primary feature-clean">
-                <div className="icons text-center mx-auto">
-                  <i className="uil uil-map-marker d-block rounded-md h3 mb-0"></i>
-                </div>
-                <div className="content mt-4 px-4">
-                  <h5 className="fw-bold">Location</h5>
-                  <p className="text-muted">
-                    C/54 Northwest Freeway, Suite 558, <br />
-                    Houston, USA 485
-                  </p>
-                  <a
-                    href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39206.002432144705!2d-95.4973981212445!3d29.709510002925988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640c16de81f3ca5%3A0xf43e0b60ae539ac9!2sGerald+D.+Hines+Waterwall+Park!5e0!3m2!1sen!2sin!4v1566305861440!5m2!1sen!2sin"
-                    data-type="iframe"
-                    className="video-play-icon text-primary lightbox"
-                  >
-                    View on Google map
                   </a>
                 </div>
               </div>
@@ -321,31 +298,8 @@ const Contact = () => {
       </section>
       {/*end section*/}
 
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-12 p-0">
-            <div className="card map border-0">
-              <div className="card-body p-0">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39206.002432144705!2d-95.4973981212445!3d29.709510002925988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640c16de81f3ca5%3A0xf43e0b60ae539ac9!2sGerald+D.+Hines+Waterwall+Park!5e0!3m2!1sen!2sin!4v1566305861440!5m2!1sen!2sin"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                ></iframe>
-              </div>
-            </div>
-          </div>
-          {/*end col*/}
-        </div>
-        {/*end row*/}
-      </div>
-      {/*end container*/}
-      {/* End Section */}
-
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

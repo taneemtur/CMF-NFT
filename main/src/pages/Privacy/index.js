@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { bg02 } from '../../components/imageImport'
-import StyleSwitcher from '../../components/StyleSwitcher'
 
 const Privacy = () => {
   const navigate = useNavigate()
@@ -173,9 +172,6 @@ const Privacy = () => {
       {/* End Privacy */}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

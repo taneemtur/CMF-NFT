@@ -5090,39 +5090,6 @@ footer .border {
   border-color: #252f4c !important;
 }
 
-#style-switcher {
-  transition: all 0.4s;
-  background: none repeat scroll 0 0 #ffffff;
-  box-shadow: 0 0 3px rgba(60, 72, 88, 0.15);
-  left: -189px;
-  position: fixed;
-  top: 17%;
-  width: 189px;
-  z-index: 9999;
-  padding: 10px 5px;
-}
-
-#style-switcher div {
-  padding: 5px 10px;
-}
-
-#style-switcher div h3 {
-  color: #3c4858;
-  font-size: 16px;
-  margin: 0 3px 12px;
-}
-
-#style-switcher .bottom a.settings {
-  background: none repeat scroll 0 0 #ffffff;
-  height: 41px;
-  position: absolute;
-  right: -41px;
-  top: 0px;
-  width: 40px;
-  padding: 3px;
-  border-radius: 0 30px 30px 0;
-}
-
 ul.pattern {
   list-style: none outside none;
   overflow: hidden;
@@ -5172,11 +5139,6 @@ ul.pattern .color7 {
   background-color: #e40066;
 }
 
-@media only screen and (max-width: 375px) {
-  #style-switcher {
-    display: none;
-  }
-}
 
 /*********************************/
 /*     Variables-DARK            */
@@ -5191,10 +5153,6 @@ body {
 
 ::selection {
   color: #ffffff;
-}
-#style-switcher .t-light,
-#style-switcher .t-rtl-dark {
-  display: inline-block;
 }
 
 /*********************************/

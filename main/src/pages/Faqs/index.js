@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import { bg02 } from '../../components/imageImport'
 import BackToTop from '../../components/BackToTop'
 
@@ -135,7 +134,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingOne">
                     <button
                       className="accordion-button border-0"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseOne"
@@ -161,7 +159,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingTwo">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseTwo"
@@ -187,7 +184,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingThree">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseThree"
@@ -213,7 +209,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingFour">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseFour"
@@ -245,7 +240,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingfive">
                     <button
                       className="accordion-button border-0"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsefive"
@@ -271,7 +265,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingsix">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsesix"
@@ -297,7 +290,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingseven">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseseven"
@@ -323,7 +315,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingeight">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseeight"
@@ -355,7 +346,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingnine">
                     <button
                       className="accordion-button border-0 "
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsenine"
@@ -381,7 +371,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingten">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseten"
@@ -407,7 +396,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingeleven">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseeleven"
@@ -433,7 +421,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingtwelve">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsetwelve"
@@ -465,7 +452,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingthirteen">
                     <button
                       className="accordion-button border-0"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsethirteen"
@@ -491,7 +477,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingfourteen">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsefourteen"
@@ -517,7 +502,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingfifteen">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsefifteen"
@@ -543,7 +527,6 @@ const Faqs = () => {
                   <h2 className="accordion-header" id="headingsixteen">
                     <button
                       className="accordion-button border-0 collapsed"
-                      style={{ backgroundColor: "#F8F8FC" }}
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapsesixteen"
@@ -604,8 +587,6 @@ const Faqs = () => {
       {/* footer */}
       <Footer />
       <BackToTop />
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

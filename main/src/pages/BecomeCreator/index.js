@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { creator } from '../../components/imageImport'
-import StyleSwitcher from '../../components/StyleSwitcher'
 
 const BecomeCreator = () => {
   const [name, setName] = useState('streetboyyy')
@@ -215,9 +214,6 @@ const BecomeCreator = () => {
 
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

@@ -1,10 +1,9 @@
-import React from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiCamera } from 'react-icons/fi'
 import Countdown from 'react-countdown'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import {
   client01, client02, client03, client04, client05, client06, client08,
   client10, client12, client13,
@@ -12,6 +11,10 @@ import {
   item1, item2, item3, item4, item5, item6, item7, item8, item9, item10,
   single, ofcDesk, prodToCard,
 } from '../../components/imageImport'
+
+
+
+
 
 const CreateProfile = () => {
   const navigate = useNavigate()
@@ -204,10 +207,32 @@ const CreateProfile = () => {
     image.src = URL.createObjectURL(event.target.files[0])
   }
 
+// const getMyNfts = async () =>{
+//   if(accounts&&accounts[0]&&chain){
+//     setNftsLoading(true)
+//     const response = await handler(accounts,chain).then((data)=>console.log(data))
+//     if(response){
+//       setWalletNfts([response])
+//       setNftsLoading(false)
+//     }
+//   }
+
+// }
+
+// useEffect(() => {
+  
+//   getMyNfts()
+
+// }, [accounts])
+
+ 
+  
+
   return (
     <>
       {/* Navbar */}
       <Navbar />
+      
 
       {/* Start Home */}
       <section className="bg-creator-profile">
@@ -323,13 +348,27 @@ const CreateProfile = () => {
                 <li className="nav-item" role="presentation">
                   <button
                     className="nav-link active"
+                    id="MyNfts-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#MyNfts"
+                    type="button"
+                    role="tab"
+                    aria-controls="MyNfts"
+                    aria-selected="true"
+                  >
+                    My NFTs
+                  </button>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <button
+                    className="nav-link"
                     id="Create-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#CreateItem"
                     type="button"
                     role="tab"
                     aria-controls="CreateItem"
-                    aria-selected="true"
+                    aria-selected="false"
                   >
                     Created
                   </button>
@@ -427,6 +466,17 @@ const CreateProfile = () => {
               </ul>
 
               <div className="tab-content mt-4 pt-2" id="myTabContent">
+                <div
+                  className="tab-pane fade show active"
+                  id="MyNfts"
+                  role="tabpanel"
+                  aria-labelledby="MyNfts-tab"
+                >
+                  {/* if value select myNFTs */}
+                  <div>
+                      My Nfts
+                  </div>
+                </div>
                 <div
                   className="tab-pane fade show active"
                   id="CreateItem"
@@ -878,9 +928,6 @@ const CreateProfile = () => {
       {/* End Home */}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

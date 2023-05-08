@@ -5,7 +5,6 @@ import { FiArrowRight } from 'react-icons/fi'
 import Countdown from 'react-countdown'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import {
   client01, client02, client03, client04, client05, client06, client07, client08,
   client09, client10, client11, client12, client13,
@@ -16,16 +15,6 @@ import {
 const DarkVersionThree = () => {
   const navigate = useNavigate()
 
-  const toggleSwitcher = () => {
-    var i = document.getElementById('style-switcher')
-    if (i) {
-      if (i.style.left === '-189px') {
-        i.style.left = '0px'
-      } else {
-        i.style.left = '-189px'
-      }
-    }
-  }
 
   const bestCreator = [
     {
@@ -202,7 +191,6 @@ const DarkVersionThree = () => {
       } else {
         document.getElementById('theme-opt').href = './css/style-dark.min.css'
       }
-      toggleSwitcher(false)
     }, 100)
   }, [location?.pathname])
 
@@ -748,9 +736,6 @@ const DarkVersionThree = () => {
       {/* End */}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

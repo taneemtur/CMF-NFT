@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Countdown from 'react-countdown'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import {
   bg01,
   item1,
@@ -604,9 +603,6 @@ const ExploreFour = () => {
       {/* CTA End */}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

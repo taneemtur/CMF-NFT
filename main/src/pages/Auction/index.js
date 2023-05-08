@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Countdown from 'react-countdown'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
+
 import {
   item1, item2, item3, item4, gif1, gif2, gif3, gif4,
   cta, bg01,
@@ -325,9 +325,6 @@ const Auction = () => {
       {/* CTA End */}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

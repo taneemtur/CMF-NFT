@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { bg02 } from '../../components/imageImport'
-import StyleSwitcher from '../../components/StyleSwitcher'
+
 
 const ChangeLog = () => {
   const navigate = useNavigate()
@@ -122,9 +122,6 @@ const ChangeLog = () => {
 
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

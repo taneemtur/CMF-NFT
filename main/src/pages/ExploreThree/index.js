@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { tns } from 'tiny-slider/src/tiny-slider';
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import {
   bg01, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10,
   gif1, gif2, gif3, gif4, gif5, gif6,
@@ -382,9 +381,6 @@ const ExploreThree = () => {
       {/*end section*/}
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import Countdown from 'react-countdown'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import { client01, client02, client03, client08, client09, item1, item2, gif1, gif2, itemDetail } from '../../components/imageImport'
 
 const ItemDetailTwo = () => {
@@ -880,9 +879,6 @@ const ItemDetailTwo = () => {
 
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

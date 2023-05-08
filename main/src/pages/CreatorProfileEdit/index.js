@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { bg01, client01 } from '../../components/imageImport'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import { FiCamera } from 'react-icons/fi'
 
 const CreatorProfileEdit = () => {
@@ -429,9 +428,6 @@ const CreatorProfileEdit = () => {
 
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }

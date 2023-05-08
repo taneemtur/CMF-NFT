@@ -6,6 +6,12 @@ import { MetaMask_Fox, playStore, app, iconLogo } from '../imageImport'
 
 const Footer = () => {
   const navigate = useNavigate()
+  const closeModal = () => {
+    //   metamask modal
+    const modal = document.getElementById('modal-metamask')
+    modal.classList.remove('show')
+    modal.style.display = 'none'
+  }
   return (
     <>
       <footer className="bg-footer">
@@ -358,6 +364,7 @@ const Footer = () => {
             <div className="position-absolute top-0 start-100 translate-middle z-index-1">
               <button
                 type="button"
+                onClick={closeModal}
                 className="btn btn-icon btn-pills btn-sm btn-light btn-close opacity-10"
                 data-bs-dismiss="modal"
                 id="close-modal"

@@ -10,7 +10,7 @@ import Faqs from './pages/Faqs'
 import Contact from './pages/Contact'
 import UploadWork from './pages/UploadWork'
 import Collections from './pages/Collections'
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import {BrowserRouter, Route, Routes } from 'react-router-dom'
 import BecomeCreator from './pages/BecomeCreator'
 import CreateProfile from './pages/CreatorProfile'
 import Creator from './pages/Creator'
@@ -32,12 +32,28 @@ import CreatorProfileEdit from './pages/CreatorProfileEdit'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import ChangeLog from './pages/ChangeLog'
+import Subscriptions from './pages/Subscriptions'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router'
+import { useSelector } from 'react-redux'
 
-export default function Router() {
+
+export default function Router() { 
+  const theme = useSelector((state)=>state.theme.theme)
+  const location = useLocation();
+  useEffect(() => {
+    // 👇️ scroll to top on page load
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+  }, [location]);
+  useEffect(() => {
+    if(theme==='dark'){
+      document.getElementById('theme-opt').href = './css/style-dark.min.css'
+    }else{
+      document.getElementById('theme-opt').href = './css/style.min.css'
+    }
+  }, [theme])
   return (
-    <BrowserRouter>
       <Routes>
-   
         {/* auth router  */}
 
         {/* special router page  */}
@@ -76,13 +92,11 @@ export default function Router() {
 
         <Route exact path="/index-dark" element={<DarkVersionOne />} />
         <Route exact path="/index-dark-rtl" element={<DarkVersionOne />} />
-        <Route exact path="/index" element={<DarkVersionOne />} />
-        {/* <Route exact path="/" element={<DarkVersionOne />} /> */}
-        <Route exact path="/index-rtl" element={<DarkVersionOne />} />
 
         <Route exact path="/index-two-dark" element={<DarkVersionTwo />} />
         <Route exact path="/index-two-dark-rtl" element={<DarkVersionTwo />} />
         <Route exact path="/index-two" element={<DarkVersionTwo />} />
+        <Route exact path="/index" element={<DarkVersionTwo />} />
         <Route exact path="/" element={<DarkVersionTwo />} />
         <Route exact path="/index-two-rtl" element={<DarkVersionTwo />} />
 
@@ -100,7 +114,7 @@ export default function Router() {
           exact
           path="/index-four-dark-rtl"
           element={<DarkVersionFour />}
-        />
+        />                          
         <Route exact path="/index-four" element={<DarkVersionFour />} />
         <Route exact path="/index-four-rtl" element={<DarkVersionFour />} />
 
@@ -113,10 +127,12 @@ export default function Router() {
         <Route exact path="/index-five" element={<DarkVersionFive />} />
         <Route exact path="/index-five-rtl" element={<DarkVersionFive />} />
 
+        <Route exact path="/subscriptions" element={<Subscriptions/>} />
+
         <Route exact path="/terms" element={<Terms />} />
         <Route exact path="/privacy" element={<Privacy />} />
         <Route exact path="/changelog" element={<ChangeLog />} />
       </Routes>
-    </BrowserRouter>
+    
   )
 }

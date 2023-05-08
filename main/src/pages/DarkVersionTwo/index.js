@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 import { tns } from 'tiny-slider/src/tiny-slider';
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import StyleSwitcher from '../../components/StyleSwitcher'
 import {
   work1, work2, work3, work4, work5, work6, work7, work8, work9, work10, work11, work12,
   client01, client02, client03, client04, client05, client06, client07, client08,
@@ -116,16 +115,6 @@ const DarkVersionTwo = () => {
     }
   }, [])
 
-  const toggleSwitcher = () => {
-    var i = document.getElementById('style-switcher')
-    if (i) {
-      if (i.style.left === '-189px') {
-        i.style.left = '0px'
-      } else {
-        i.style.left = '-189px'
-      }
-    }
-  }
 
   const creator = [
     {
@@ -406,20 +395,19 @@ const DarkVersionTwo = () => {
   const [type, setType] = useState('all')
   const location = useLocation()
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (location?.pathname === '/index-two-dark-rtl') {
-        document.getElementById('theme-opt').href = './css/style-dark-rtl.min.css'
-      } else if (location?.pathname === '/index-two') {
-        document.getElementById('theme-opt').href = './css/style.min.css'
-      } else if (location?.pathname === '/index-two-rtl') {
-        document.getElementById('theme-opt').href = './css/style-rtl.min.css'
-      } else {
-        document.getElementById('theme-opt').href = './css/style-dark.min.css'
-      }
-      toggleSwitcher(false)
-    }, 100)
-  }, [location?.pathname])
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (location?.pathname === '/index-two-dark-rtl') {
+  //       document.getElementById('theme-opt').href = './css/style-dark-rtl.min.css'
+  //     } else if (location?.pathname === '/index-two') {
+  //       document.getElementById('theme-opt').href = './css/style.min.css'
+  //     } else if (location?.pathname === '/index-two-rtl') {
+  //       document.getElementById('theme-opt').href = './css/style-rtl.min.css'
+  //     } else {
+  //       document.getElementById('theme-opt').href = './css/style-dark.min.css'
+  //     }
+  //   }, 100)
+  // }, [location?.pathname])
   const setFilter = type => {
     setType(type)
     const newOne = AuctionData?.filter(data => data?.filter?.includes(type))
@@ -912,9 +900,6 @@ const DarkVersionTwo = () => {
 
       {/* footer */}
       <Footer />
-
-      {/* Style switcher  */}
-      <StyleSwitcher />
     </>
   )
 }
