@@ -408,22 +408,173 @@ const Navbar = () => {
                   Home
                 </a>
               </li>
-              <li>
-                <a
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault()
-                    setTimeout(() => {
-                      activateMenu()
-                    }, 1000)
-                    navigate('/')
-                  }}
-                  className="sub-menu-item"
-                >
-                  <IoMdMap/>
-                  {' '}
-                  Roadmap
+              <li className="has-submenu parent-parent-menu-item">
+                <a href="" onClick={e => mobileHandler(e, 'pages')}>
+                  Marketplace
                 </a>
+                <span className="menu-arrow"></span>
+                <ul
+                  className={`submenu ${mobile.includes('pages') ? 'open' : ''
+                    }`}
+                >
+                  <li>
+                    <a
+                      href="/explore-two"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                        }, 1000)
+                        navigate('/explore-two')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Explore
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/auction"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                        }, 1000)
+                        navigate('/auction')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Live Auction
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/activity"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                        }, 1000)
+                        navigate('/activity')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Activity
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/wallet"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                          toggleSwitcher(false)
+                        }, 1000)
+                        navigate('/wallet')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Wallet
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/creators"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                          toggleSwitcher(false)
+                        }, 1000)
+                        navigate('/creators')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Creators
+                    </a>
+                  </li>
+                  {/* <li className="has-submenu parent-menu-item">
+                    <a href="" onClick={e => mobileHandler(e, 'creators')}>
+                      {' '}
+                      Creator{' '}
+                    </a>
+                    <span className="submenu-arrow"></span>
+                    <ul
+                      className={`submenu ${mobile.includes('creators') ? 'open' : ''
+                        }`}
+                    >
+                      <li>
+                        <a
+                          href="/creators"
+                          onClick={e => {
+                            e.preventDefault()
+                            setTimeout(() => {
+                              activateMenu()
+                              toggleSwitcher(false)
+                            }, 1000)
+                            navigate('/creators')
+                          }}
+                          className="sub-menu-item"
+                        >
+                          {' '}
+                          Creators
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/creator-profile"
+                          onClick={e => {
+                            e.preventDefault()
+                            setTimeout(() => {
+                              activateMenu()
+                              toggleSwitcher(false)
+                            }, 1000)
+                            navigate('/creator-profile')
+                          }}
+                          className="sub-menu-item"
+                        >
+                          {' '}
+                          Creator Profile
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/creator-profile-edit"
+                          onClick={e => {
+                            e.preventDefault()
+                            setTimeout(() => {
+                              activateMenu()
+                              toggleSwitcher(false)
+                            }, 1000)
+                            navigate('/creator-profile-edit')
+                          }}
+                          className="sub-menu-item"
+                        >
+                          {' '}
+                          Profile Edit
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/become-creator"
+                          onClick={e => {
+                            e.preventDefault()
+                            setTimeout(() => {
+                              activateMenu()
+                              toggleSwitcher(false)
+                            }, 1000)
+                            navigate('/become-creator')
+                          }}
+                          className="sub-menu-item"
+                        >
+                          {' '}
+                          Become Creator
+                        </a>
+                      </li>
+                    </ul>
+                  </li> */}
+                </ul>
               </li>
               <li>
                 <a

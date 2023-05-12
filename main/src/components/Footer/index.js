@@ -78,7 +78,7 @@ const Footer = () => {
                   {/*end col*/}
 
                   <div className="col-lg-2 col-md-4 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                    <h5 className="footer-head">NFT Market</h5>
+                    <h5 className="footer-head">Chain Master Finance</h5>
                     <ul className="list-unstyled footer-list mt-4">
                       <li>
                         <a
