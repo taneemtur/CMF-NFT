@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { FiMail } from 'react-icons/fi'
 import BackToTop from '../BackToTop'
 import { MetaMask_Fox, playStore, app, iconLogo } from '../imageImport'
+import { defaultChain, getChainById, supportedChains } from '../../blockchain/supportedChains'
+import { useSelector } from 'react-redux'
 
 const Footer = () => {
+  const {chain} = useSelector(state => state.theme)
   const navigate = useNavigate()
   const closeModal = () => {
     //   metamask modal
@@ -12,6 +15,36 @@ const Footer = () => {
     modal.classList.remove('show')
     modal.style.display = 'none'
   }
+  const closeChainModal = () => {
+    //   chain modal
+    const modal = document.getElementById('modal-chain')
+    modal.classList.remove('show')
+    modal.style.display = 'none'
+  }
+
+  const switchChain = async (chainId) => {
+    const chainParam = getChainById(chainId)
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainId }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [ chainParam ],
+          });
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
+  }
+
   return (
     <>
       <footer className="bg-footer">
@@ -395,6 +428,56 @@ const Footer = () => {
                 >
                   MetaMask
                 </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Wallet Modal */}
+
+       {/* chain Modal */}
+       <div
+        className="modal fade"
+        id="modal-chain"
+        tabIndex="-1"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered modal-sm">
+          <div className="modal-content justify-content-center border-0 shadow-md rounded-md position-relative">
+            <div className="position-absolute top-0 start-100 translate-middle z-index-1">
+              <button
+                type="button"
+                onClick={closeChainModal}
+                className="btn btn-icon btn-pills btn-sm btn-light btn-close opacity-10"
+                data-bs-dismiss="modal"
+                id="close-modal"
+              >
+                <i className="uil uil-times fs-4"></i>
+              </button>
+            </div>
+
+            <div className="modal-body p-4 text-center">
+              <img
+                src={MetaMask_Fox}
+                className="avatar avatar-md-md rounded-circle shadow-sm "
+                alt=""
+              />
+
+              <div className="content mt-4">
+                <h5 className="text-muted mb-4">Current Chain: <span className='text-primary'> {chain && getChainById(chain).chainName} </span> </h5>
+
+                <p className="text-muted">
+                  CMF supports multichain and chains are given below you can do trasaction on any one of the chain.
+                </p>
+                <select name='chain-id' id='chain-id' className='form-control' onChange={(e)=>switchChain(e.target.value)} >
+                  { supportedChains.map((item) => {
+                    return (
+                      <>
+                      <option value={item.chainId}> {item.chainName} </option>
+                      </>
+                    )
+                  }) }
+                </select>
               </div>
             </div>
           </div>

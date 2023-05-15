@@ -1,4 +1,6 @@
 import { DocumentData } from "@firebase/firestore-types";
+import { CollectionModel } from "../collections/Collection";
+import { UserModel } from "../profile/User";
 
 export enum LISTINGTYPE {
     "fixedprice"="fixedprice",
@@ -10,12 +12,12 @@ interface NFTModel  {
     name: string;
     description: string;
     image?: string;
-    collectionAddress: DocumentData;
+    collection: DocumentData | CollectionModel;
     metaData: string;
     blockchain: string;
     type: LISTINGTYPE
     price: string;
-    owner: DocumentData;
+    owner: DocumentData | UserModel;
     auctionTimeEnd: string | null;
     supply: string;
 }

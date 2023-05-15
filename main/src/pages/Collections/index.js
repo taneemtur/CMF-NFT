@@ -15,9 +15,9 @@ const Collections = () => {
     {
       title: 'Digital Arts',
       img1: c3,
-      img2: c1,
-      img3: c4,
-      img4: c10,
+      // img2: c1,
+      // img3: c4,
+      // img4: c10,
       client: client01,
     },
     {

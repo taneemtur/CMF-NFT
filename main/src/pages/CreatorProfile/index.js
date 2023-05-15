@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiCamera } from 'react-icons/fi'
 import Countdown from 'react-countdown'
@@ -12,63 +12,23 @@ import {
   single, ofcDesk, prodToCard,
 } from '../../components/imageImport'
 
-
+import axiosConfig from '../../axiosConfig'
+import { useSelector } from 'react-redux'
 
 
 
 const CreateProfile = () => {
   const navigate = useNavigate()
+  const { user, account } = useSelector(state => state.theme);
+  const [loading, setLoading] = useState(false)
+  const [collections, setCollections] = useState([]);
 
-  const createdData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      type: 'GIFs',
-      id: 'May 29, 2022 6:0:0'
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      type: 'Arts',
-      id: ''
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      type: 'Games',
-      id: ''
-    },
-    {
-      image: item2,
-      title: 'Colorful Abstract Painting',
-      type: '',
-      id: 'June 03, 2022 5:3:1'
-    },
-    {
-      image: item3,
-      title: 'Liquid Forest Princess',
-      type: '',
-      id: ''
-    },
-    {
-      image: gif3,
-      title: 'Spider Eyes Modern Art',
-      type: 'GIFs',
-      id: 'June 10, 2022 1:0:1'
-    },
-    {
-      image: item4,
-      title: 'Synthwave Painting',
-      type: '',
-      id: ''
-    },
-    {
-      image: gif4,
-      title: 'Contemporary Abstract',
-      type: 'GIFs',
-      id: ''
-    },
-  ]
+  useEffect(() => {
+    if (!account) {
+      navigate('/')
+    }
+  }, [account, navigate])
+
   const onSaleData = [
     {
       image: gif1,
@@ -202,37 +162,53 @@ const CreateProfile = () => {
     },
   ]
 
-  const loadFile = function (event) {
+
+  const loadFile = async function (event, banner = false) {
     var image = document.getElementById(event.target.name)
     image.src = URL.createObjectURL(event.target.files[0])
+    const data = new FormData();
+    data.append("file", event.target.files[0]);
+    const endpoint = banner ? "/profile/uploadbannerimage" : "/profile/uploadprofileimage"
+    await axiosConfig.post(`${endpoint}/${account}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
-// const getMyNfts = async () =>{
-//   if(accounts&&accounts[0]&&chain){
-//     setNftsLoading(true)
-//     const response = await handler(accounts,chain).then((data)=>console.log(data))
-//     if(response){
-//       setWalletNfts([response])
-//       setNftsLoading(false)
-//     }
-//   }
+  const getUserCollection = async () => {
+    console.log("fetch user collections", account)
+    await axiosConfig.get(`/collections/user/${account}`).then((res) => {
+      setCollections(res.data.data)
+    })
+  }
 
-// }
 
-// useEffect(() => {
-  
-//   getMyNfts()
+  useEffect(() => {
+    if (account) {
+      getUserCollection();
+    }
+    return () => {
+      // cleanup
+      setCollections([])
+    }
+  }, [account])
 
-// }, [accounts])
-
- 
-  
+  if (!account) {
+    return <></>
+  }
 
   return (
     <>
       {/* Navbar */}
       <Navbar />
-      
+
 
       {/* Start Home */}
       <section className="bg-creator-profile">
@@ -243,11 +219,11 @@ const CreateProfile = () => {
               name="profile-banner"
               type="file"
               className="d-none"
-              onChange={e => loadFile(e)}
+              onChange={e => loadFile(e, true)}
             />
             <div className="position-relative d-inline-block">
               <img
-                src={single}
+                src={user?.bannerImage || single}
                 className="rounded-md shadow-sm img-fluid"
                 id="profile-banner"
                 alt=""
@@ -276,7 +252,7 @@ const CreateProfile = () => {
                   />
                   <div className="position-relative d-inline-block">
                     <img
-                      src={client01}
+                      src={user?.profileImage || client01}
                       className="avatar avatar-medium img-thumbnail rounded-pill shadow-sm"
                       id="profile-image"
                       alt=""
@@ -293,9 +269,9 @@ const CreateProfile = () => {
                 </div>
 
                 <div className="content mt-3">
-                  <h5 className="mb-3">streetboyyy</h5>
+                  <h5 className="mb-3">{user?.name}</h5>
                   <small className="text-muted px-2 py-1 rounded-lg shadow">
-                    bhcedeh5sdijuj-husac4saiu{' '}
+                    {account}{' '}
                     <a
                       href=""
                       onClick={e => e.preventDefault()}
@@ -306,7 +282,7 @@ const CreateProfile = () => {
                   </small>
 
                   <h6 className="mt-3 mb-0">
-                    Artist, UX / UI designer, and Entrepreneur
+                    {user?.bio}
                   </h6>
 
                   <div className="mt-4">
@@ -348,27 +324,13 @@ const CreateProfile = () => {
                 <li className="nav-item" role="presentation">
                   <button
                     className="nav-link active"
-                    id="MyNfts-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#MyNfts"
-                    type="button"
-                    role="tab"
-                    aria-controls="MyNfts"
-                    aria-selected="true"
-                  >
-                    My NFTs
-                  </button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button
-                    className="nav-link"
                     id="Create-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#CreateItem"
                     type="button"
                     role="tab"
                     aria-controls="CreateItem"
-                    aria-selected="false"
+                    aria-selected="true"
                   >
                     Created
                   </button>
@@ -468,81 +430,30 @@ const CreateProfile = () => {
               <div className="tab-content mt-4 pt-2" id="myTabContent">
                 <div
                   className="tab-pane fade show active"
-                  id="MyNfts"
-                  role="tabpanel"
-                  aria-labelledby="MyNfts-tab"
-                >
-                  {/* if value select myNFTs */}
-                  <div>
-                      My Nfts
-                  </div>
-                </div>
-                <div
-                  className="tab-pane fade show active"
                   id="CreateItem"
                   role="tabpanel"
                   aria-labelledby="Create-tab"
                 >
                   {/* if value select created */}
                   <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-                    {createdData?.map(data => (
-                      <div className="col" key={data?.title}>
-                        <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
-                          <div className="d-flex justify-content-between">
-                            <div className="img-group">
-                              <a
-                                href="/creator-profile"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creator-profile')
-                                }}
-                                className="user-avatar"
-                              >
-                                <img
-                                  src={client08}
-                                  alt="user"
-                                  className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                                />
-                              </a>
-                              <a
-                                href="/creator-profile"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creator-profile')
-                                }}
-                                className="user-avatar ms-n3"
-                              >
-                                <img
-                                  src={client05}
-                                  alt="user"
-                                  className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                                />
-                              </a>
-                              <a
-                                href="/creator-profile"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creator-profile')
-                                }}
-                                className="user-avatar ms-n3"
-                              >
-                                <img
-                                  src={client06}
-                                  alt="user"
-                                  className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                                />
-                              </a>
-                            </div>
-
-                            <span className="like-icon shadow-sm">
+                    {onSaleData?.map((onSale, index) => (
+                      <div className="col" key={index}>
+                        <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center">
+                              <img
+                                src={client01}
+                                alt="user"
+                                className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
+                              />
                               <a
                                 href=""
                                 onClick={e => e.preventDefault()}
-                                className="text-muted icon"
+                                className="text-dark small creator-name h6 mb-0 ms-2"
                               >
-                                <i className="mdi mdi-18px mdi-heart mb-0"></i>
+                                @StreetBoyyy
                               </a>
-                            </span>
+                            </div>
                           </div>
 
                           <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
@@ -554,32 +465,30 @@ const CreateProfile = () => {
                               }}
                             >
                               <img
-                                src={data?.image}
+                                src={onSale?.image}
                                 className="img-fluid"
                                 alt=""
                               />
                             </a>
-                            {data?.type && (
-                              <div className="position-absolute top-0 start-0 m-2">
+                            <div className="position-absolute top-0 start-0 m-2">
+                              <a
+                                href=""
+                                onClick={e => e.preventDefault()}
+                                className="badge badge-link bg-primary"
+                              >
+                                {onSale?.type}
+                              </a>
+                            </div>
+                            <div className="position-absolute top-0 end-0 m-2">
+                              <span className="like-icon shadow-sm">
                                 <a
                                   href=""
                                   onClick={e => e.preventDefault()}
-                                  className="badge badge-link bg-primary"
+                                  className="text-muted icon"
                                 >
-                                  GIFs
+                                  <i className="mdi mdi-18px mdi-heart mb-0"></i>
                                 </a>
-                              </div>
-                            )}
-                            <div className={`${data?.id ? '' : 'hide-data'} position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}>
-                              <i className="uil uil-clock"></i>
-                              <Countdown
-                                date={data?.id}
-                                renderer={({ days, hours, minutes, seconds }) => (
-                                  <span>
-                                    {days}:{hours}:{minutes}:{seconds}
-                                  </span>
-                                )}
-                              />
+                              </span>
                             </div>
                           </div>
 
@@ -592,20 +501,31 @@ const CreateProfile = () => {
                               }}
                               className="title text-dark h6"
                             >
-                              {data?.title}
+                              {onSale?.title}
                             </a>
 
-                            <div className="d-flex justify-content-between mt-2">
-                              <small className="rate fw-bold">20.5 ETH</small>
-                              <small className="text-dark fw-bold">
-                                1 out of 10
-                              </small>
+                            <div className="d-flex align-items-center justify-content-between mt-3">
+                              <div className="">
+                                <small className="mb-0 d-block fw-semibold">
+                                  Current Bid:
+                                </small>
+                                <small className="rate fw-bold">20.5 ETH</small>
+                              </div>
+                              <a
+                                href="/item-detail-one"
+                                onClick={e => {
+                                  e.preventDefault()
+                                  navigate('/item-detail-one')
+                                }}
+                                className="btn btn-icon btn-pills btn-primary"
+                              >
+                                <i className="uil uil-shopping-bag"></i>
+                              </a>
                             </div>
                           </div>
                         </div>
                       </div>
                     ))}
-                    {/*end row*/}
                   </div>
                 </div>
                 {/* if value select like */}
@@ -741,17 +661,48 @@ const CreateProfile = () => {
                   aria-labelledby="Collection-tab"
                 >
                   <div className="row justify-content-center">
-                    <div className="col-lg-5 col-md-8 text-center">
-                      <img src={prodToCard} className="img-fluid" alt="" />
+                    <div className="col-lg-12 col-md-12 text-center">
+                      {collections != [] && collections.map((collection, index) => (
+                        <div className="col-lg-3 col-md-3" key={index}>
+                          <div className="card collections collection-primary rounded-md shadow p-2 pb-0">
+                            <div className="row g-2">
+                              <div className="col-12">
+                                <img
+                                  src={collection?.collectionImage}
+                                  className="img-fluid shadow-sm rounded-md"
+                                  alt=""
+                                />
+                              </div>
+                            </div>
 
-                      <div className="content mt-4">
-                        <h5 className="mb-4">No Collection</h5>
-                        <p className="text-muted">
-                          Save interesting shots into personalized collections,
-                          and discover new and interesting recommendations along
-                          the way.
-                        </p>
-                      </div>
+                            <div className="content text-center p-4 mt-n5">
+                              <div className="position-relative d-inline-flex">
+                                <img
+                                  src={collection?.owner.profileImage}
+                                  className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
+                                  alt=""
+                                />
+                                <span className="verified text-primary">
+                                  <i className="mdi mdi-check-decagram"></i>
+                                </span>
+                              </div>
+                              <div className="mt-2">
+                                <a
+                                  href="/explore-four"
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    navigate('/explore-four')
+                                  }}
+                                  className="text-dark title h5"
+                                >
+                                  {collection?.name}
+                                </a>
+                                <p className="text-muted mb-0 small">27 Items</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                     {/*end col*/}
                   </div>
@@ -906,14 +857,10 @@ const CreateProfile = () => {
                   role="tabpanel"
                   aria-labelledby="About-tab"
                 >
-                  <h5 className="mb-4">Calvin Carlo</h5>
+                  <h5 className="mb-4">{user.name || "...."}</h5>
 
                   <p className="text-muted mb-0">
-                    I have started my career as a trainee and prove my self and
-                    achieve all the milestone with good guidance and reach up to
-                    the project manager. In this journey, I understand all the
-                    procedure which make me a good developer, team leader, and a
-                    project manager.
+                    {user.bio || "...."}
                   </p>
                 </div>
               </div>

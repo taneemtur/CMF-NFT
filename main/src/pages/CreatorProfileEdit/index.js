@@ -1,24 +1,93 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
-import { bg01, client01 } from '../../components/imageImport'
+import { bg01, client01, set } from '../../components/imageImport'
 import { FiCamera } from 'react-icons/fi'
+import axiosConfig from '../../axiosConfig'
+import { useSelector } from 'react-redux'
 
 const CreatorProfileEdit = () => {
   const navigate = useNavigate()
-  const [name, setName] = useState('CMF')
-  const [url, setUrl] = useState('https://ChainMasterFinance.io/CMF')
-  const [twitter, _twitter] = useState('https://twitter.com/chainmasterfin')
-  const [website, setWebsite] = useState('https://www.chainmaster.io')
-  const [email, setEmail] = useState('streetboyyy@example.com')
+  const { user, account } = useSelector(state => state.theme)
+  const [name, setName] = useState(user?.name || "")
+  const [url, setUrl] = useState(user?.url || "")
+  const [twitter, _twitter] = useState(user?.twitterAccount || "")
+  const [website, setWebsite] = useState(user?.website || "")
+  const [email, setEmail] = useState(user?.email || "")
+  const [bio, setBio] = useState(user?.bio || "")
   const [follow, setFollow] = useState(true)
   const [job, setJob] = useState(true)
   const [unsubscribe, setUnsubscribe] = useState(true)
 
-  const loadFile = function (event) {
+  const [updating, setUpdating] = useState(false)
+
+  useEffect(() => {
+    if (!account) {
+      navigate('/')
+    }
+  }, [account, navigate])
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name)
+      setUrl(user.url)
+      _twitter(user.twitterAccount)
+      setWebsite(user.website)
+      setEmail(user.email)
+      setBio(user.bio)
+    }
+    return () => {
+      setName("")
+      setUrl("")
+      _twitter("")
+      setWebsite("")
+      setEmail("")
+      setBio("")
+    }
+  }, [user])
+
+
+  const loadFile = async function (event, banner=false) {
     var image = document.getElementById(event.target.name)
     image.src = URL.createObjectURL(event.target.files[0])
+
+    const data = new FormData();
+    data.append("file", event.target.files[0]);
+    const endpoint = banner ? "/profile/uploadbannerimage" : "/profile/uploadprofileimage"
+    await axiosConfig.post(`${endpoint}/${account}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setUpdating(true)
+    const data = {
+      name,
+      url,
+      twitterAccount: twitter,
+      website,
+      email,
+      bio,
+      walletAddress: account,
+    }
+    try {
+      const res = await axiosConfig.put('/profile/updateprofile', data)
+      setUpdating(false)
+      console.log(res)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -48,7 +117,7 @@ const CreatorProfileEdit = () => {
           </div>
           {/*end row*/}
 
-          <div className="position-middle-bottom">sdfs
+          <div className="position-middle-bottom">
             <nav aria-label="breadcrumb" className="d-block">
               <ul
                 className="breadcrumb breadcrumb-muted mb-0 p-0"
@@ -110,7 +179,7 @@ const CreatorProfileEdit = () => {
                 </div>
 
                 <div className="p-4">
-                  <form className="profile-edit">
+                  <form className="profile-edit" onSubmit={handleSubmit}>
                     <div className="row">
                       <div className="col-12 mb-4">
                         <label className="form-label h6">Display Name:</label>
@@ -143,6 +212,8 @@ const CreatorProfileEdit = () => {
                       <div className="col-12 mb-4">
                         <label className="form-label h6">Your Bio:</label>
                         <textarea
+                          onChange={(e) => setBio(e.target.value)}
+                          value={bio}
                           name="comments"
                           id="comments"
                           rows="3"
@@ -207,9 +278,10 @@ const CreatorProfileEdit = () => {
                           type="submit"
                           id="submit"
                           name="send"
+                          disabled={updating}
                           className="btn btn-primary rounded-md"
                         >
-                          Update Profile
+                          {updating ? "Updating ..." : "Update Profile"}
                         </button>
                       </div>
                       {/*end col*/}
@@ -394,7 +466,7 @@ const CreatorProfileEdit = () => {
                   />
                   <div className="position-relative d-inline-block">
                     <img
-                      src={client01}
+                      src={user?.profileImage || client01}
                       className="avatar avatar-medium img-thumbnail rounded-pill shadow-sm"
                       id="profile-image"
                       alt=""

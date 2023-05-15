@@ -1,12 +1,12 @@
 import admin from 'firebase-admin';
-// import ServiceAccount from "../serviceAccountKey"
-const serviceAccount = require('../../serviceAccountKey.json');
-
+// const serviceAccount = require('../../serviceAccountKey.json');
+import {key} from "./key"
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(JSON.parse(JSON.stringify(key))),
+    storageBucket: "superex-nft.appspot.com"
 });
 
 const db = admin.firestore();
-
-export {admin, db};
+const bucket = admin.storage().bucket();
+export { admin, db, bucket };

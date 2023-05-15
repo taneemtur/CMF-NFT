@@ -1,17 +1,57 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { work1, client01, bg01 } from '../../components/imageImport'
+import axiosConfig from '../../axiosConfig'
+import { useSelector } from 'react-redux'
+import { supportedChains } from '../../blockchain/supportedChains'
+
 
 const UploadWork = () => {
   const navigate = useNavigate()
-  const handleChange = () => {
+  const { user, account } = useSelector(state => state.theme)
+  const [title, setTitle] = React.useState('Collection 5')
+  const [description, setDescription] = React.useState('This is collection')
+  const [blockchain, setBlockchain] = React.useState('Ethereum')
+  const [paymentToken, setPaymentToken] = React.useState('Eth')
+  const [categories, setCategories] = React.useState([])
+  const [category, setCategory] = React.useState('Music')
+  const [creating, setCreating] = React.useState(false)
+  const [image, setImages] = React.useState(null)
+  const [error, setError] = React.useState(null)
+
+  useEffect(() => {
+    console.log(account)
+    if (!account) {
+      navigate('/')
+    }
+  }, [account, navigate])
+
+  useEffect(() => {
+    axiosConfig.get('/categories/getcategories')
+      .then(res => {
+        setCategories(res.data.data)
+        setCategory(res.data.data[0])
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    return () => {
+      setCategories([])
+    }
+  }, [])
+
+
+  const handleChange = (e) => {
     const fileUploader = document.querySelector('#input-file')
     const getFile = fileUploader.files
     if (getFile.length !== 0) {
       const uploadedFile = getFile[0]
+      const file = e.target.files[0]
       readFile(uploadedFile)
+      setImages(file)
     }
   }
 
@@ -26,6 +66,43 @@ const UploadWork = () => {
       reader.readAsDataURL(uploadedFile)
     }
   }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    const data = {
+      name: title,
+      description,
+      blockchain,
+      paymentTokens: [paymentToken],
+      categoryID: category.id,
+      owner: account
+    }
+
+    if (!image) {
+      setError('Please upload an image')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('file', image)
+    formData.append('data', JSON.stringify(data))
+    setCreating(true)
+    await axiosConfig.post("/collections/createcollection", formData, {
+      body: data,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+    })
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+    setCreating(false)
+  }
+
+
   return (
     <>
       {/* Navbar */}
@@ -103,18 +180,18 @@ const UploadWork = () => {
               <div className="card creators creator-primary rounded-md shadow overflow-hidden sticky-bar">
                 <div
                   className="py-5"
-                  style={{ background: `url(${work1})` }}
+                  style={{ background: `url(${user?.bannerImage || work1})`, backgroundSize: 'cover' }}
                 ></div>
                 <div className="position-relative mt-n5">
                   <img
-                    src={client01}
+                    src={user?.profileImage || client01}
                     className="avatar avatar-md-md rounded-pill shadow-sm bg-light img-thumbnail mx-auto d-block"
                     alt=""
                   />
 
                   <div className="content text-center pt-2 p-4">
-                    <h6 className="mb-0">Steven Townsend</h6>
-                    <small className="text-muted">@StreetBoy</small>
+                    <h6 className="mb-0"></h6>
+                    <small className="text-muted">{"@" + user?.name}</small>
 
                     <ul className="list-unstyled mb-0 mt-3" id="navmenu-nav">
                       <li className="px-0">
@@ -194,7 +271,7 @@ const UploadWork = () => {
                         id="input-file"
                         name="input-file"
                         accept="image/*"
-                        onChange={() => handleChange()}
+                        onChange={(e) => handleChange(e)}
                         hidden
                       />
                       <label
@@ -209,15 +286,18 @@ const UploadWork = () => {
 
                   <div className="col-lg-7 mt-4 mt-lg-0">
                     <div className="ms-lg-4">
-                      <form>
+                      <form onSubmit={handleSubmit}>
                         <div className="row">
                           <div className="col-12 mb-4">
                             <label className="form-label fw-bold">
-                              Art Title <span className="text-danger">*</span>
+                              Collection Title <span className="text-danger">*</span>
                             </label>
                             <input
+                              onChange={e => setTitle(e.target
+                                .value)}
                               name="name"
                               id="name"
+                              value={title}
                               type="text"
                               className="form-control"
                               placeholder="Title :"
@@ -231,6 +311,8 @@ const UploadWork = () => {
                               Description :{' '}
                             </label>
                             <textarea
+                              onChange={e => setDescription(e.target.value)}
+                              value={description}
                               name="comments"
                               id="comments"
                               rows="4"
@@ -241,69 +323,66 @@ const UploadWork = () => {
                           {/*end col*/}
 
                           <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">Type:</label>
-                            <select className="form-control">
-                              <option>GIFs</option>
-                              <option>Music</option>
-                              <option>Video</option>
-                              <option>Tech</option>
+                            <label className="form-label fw-bold">Blockchain:</label>
+                            <select value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
+                              { supportedChains.map((item) => {
+                                return (
+                                  <>
+                                  <option value={item.chainId}> {item.chainName} </option>
+                                  </>
+                                )
+                              }) }
                             </select>
                           </div>
                           {/*end col*/}
 
                           <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">
-                              {' '}
-                              Rate:{' '}
-                            </label>
-                            <input
-                              name="time"
-                              type="text"
-                              className="form-control"
-                              id="time"
-                              defaultValue="0.004 ETH"
-                            />
+                            <label className="form-label fw-bold">Payment Token:</label>
+                            <select
+                              onChange={e => setPaymentToken(e.target.value)}
+                              value={paymentToken}
+                              className="form-control">
+                              <option>Eth</option>
+                            </select>
                           </div>
                           {/*end col*/}
 
-                          <div className="col-12">
-                            <h6>Auction:</h6>
-                          </div>
-
-                          <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">
-                              {' '}
-                              Starting Date :{' '}
-                            </label>
-                            <input
-                              name="date"
-                              type="text"
-                              className="form-control start"
-                              placeholder="Select date:"
-                            />
-                          </div>
-                          {/*end col*/}
-
-                          <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">
-                              {' '}
-                              Expiration date:{' '}
-                            </label>
-                            <input
-                              name="date"
-                              type="text"
-                              className="form-control end"
-                              placeholder="Select date:"
-                            />
+                          <div className="col-12 mb-4">
+                            <label className="form-label fw-bold">Category:</label>
+                            {
+                              categories && (
+                                <select
+                              onChange={e => {
+                                setCategory(categories.find(category => category.name === e.target.value))
+                              }}
+                              value={category.name}
+                              className="form-control">
+                              {
+                                categories?.map((category, index) => (
+                                  <option key={index}>{category.name}</option>
+                                ))
+                              }
+                            </select>
+                              )
+                            }
                           </div>
                           {/*end col*/}
 
+                          {
+                            error && (
+                              <div className="col-12 mb-4">
+                                  <p style={{color: "red", marginBott
+                                : 0}}>{error}</p>
+                              </div>
+                            )
+                          }
                           <div className="col-lg-12">
                             <button
                               type="submit"
+                              disabled={creating}
                               className="btn btn-primary rounded-md"
                             >
-                              Create This Item
+                              {creating ? "Creating..." : "Create Collection"}
                             </button>
                           </div>
                           {/*end col*/}

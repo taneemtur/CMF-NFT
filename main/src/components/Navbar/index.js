@@ -1,13 +1,20 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useContext } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MetaMask_Fox, character, client01, lightLogo, logoDark } from '../imageImport'
-import { IoIosHome, IoMdMap, IoIosStats, IoIosAlbums,} from 'react-icons/io'
-import {MdNotificationAdd} from 'react-icons/md'
+import { IoIosHome, IoMdMap, IoIosStats, IoIosAlbums, } from 'react-icons/io'
+import { MdNotificationAdd } from 'react-icons/md'
 import { CgFileDocument } from 'react-icons/cg'
 import ThemeSwitcher from '../ThemeSwitcher'
+import axiosConfig from "../../axiosConfig"
+import AuthContext from '../../AuthContext'
+import { useDispatch, useSelector } from 'react-redux';
+import { setAccount, setChain, setUser } from '../../Store/Slicers/theme';
+import { defaultChain, getChainById, isChainSupported } from '../../blockchain/supportedChains'
 require('dotenv').config()
 
 const Navbar = () => {
+  const { account, chain, user } = useSelector(state => state.theme)
+  const dispatch = useDispatch()
   const location = useLocation()
   const navigate = useNavigate()
   const url = useMemo(() => location?.pathname === '/blog-detail', [])
@@ -24,6 +31,9 @@ const Navbar = () => {
   ]
   const becomeUrl = templatePage.includes(location?.pathname)
   const [mobile, setMobile] = useState([])
+  // const {profile} = useContext(AuthContext)
+  // const {data} = profile
+
   const mobileHandler = (e, panel) => {
     e.preventDefault()
     const dataIndex = mobile?.findIndex(data => data === panel)
@@ -35,10 +45,16 @@ const Navbar = () => {
     }
   }
 
-  const showModal = () =>{
-      const modal = document.getElementById('modal-metamask')
-      modal.classList.add('show')
-      modal.style.display = 'block'
+  const showModal = () => {
+    const modal = document.getElementById('modal-metamask')
+    modal.classList.add('show')
+    modal.style.display = 'block'
+  }
+
+  const showChainModal = () => {
+    const modal = document.getElementById('modal-chain')
+    modal.classList.add('show')
+    modal.style.display = 'block'
   }
 
   const isMetaMaskInstalled = useCallback(() => {
@@ -47,25 +63,112 @@ const Navbar = () => {
     return Boolean(ethereum && ethereum.isMetaMask)
   }, [])
 
-  const checkWalletConnet = useCallback(async () => {
-    if (isMetaMaskInstalled()) {
-  
-    }
-  }, [isMetaMaskInstalled])
-
-  useEffect(() => {
-    checkWalletConnet()
-  }, [checkWalletConnet])
-
-
-  const _handleDropdownProfile =  () => {
-    if(!isMetaMaskInstalled()){
+  const connectWallet = async () => {
+    if (window.ethereum !== undefined) {
+      await window.ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
+        console.log("accounts", accounts)
+        if (accounts.length > 0) {
+          dispatch(setAccount(accounts[0]));
+          // storeDB(accounts[0])
+          fetchProfile()
+        }
+      })
+        .then(async () => {
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          checkChainId(chainId)
+        })
+        .catch((error) => {
+          if (error.code === 4001) {
+            // EIP-1193 userRejectedRequest error
+            console.log('Please connect to MetaMask.');
+          } else {
+            console.error(error);
+          }
+        })
+    } else {
       showModal()
-    }else{
-      //
     }
-    }
+  };
 
+  const checkAccountChanges = (accounts) => {
+    if (accounts.length === 0) {
+      dispatch(setAccount(null));
+    } else {
+      dispatch(setAccount(window.ethereum?.selectedAddress));
+      // storeDB(window.ethereum?.selectedAddress)
+      fetchProfile()
+    }
+  }
+
+  const checkConnection = () => {
+    if (window.ethereum) {
+      if (window.ethereum?.isConnected()) {
+        dispatch(setAccount(window.ethereum?.selectedAddress));
+        // storeDB(window.ethereum?.selectedAddress)
+        fetchProfile()
+      }
+    }
+  }
+
+  const checkChainId = (newChain) => {
+    if (window.ethereum) {
+      if (isChainSupported(newChain)) {
+        dispatch(setChain(newChain))
+      } else {
+        switchChain(defaultChain.chainId)
+      }
+    }
+  }
+
+  const switchChain = async (chainId) => {
+    const chainParam = getChainById(chainId)
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainId }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainParam],
+          });
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
+  }
+
+  const storeDB = async (account) => {
+    //save user to firebase db when wallet connected
+    await axiosConfig.post("/profile/createprofile", {
+      walletAddress: account,
+    })
+      .then((res) => {
+        console.log(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  const fetchProfile = async () => {
+    //save user to firebase db when wallet connected
+    await axiosConfig.post(`/profile/createprofile`, {
+      walletAddress: account,
+    })
+      .then((res) => {
+        dispatch(setUser(res.data.data))
+        console.log(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 
   const getClosest = (elem, selector) => {
 
@@ -141,6 +244,17 @@ const Navbar = () => {
       isOpen.style.display = "block";
     }
   };
+
+  useEffect(() => {
+    window.ethereum?.on('chainChanged', (newChain) => checkChainId(newChain))
+    window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
+  }, []);
+
+
+  useEffect(() => {
+    checkConnection();
+  }, []);
+
   return (
     <>
       {/* Navbar STart */}
@@ -255,13 +369,14 @@ const Navbar = () => {
             <li className="list-inline-item mb-0 me-1">
               {becomeUrl ? (
                 <a
+                  onClick={connectWallet}
                   id="connectWallet"
                   className="btn btn-icon btn-pills btn-primary"
                 >
                   <i className="uil uil-wallet fs-6"></i>
                 </a>
               ) : (
-                <p id="connectWallet" onClick={_handleDropdownProfile}>
+                <p id="connectWallet" onClick={connectWallet}>
                   <span className="btn-icon-dark">
                     <span className="btn btn-icon btn-pills btn-primary">
                       <i className="uil uil-wallet fs-6"></i>
@@ -277,111 +392,128 @@ const Navbar = () => {
             </li>
 
             <li className="list-inline-item mb-0 me-1">
-              <div className="dropdown dropdown-primary">
-                {!isMetaMaskInstalled() ? 
-                <button 
-                type="button"
-                className="btn btn-pills dropdown-toggle p-0 "
-                
-                ><a href='https://metamask.io/'
-                style={{ minWidth: 30 }}>
-                  <img src={MetaMask_Fox} alt="metamask" className='hover-zoom'/>
-                  </a>
-                </button>
-                :
-                <button
-                type="button"
-                className="btn btn-pills dropdown-toggle p-0"
-                data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <img
-                  src={client01}
-                  className="rounded-pill avatar avatar-sm-sm"
-                  alt=""
-                />
-              </button>
-                }
-                <div
-                  className="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 pb-3 pt-0 overflow-hidden rounded"
-                  style={{ minWidth: 200 }}
-                >
-                  <div className="position-relative">
-                    <div className="pt-5 pb-3 bg-gradient-primary"></div>
-                    <div className="px-3">
-                      <div className="d-flex align-items-end mt-n4">
+              {
+                account && (
+                  <div className="dropdown dropdown-primary">
+                    {!isMetaMaskInstalled() ?
+                      <button
+                        type="button"
+                        className="btn btn-pills dropdown-toggle p-0 "
+
+                      ><a href='https://metamask.io/'
+                        style={{ minWidth: 30 }}>
+                          <img src={MetaMask_Fox} alt="metamask" className='hover-zoom' />
+                        </a>
+                      </button>
+                      :
+                      <button
+                        type="button"
+                        className="btn btn-pills dropdown-toggle p-0"
+                        data-bs-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
                         <img
                           src={client01}
-                          className="rounded-pill avatar avatar-md-sm img-thumbnail shadow-md"
+                          className="rounded-pill avatar avatar-sm-sm"
                           alt=""
                         />
-                        <h6 className="text-dark fw-bold mb-0 ms-1">
-                          Calvin Carlo
-                        </h6>
-                      </div>
-                      <div className="mt-2">
-                        <small className="text-start text-dark d-block fw-bold">
-                          Wallet:
-                        </small>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <small id="myPublicAddress" className="text-muted">
-                            0x45d...23dwW
-                          </small>
-                          <a href="" onClick={e => e.preventDefault()} className="text-primary">
-                            <span className="uil uil-copy"></span>
-                          </a>
+                      </button>
+                    }
+                    <div
+                      className="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 pb-3 pt-0 overflow-hidden rounded"
+                      style={{ minWidth: 200 }}
+                    >
+                      <div className="position-relative">
+                        <div className="pt-5 pb-3 bg-gradient-primary"></div>
+                        <div className="px-3">
+                          <div className="d-flex align-items-end mt-n4">
+                            <img
+                              src={client01}
+                              className="rounded-pill avatar avatar-md-sm img-thumbnail shadow-md"
+                              alt=""
+                            />
+                            <h6 className="text-dark fw-bold mb-0 ms-1">
+                              {user ? user?.name : ''}
+                            </h6>
+                          </div>
+                          <div className="mt-2">
+                            <small className="text-start text-dark d-block fw-bold">
+                              Wallet:
+                            </small>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <small id="myPublicAddress" className="text-muted">
+                                {account}
+                              </small>
+                              <a href="" onClick={e => e.preventDefault()} className="text-primary">
+                                <span className="uil uil-copy"></span>
+                              </a>
+                            </div>
+                          </div>
+
+                          <div className="mt-2">
+                            <small className="text-dark">
+                              Balance:
+                              <span className="text-primary fw-bold">
+                                0
+                              </span>
+                            </small>
+                          </div>
                         </div>
                       </div>
-
                       <div className="mt-2">
-                        <small className="text-dark">
-                          Balance:
-                          <span className="text-primary fw-bold">
-                            0
-                          </span>
-                        </small>
+                        <a
+                          className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
+                          href="/creator-profile"
+                          onClick={e => {
+                            e.preventDefault()
+                            navigate('/creator-profile')
+                          }}
+                        >
+                          <span className="mb-0 d-inline-block me-1">
+                            <i className="uil uil-user align-middle h6 mb-0 me-1"></i>
+                          </span>{' '}
+                          Profile
+                        </a>
+                        <a
+                          className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
+                          href="/creator-profile-edit"
+                          onClick={e => {
+                            e.preventDefault()
+                            setTimeout(() => {
+                              activateMenu()
+                            }, 1000)
+                            navigate('/creator-profile-edit')
+                          }}
+                        >
+                          <span className="mb-0 d-inline-block me-1">
+                            <i className="uil uil-cog align-middle h6 mb-0 me-1"></i>
+                          </span>{' '}
+                          Settings
+                        </a>
+                        <a
+                          className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
+                          href="#"
+                          onClick={e => {
+                            e.preventDefault()
+                            showChainModal()
+                          }}
+                        >
+                          <span className="mb-0 d-inline-block me-1">
+                            <i className="uil uil-cog align-middle h6 mb-0 me-1"></i>
+                          </span>{' '}
+                          Change Chain
+                        </a>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-2">
-                    <a
-                      className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
-                      href="/creator-profile"
-                      onClick={e => {
-                        e.preventDefault()
-                        navigate('/creator-profile')
-                      }}
-                    >
-                      <span className="mb-0 d-inline-block me-1">
-                        <i className="uil uil-user align-middle h6 mb-0 me-1"></i>
-                      </span>{' '}
-                      Profile
-                    </a>
-                    <a
-                      className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
-                      href="/creator-profile-edit"
-                      onClick={e => {
-                        e.preventDefault()
-                        setTimeout(() => {
-                          activateMenu()
-                        }, 1000)
-                        navigate('/creator-profile-edit')
-                      }}
-                    >
-                      <span className="mb-0 d-inline-block me-1">
-                        <i className="uil uil-cog align-middle h6 mb-0 me-1"></i>
-                      </span>{' '}
-                      Settings
-                    </a>
-                  </div>
-                </div>
-              </div>
+                )
+              }
             </li>
             <li className="list-inline-item mb-0">
               <div className="dropdown dropdown-primary">
-              <ThemeSwitcher/> 
-              </div> 
+                <ThemeSwitcher />
+              </div>
             </li>
           </ul>
           {/*Login button End*/}
@@ -403,7 +535,7 @@ const Navbar = () => {
                   }}
                   className="sub-menu-item"
                 >
-                  <IoIosHome/>
+                  <IoIosHome />
                   {' '}
                   Home
                 </a>
@@ -588,7 +720,7 @@ const Navbar = () => {
                   }}
                   className="sub-menu-item"
                 >
-                  <IoIosStats/>
+                  <IoIosStats />
                   {' '}
                   Tokenomics
                 </a>
@@ -605,7 +737,7 @@ const Navbar = () => {
                   }}
                   className="sub-menu-item"
                 >
-                  <IoIosAlbums/>
+                  <IoIosAlbums />
                   {' '}
                   Utility
                 </a>
@@ -622,7 +754,7 @@ const Navbar = () => {
                   }}
                   className="sub-menu-item"
                 >
-                  <MdNotificationAdd/>
+                  <MdNotificationAdd />
                   {' '}
                   Subscriptions
                 </a>
@@ -639,7 +771,7 @@ const Navbar = () => {
                   }}
                   className="sub-menu-item"
                 >
-                  <CgFileDocument/>
+                  <CgFileDocument />
                   {' '}
                   Whitepaper
                 </a>
