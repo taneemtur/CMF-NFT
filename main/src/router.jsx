@@ -10,6 +10,7 @@ import Faqs from './pages/Faqs'
 import Contact from './pages/Contact'
 import UploadWork from './pages/UploadWork'
 import Collections from './pages/Collections'
+import CollectionDetail from './pages/CollectionDetail'
 import { BrowserRouter, Route, Routes, redirect, useNavigate } from 'react-router-dom'
 import BecomeCreator from './pages/BecomeCreator'
 import CreateProfile from './pages/CreatorProfile'
@@ -81,6 +82,7 @@ export default function Router() {
       <Route exact path="/contact" element={<Contact />} />
       <Route exact path="/upload-work" element={<UploadWork />} />
       <Route exact path="/collections" element={<Collections />} />
+      <Route exact path="/collection/:collectionAddress/" element={<CollectionDetail />} />
       <Route exact path="/become-creator" element={<BecomeCreator />} />
       <Route exact path="/creator-profile" element={<CreateProfile />} />
       

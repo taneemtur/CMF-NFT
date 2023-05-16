@@ -69,8 +69,7 @@ const Navbar = () => {
         console.log("accounts", accounts)
         if (accounts.length > 0) {
           dispatch(setAccount(accounts[0]));
-          // storeDB(accounts[0])
-          fetchProfile()
+          fetchProfile(accounts[0])
         }
       })
         .then(async () => {
@@ -95,18 +94,7 @@ const Navbar = () => {
       dispatch(setAccount(null));
     } else {
       dispatch(setAccount(window.ethereum?.selectedAddress));
-      // storeDB(window.ethereum?.selectedAddress)
-      fetchProfile()
-    }
-  }
-
-  const checkConnection = () => {
-    if (window.ethereum) {
-      if (window.ethereum?.isConnected()) {
-        dispatch(setAccount(window.ethereum?.selectedAddress));
-        // storeDB(window.ethereum?.selectedAddress)
-        fetchProfile()
-      }
+      fetchProfile(accounts[0])
     }
   }
 
@@ -143,23 +131,10 @@ const Navbar = () => {
     }
   }
 
-  const storeDB = async (account) => {
-    //save user to firebase db when wallet connected
-    await axiosConfig.post("/profile/createprofile", {
-      walletAddress: account,
-    })
-      .then((res) => {
-        console.log(res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }
-
-  const fetchProfile = async () => {
+  const fetchProfile = async (accounts) => {
     //save user to firebase db when wallet connected
     await axiosConfig.post(`/profile/createprofile`, {
-      walletAddress: account,
+      walletAddress: accounts,
     })
       .then((res) => {
         dispatch(setUser(res.data.data))
@@ -246,14 +221,13 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    window.ethereum?.on('chainChanged', (newChain) => checkChainId(newChain))
     window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
   }, []);
 
+  useEffect(()=>{
+    account != null && window.ethereum?.on('chainChanged', (newChain) => checkChainId(newChain))
+  },[account])
 
-  useEffect(() => {
-    checkConnection();
-  }, []);
 
   return (
     <>

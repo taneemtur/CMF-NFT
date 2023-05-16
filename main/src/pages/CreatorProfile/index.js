@@ -688,10 +688,10 @@ const CreateProfile = () => {
                               </div>
                               <div className="mt-2">
                                 <a
-                                  href="/explore-four"
+                                  href={`/collection/${collection.collectionAddress}`}
                                   onClick={e => {
                                     e.preventDefault()
-                                    navigate('/explore-four')
+                                    navigate(`/collection/${collection.collectionAddress}`)
                                   }}
                                   className="text-dark title h5"
                                 >
