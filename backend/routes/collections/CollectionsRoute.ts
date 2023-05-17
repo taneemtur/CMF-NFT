@@ -27,7 +27,6 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
 
     try {
         const userRef = db.collection("users").doc(body.owner);
-        console.log("UserRef", userRef)
         // Upload the image to firebase storage
         if (file) {
             const metadata = {
@@ -54,15 +53,15 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
             const response = await db.collection("collections").doc(collectionID).set(collection);
             if (response) {
                 return res.json({
-                    message: "Profile Created",
+                    message: "Collection Created",
                     data: collection,
                 }).status(200)
-            }else{
+            } else {
                 return res.json({
                     message: "error creating collection",
                 }).status(500)
             }
-        }else{
+        } else {
             return res.json({
                 message: "error creating collection",
             }).status(500)
@@ -78,8 +77,11 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
 
 
 // Update Collection
-router.put("/updatecollection", async (req: Request, res: Response) => {
-    const { collectionAddress, ...restBody } = req.body;
+router.put("/updatecollection", upload, async (req: Request, res: Response) => {
+    const body = JSON.parse(req.body.data);
+    const file = req.file;
+
+    const { collectionAddress, ...restBody } = body;
     const collectionRef = db.collection("collections").doc(collectionAddress);
     const doc = await collectionRef.get();
     // convert doc to collectionModel
@@ -93,6 +95,24 @@ router.put("/updatecollection", async (req: Request, res: Response) => {
     if (restBody.category) {
         const categoryref = db.collection("categories").doc(restBody.category);
         restBody.category = categoryref;
+    }
+
+    if (file) {
+        const metadata = {
+            metadata: {
+                firebaseStorageDownloadTokens: uuid()
+            },
+            contentType: file.mimetype,
+            cacheControl: 'public, max-age=31536000',
+        };
+        const filepath = `collections/${collectionAddress}/collectionImage`;
+
+        const fileUpload = bucket.file(filepath);
+        await fileUpload.save(file.buffer, {
+            metadata: metadata,
+        });
+        const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileUpload.name)}?alt=media&token=${metadata.metadata.firebaseStorageDownloadTokens}`;
+        collection.collectionImage = url;
     }
     // update collection
     const updatedCollection: CollectionModel = { ...collection, ...restBody };
@@ -164,8 +184,16 @@ router.get("/user/:useraddress", async (req: Request, res: Response) => {
     const userAddress = req.params.useraddress;
     const userRef = db.collection("users").doc(userAddress);
     const collectionsRef = db.collection("collections").where("owner", "==", userRef);
+
     const collections: CollectionModel[] = [];
     const snapshot = await collectionsRef.get();
+    if (snapshot.empty) {
+        console.log("No collection ref")
+        return res.json({
+            message: "Collections",
+            data: [],
+        }).status(200)
+    }
     await new Promise((resolve, reject) => {
         snapshot.forEach(async (doc) => {
             const data = {

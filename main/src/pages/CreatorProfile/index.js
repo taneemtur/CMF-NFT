@@ -186,6 +186,8 @@ const CreateProfile = () => {
     console.log("fetch user collections", account)
     await axiosConfig.get(`/collections/user/${account}`).then((res) => {
       setCollections(res.data.data)
+    }).catch((err) => {
+      console.log(err)
     })
   }
 

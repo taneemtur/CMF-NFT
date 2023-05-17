@@ -7,7 +7,7 @@ import { FiCamera } from 'react-icons/fi'
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 
-const CreatorProfileEdit = () => {
+const CreatorProfileEdit = (props) => {
   const navigate = useNavigate()
   const { user, account } = useSelector(state => state.theme)
   const [name, setName] = useState(user?.name || "")
@@ -21,7 +21,7 @@ const CreatorProfileEdit = () => {
   const [unsubscribe, setUnsubscribe] = useState(true)
 
   const [updating, setUpdating] = useState(false)
-
+  
   useEffect(() => {
     if (!account) {
       navigate('/')

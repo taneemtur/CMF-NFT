@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import { work1, client01, bg01 } from '../../components/imageImport'
@@ -20,6 +20,20 @@ const UploadWork = () => {
   const [creating, setCreating] = React.useState(false)
   const [image, setImages] = React.useState(null)
   const [error, setError] = React.useState(null)
+
+  const location = useLocation();
+  const { state } = location
+  
+  useEffect(() => {
+    if (state) {
+      const collection = state.collection
+      setBlockchain(collection.blockchain)
+      setPaymentToken(collection.paymentTokens[0])
+      setCategory(collection.category.name)
+      setTitle(collection.name)
+      setDescription(collection.description)
+    }
+  }, [])
 
   useEffect(() => {
     console.log(account)
@@ -66,7 +80,6 @@ const UploadWork = () => {
       reader.readAsDataURL(uploadedFile)
     }
   }
-
   const handleSubmit = async e => {
     e.preventDefault()
     const data = {
@@ -75,10 +88,12 @@ const UploadWork = () => {
       blockchain,
       paymentTokens: [paymentToken],
       categoryID: category.id,
-      owner: account
+      owner: state ? state.collection.owner.walletAddress : account
     }
-
-    if (!image) {
+    if (state) {
+      data["collectionAddress"] = state.collection.collectionAddress
+    }
+    if (!image && !state) {
       setError('Please upload an image')
       return
     }
@@ -87,18 +102,35 @@ const UploadWork = () => {
     formData.append('file', image)
     formData.append('data', JSON.stringify(data))
     setCreating(true)
-    await axiosConfig.post("/collections/createcollection", formData, {
-      body: data,
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-    })
-    .then(res => {
-      console.log(res)
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    if (!state) {
+      await axiosConfig.post("/collections/createcollection", formData, {
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      })
+        .then(res => {
+          console.log(res)
+          navigate(`/collection/${res.data.data.collectionAddress}`)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    } else {
+      await axiosConfig.put("/collections/updatecollection", formData, {
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      })
+        .then(res => {
+          console.log(res)
+          navigate(`/collection/${res.data.data.collectionAddress}`)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
     setCreating(false)
   }
 
@@ -325,13 +357,13 @@ const UploadWork = () => {
                           <div className="col-md-6 mb-4">
                             <label className="form-label fw-bold">Blockchain:</label>
                             <select value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
-                              { supportedChains.map((item) => {
+                              {supportedChains.map((item) => {
                                 return (
                                   <>
-                                  <option value={item.chainId}> {item.chainName} </option>
+                                    <option value={item.chainId}> {item.chainName} </option>
                                   </>
                                 )
-                              }) }
+                              })}
                             </select>
                           </div>
                           {/*end col*/}
@@ -352,17 +384,17 @@ const UploadWork = () => {
                             {
                               categories && (
                                 <select
-                              onChange={e => {
-                                setCategory(categories.find(category => category.name === e.target.value))
-                              }}
-                              value={category.name}
-                              className="form-control">
-                              {
-                                categories?.map((category, index) => (
-                                  <option key={index}>{category.name}</option>
-                                ))
-                              }
-                            </select>
+                                  onChange={e => {
+                                    setCategory(categories.find(category => category.name === e.target.value))
+                                  }}
+                                  value={category.name}
+                                  className="form-control">
+                                  {
+                                    categories?.map((category, index) => (
+                                      <option key={index}>{category.name}</option>
+                                    ))
+                                  }
+                                </select>
                               )
                             }
                           </div>
@@ -371,8 +403,10 @@ const UploadWork = () => {
                           {
                             error && (
                               <div className="col-12 mb-4">
-                                  <p style={{color: "red", marginBott
-                                : 0}}>{error}</p>
+                                <p style={{
+                                  color: "red", marginBott
+                                    : 0
+                                }}>{error}</p>
                               </div>
                             )
                           }
@@ -382,7 +416,10 @@ const UploadWork = () => {
                               disabled={creating}
                               className="btn btn-primary rounded-md"
                             >
-                              {creating ? "Creating..." : "Create Collection"}
+                              {
+                                state ? creating ? "Updating..." : "Update Collection" 
+                                : creating ? "Creating..." : "Create Collection"
+                              }
                             </button>
                           </div>
                           {/*end col*/}

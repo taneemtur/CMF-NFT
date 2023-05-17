@@ -66,9 +66,7 @@ const Navbar = () => {
   const connectWallet = async () => {
     if (window.ethereum !== undefined) {
       await window.ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
-        console.log("accounts", accounts)
         if (accounts.length > 0) {
-          dispatch(setAccount(accounts[0]));
           fetchProfile(accounts[0])
         }
       })
@@ -93,7 +91,6 @@ const Navbar = () => {
     if (accounts.length === 0) {
       dispatch(setAccount(null));
     } else {
-      dispatch(setAccount(window.ethereum?.selectedAddress));
       fetchProfile(accounts[0])
     }
   }
@@ -131,19 +128,35 @@ const Navbar = () => {
     }
   }
 
-  const fetchProfile = async (accounts) => {
+  const fetchProfile = async (account) => {
     //save user to firebase db when wallet connected
     await axiosConfig.post(`/profile/createprofile`, {
-      walletAddress: accounts,
+      walletAddress: account,
     })
       .then((res) => {
         dispatch(setUser(res.data.data))
+        dispatch(setAccount(account))
         console.log(res.data)
       })
       .catch((err) => {
         console.log(err)
       })
   }
+
+  const checkConnection = () => {
+    if(window.ethereum && window.ethereum.isConnected()){
+      account != null && fetchProfile(account)
+    }
+  }
+
+  useEffect(() => {
+    window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
+    checkConnection()
+  }, []);
+
+  useEffect(()=>{
+    account != null && window.ethereum?.on('chainChanged', (newChain) => checkChainId(newChain))
+  },[account])
 
   const getClosest = (elem, selector) => {
 
@@ -219,14 +232,6 @@ const Navbar = () => {
       isOpen.style.display = "block";
     }
   };
-
-  useEffect(() => {
-    window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
-  }, []);
-
-  useEffect(()=>{
-    account != null && window.ethereum?.on('chainChanged', (newChain) => checkChainId(newChain))
-  },[account])
 
 
   return (
