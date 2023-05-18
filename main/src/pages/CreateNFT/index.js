@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
@@ -6,54 +6,56 @@ import { work1, client01, bg01 } from '../../components/imageImport'
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import { supportedChains } from '../../blockchain/supportedChains'
+import { v4 as uuid } from 'uuid';
 
 
-const UploadWork = () => {
+const CreateNFT = () => {
   const navigate = useNavigate()
   const { user, account } = useSelector(state => state.theme)
-  const [title, setTitle] = React.useState('Collection 5')
-  const [description, setDescription] = React.useState('This is collection')
+  const [title, setTitle] = React.useState('')
+  const [description, setDescription] = React.useState('')
   const [blockchain, setBlockchain] = React.useState('Ethereum')
-  const [paymentToken, setPaymentToken] = React.useState('Eth')
-  const [categories, setCategories] = React.useState([])
-  const [category, setCategory] = React.useState('Music')
+  const [price, setPrice] = React.useState(0)
+  const [supply, setSupply] = React.useState(1)
   const [creating, setCreating] = React.useState(false)
   const [image, setImages] = React.useState(null)
+  const [collections, setCollections] = useState([])
+  const [collection, setCollection] = useState(null)
+  const [externalLink, setExternalLink] = React.useState('')
   const [error, setError] = React.useState(null)
 
   const location = useLocation();
   const { state } = location
-  
+
   useEffect(() => {
     if (state) {
-      const collection = state.collection
-      setBlockchain(collection.blockchain)
-      setPaymentToken(collection.paymentTokens[0])
-      setCategory(collection.category.name)
-      setTitle(collection.name)
-      setDescription(collection.description)
+    //   const collection = state.collection
+    //   setBlockchain(collection.blockchain)
+    //   setTitle(collection.name)
+    //   setDescription(collection.description)
     }
   }, [])
 
   useEffect(() => {
-    console.log(account)
     if (!account) {
       navigate('/')
     }
   }, [account, navigate])
 
   useEffect(() => {
-    axiosConfig.get('/categories/getcategories')
+    axiosConfig.get(`/collections/user/${account}`)
       .then(res => {
-        setCategories(res.data.data)
-        setCategory(res.data.data[0])
+        console.log(res.data.data)
+        const collections = res.data.data
+        setCollections(collections)
+        setCollection(collections[0])
       })
       .catch(err => {
         console.log(err)
       })
 
     return () => {
-      setCategories([])
+      setCollections([])
     }
   }, [])
 
@@ -82,13 +84,19 @@ const UploadWork = () => {
   }
   const handleSubmit = async e => {
     e.preventDefault()
+
+    const nftAddress = uuid()
+
     const data = {
       name: title,
       description,
       blockchain,
-      paymentTokens: [paymentToken],
-      categoryID: category.id,
-      owner: state ? state.collection.owner.walletAddress : account
+      collectionAddress: collection.collectionAddress,
+      owner: account,
+      price,
+      supply,
+      externalLink,
+      nftAddress
     }
     if (state) {
       data["collectionAddress"] = state.collection.collectionAddress
@@ -98,9 +106,9 @@ const UploadWork = () => {
       return
     }
 
-    if (!category) {
-      setError('Please select a category')
-      return
+    if (!collection) {
+        setError('Please select a collection')
+        return
     }
 
     const formData = new FormData()
@@ -108,7 +116,7 @@ const UploadWork = () => {
     formData.append('data', JSON.stringify(data))
     setCreating(true)
     if (!state) {
-      await axiosConfig.post("/collections/createcollection", formData, {
+      await axiosConfig.post("/nfts/createnft", formData, {
         body: data,
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -116,25 +124,25 @@ const UploadWork = () => {
       })
         .then(res => {
           console.log(res)
-          navigate(`/collection/${res.data.data.collectionAddress}`)
+          navigate(`/creator-profile`)
         })
         .catch(err => {
           console.log(err)
         })
     } else {
-      await axiosConfig.put("/collections/updatecollection", formData, {
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-      })
-        .then(res => {
-          console.log(res)
-          navigate(`/collection/${res.data.data.collectionAddress}`)
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    //   await axiosConfig.put("/collections/updatecollection", formData, {
+    //     body: data,
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     },
+    //   })
+    //     .then(res => {
+    //       console.log(res)
+    //       navigate(`/collection/${res.data.data.collectionAddress}`)
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
     }
     setCreating(false)
   }
@@ -327,18 +335,18 @@ const UploadWork = () => {
                         <div className="row">
                           <div className="col-12 mb-4">
                             <label className="form-label fw-bold">
-                              Collection Title <span className="text-danger">*</span>
+                              NFT Title <span className="text-danger">*</span>
                             </label>
                             <input
                               onChange={e => setTitle(e.target
                                 .value)}
                               name="name"
-                              required
                               id="name"
                               value={title}
                               type="text"
                               className="form-control"
                               placeholder="Title :"
+                              required
                             />
                           </div>
                           {/*end col*/}
@@ -349,23 +357,21 @@ const UploadWork = () => {
                               Description :{' '}
                             </label>
                             <textarea
-                            required
                               onChange={e => setDescription(e.target.value)}
                               value={description}
-                              name="escription"
-                              id="escription"
+                              name="description"
+                              id="description"
                               rows="4"
                               className="form-control"
                               placeholder="Description :"
+                              required
                             ></textarea>
                           </div>
                           {/*end col*/}
 
                           <div className="col-md-6 mb-4">
                             <label className="form-label fw-bold">Blockchain:</label>
-                            <select
-                            required
-                            value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
+                            <select required value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
                               {supportedChains.map((item) => {
                                 return (
                                   <>
@@ -378,31 +384,37 @@ const UploadWork = () => {
                           {/*end col*/}
 
                           <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">Payment Token:</label>
-                            <select
+                            <label className="form-label fw-bold">Price:</label>
+                            <input
                             required
-                              onChange={e => setPaymentToken(e.target.value)}
-                              value={paymentToken}
-                              className="form-control">
-                              <option>Eth</option>
-                            </select>
+                              onChange={e => setPrice(e.target
+                                .value)}
+                              name="price"
+                              id="price"
+                              value={price}
+                              min="0"
+                              step={"any"}
+                              type="number"
+                              className="form-control"
+                              placeholder="Price :"
+                            />
                           </div>
                           {/*end col*/}
 
                           <div className="col-12 mb-4">
-                            <label className="form-label fw-bold">Category:</label>
+                            <label className="form-label fw-bold">Collection:</label>
                             {
-                              categories && (
+                              collections && (
                                 <select
                                 required
                                   onChange={e => {
-                                    setCategory(categories.find(category => category.name === e.target.value))
+                                    setCollection(collections.find(collection => collection.name === e.target.value))
                                   }}
-                                  value={category.name}
+                                  value={collection?.name}
                                   className="form-control">
                                   {
-                                    categories?.map((category, index) => (
-                                      <option key={index}>{category.name}</option>
+                                    collections?.map((collection, index) => (
+                                      <option key={collection.collectionAddress}>{collection.name}</option>
                                     ))
                                   }
                                 </select>
@@ -410,6 +422,41 @@ const UploadWork = () => {
                             }
                           </div>
                           {/*end col*/}
+
+                          <div className="col-12 mb-4">
+                            <label className="form-label fw-bold">Supply:</label>
+                            <input
+                            required
+                              onChange={e => setSupply(e.target
+                                .value)}
+                              name="supply"
+                              id="supply"
+                              value={supply}
+                              type="number"
+                              min="1"
+                              className="form-control"
+                              placeholder="Supply :"
+                            />
+                          </div>
+                          {/*end col*/}
+
+                          <div className="col-12 mb-4">
+                            <label className="form-label fw-bold">External Link:</label>
+                            <input
+                            required
+                              onChange={e => setExternalLink(e.target
+                                .value)}
+                              name="externalLink"
+                              id="externalLink"
+                              value={externalLink}
+                              type="text"
+                              className="form-control"
+                              placeholder="External Link :"
+                            />
+                          </div>
+                          {/*end col*/}
+
+
 
                           {
                             error && (
@@ -428,8 +475,8 @@ const UploadWork = () => {
                               className="btn btn-primary rounded-md"
                             >
                               {
-                                state ? creating ? "Updating..." : "Update Collection" 
-                                : creating ? "Creating..." : "Create Collection"
+                                state ? creating ? "Updating..." : "Update NFT" 
+                                : creating ? "Creating..." : "Create NFT"
                               }
                             </button>
                           </div>
@@ -458,4 +505,4 @@ const UploadWork = () => {
   )
 }
 
-export default UploadWork
+export default CreateNFT

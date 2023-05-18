@@ -16,7 +16,8 @@
     "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "^4.0.3",
     "redux-persist": "^6.0.0",
-    "tiny-slider": "^2.9.4"
+    "tiny-slider": "^2.9.4",
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",

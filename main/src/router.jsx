@@ -37,6 +37,7 @@ import Subscriptions from './pages/Subscriptions'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 import { useSelector } from 'react-redux'
+import CreateNFT from './pages/CreateNFT'
 
 
 
@@ -81,6 +82,7 @@ export default function Router() {
       <Route exact path="/aboutus" element={<AboutUs />} />
       <Route exact path="/contact" element={<Contact />} />
       <Route exact path="/upload-work" element={<UploadWork />} />
+      <Route exact path="/create-nft" element={<CreateNFT />} />
       <Route exact path="/collections" element={<Collections />} />
       <Route exact path="/collection/:collectionAddress/" element={<CollectionDetail />} />
       <Route exact path="/become-creator" element={<BecomeCreator />} />

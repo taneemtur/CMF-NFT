@@ -22,6 +22,7 @@ const CreateProfile = () => {
   const { user, account } = useSelector(state => state.theme);
   const [loading, setLoading] = useState(false)
   const [collections, setCollections] = useState([]);
+  const [nfts, setNfts] = useState([]);
 
   useEffect(() => {
     if (!account) {
@@ -190,6 +191,26 @@ const CreateProfile = () => {
       console.log(err)
     })
   }
+
+  const getUserNFTs = async () => {
+    console.log("fetch user nfts", account)
+    await axiosConfig.get(`/nfts/getnfts/${account}`).then((res) => {
+      console.log(res.data.data)
+      setNfts(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  useEffect(() => {
+    if (account) {
+      getUserNFTs();
+    }
+    return () => {
+      // cleanup
+      setNfts([])
+    }
+  }, [account])
 
 
   useEffect(() => {
@@ -438,8 +459,8 @@ const CreateProfile = () => {
                 >
                   {/* if value select created */}
                   <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-                    {onSaleData?.map((onSale, index) => (
-                      <div className="col" key={index}>
+                    {nfts && nfts?.map((nft, index) => (
+                      <div className="col" key={nft.nftAddress}>
                         <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
                           <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
@@ -453,7 +474,7 @@ const CreateProfile = () => {
                                 onClick={e => e.preventDefault()}
                                 className="text-dark small creator-name h6 mb-0 ms-2"
                               >
-                                @StreetBoyyy
+                                @{user?.name}
                               </a>
                             </div>
                           </div>
@@ -467,12 +488,12 @@ const CreateProfile = () => {
                               }}
                             >
                               <img
-                                src={onSale?.image}
+                                src={nft?.image}
                                 className="img-fluid"
                                 alt=""
                               />
                             </a>
-                            <div className="position-absolute top-0 start-0 m-2">
+                            {/* <div className="position-absolute top-0 start-0 m-2">
                               <a
                                 href=""
                                 onClick={e => e.preventDefault()}
@@ -480,7 +501,7 @@ const CreateProfile = () => {
                               >
                                 {onSale?.type}
                               </a>
-                            </div>
+                            </div> */}
                             <div className="position-absolute top-0 end-0 m-2">
                               <span className="like-icon shadow-sm">
                                 <a
@@ -503,10 +524,10 @@ const CreateProfile = () => {
                               }}
                               className="title text-dark h6"
                             >
-                              {onSale?.title}
+                              {nft?.name}
                             </a>
 
-                            <div className="d-flex align-items-center justify-content-between mt-3">
+                            {/* <div className="d-flex align-items-center justify-content-between mt-3">
                               <div className="">
                                 <small className="mb-0 d-block fw-semibold">
                                   Current Bid:
@@ -523,7 +544,7 @@ const CreateProfile = () => {
                               >
                                 <i className="uil uil-shopping-bag"></i>
                               </a>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>

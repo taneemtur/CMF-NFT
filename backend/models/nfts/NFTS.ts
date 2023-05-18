@@ -11,15 +11,16 @@ interface NFTModel  {
     nftAddress: string;
     name: string;
     description: string;
-    image?: string;
+    image?: string | null;
     collection: DocumentData | CollectionModel;
-    metaData: string;
+    externalLink: string;
     blockchain: string;
-    type: LISTINGTYPE
+    type: LISTINGTYPE | null;
     price: string;
     owner: DocumentData | UserModel;
     auctionTimeEnd: string | null;
     supply: string;
+    listed?: boolean;
 }
 
 
