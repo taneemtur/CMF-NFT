@@ -29,6 +29,8 @@ import {
 } from '../../components/imageImport'
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
+import Main from '../../Layouts/Main'
+import { getChainByName } from '../../blockchain/supportedChains'
 
 
 
@@ -36,6 +38,7 @@ const CollectionDetail = () => {
   const navigate = useNavigate()
   const { user, account } = useSelector(state => state.theme)
   const [collection, setCollection] = useState(null);
+  const [nfts, setNfts] = useState(null);
   const { collectionAddress } = useParams();
 
 
@@ -144,20 +147,27 @@ const CollectionDetail = () => {
     })
   }
 
+  const getCollectionNfts = async () => {
+    await axiosConfig.get(`nfts/getcollectionnfts/${collectionAddress}`).then((res) => {
+      console.log(res.data)
+      setNfts(res.data.data)
+    })
+  }
+
   useEffect(() => {
     if (collectionAddress) {
       getCollectionData();
+      getCollectionNfts();
     }
 
     return () => {
       setCollection(null);
+      setNfts([]);
     }
   }, [collectionAddress])
 
   return (
-    <>
-      <Navbar />
-
+    <Main>
       {/* collection banner and name section */}
       <section className='bg-creator-profile'>
         <div className="container">
@@ -457,7 +467,7 @@ const CollectionDetail = () => {
 
             <div className="col-lg-9 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
               <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-1">
-                {AuctionData?.map((data, index) => {
+                {nfts && nfts?.map((nft, index) => {
                   return (
                     <div
                       className={index < 3 ? 'col' : 'col pt-2 mt-4'}
@@ -475,7 +485,7 @@ const CollectionDetail = () => {
                               className="user-avatar"
                             >
                               <img
-                                src={client08}
+                                src={nft?.owner?.profileImage || client08}
                                 alt="user"
                                 className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
                               />
@@ -495,31 +505,31 @@ const CollectionDetail = () => {
 
                         <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
                           <a
-                            href="/item-detail-one"
+                            href={`/nft/${nft?.nftAddress}`}
                             onClick={e => {
                               e.preventDefault()
-                              navigate('/item-detail-one')
+                              navigate(`/nft/${nft?.nftAddress}`)
                             }}
                           >
                             <img
-                              src={data?.image}
+                              src={nft?.image}
                               className="img-fluid"
-                              alt=""
+                              alt={nft?.name}
                             />
                           </a>
-                          {data?.type && (
+                          {nft?.collection?.category && (
                             <div className="position-absolute top-0 start-0 m-2">
                               <a
                                 href=""
                                 onClick={e => e.preventDefault()}
                                 className="badge badge-link bg-primary"
                               >
-                                {data?.type}
+                                {nft?.collection?.category?.name}
                               </a>
                             </div>
                           )}
                           <div
-                            className={`${data?.id ? '' : 'hide-data'
+                            className={`${nft?.id ? '' : 'hide-data'
                               } position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
                           >
                             <i className="uil uil-clock"></i>{' '}
@@ -528,21 +538,18 @@ const CollectionDetail = () => {
 
                         <div className="card-body content position-relative p-0 mt-3">
                           <a
-                            href="/item-detail-one"
+                            href={`/nft/${nft?.nftAddress}`}
                             onClick={e => {
                               e.preventDefault()
-                              navigate('/item-detail-one')
+                              navigate(`/nft/${nft?.nftAddress}`)
                             }}
                             className="title text-dark h6"
                           >
-                            {data?.title}
+                            {nft?.name}
                           </a>
 
                           <div className="d-flex justify-content-between mt-2">
-                            <small className="rate fw-bold">20.5 ETH</small>
-                            <small className="text-dark fw-bold">
-                              1 out of 10
-                            </small>
+                            <small className="rate fw-bold">{nft?.price} {getChainByName(nft?.blockchain)} </small>
                           </div>
                         </div>
                       </div>
@@ -577,9 +584,7 @@ const CollectionDetail = () => {
         {/*end container*/}
       </section>
       {/* collection nfts section */}
-
-      <Footer />
-    </>
+    </Main>
   )
 }
 

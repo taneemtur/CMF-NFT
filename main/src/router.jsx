@@ -23,11 +23,6 @@ import Auction from './pages/Auction'
 import ExploreFour from './pages/ExploreFour'
 import ExploreThree from './pages/ExploreThree'
 import ExploreTwo from './pages/ExploreTwo'
-import DarkVersionOne from './pages/DarkVersionOne'
-import DarkVersionTwo from './pages/DarkVersionTwo'
-import DarkVersionFive from './pages/DarkVersionFive'
-import DarkVersionThree from './pages/DarkVersionThree'
-import DarkVersionFour from './pages/DarkVersionFour'
 import ExploreOne from './pages/ExploreOne'
 import CreatorProfileEdit from './pages/CreatorProfileEdit'
 import Terms from './pages/Terms'
@@ -38,8 +33,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 import { useSelector } from 'react-redux'
 import CreateNFT from './pages/CreateNFT'
-
-
+import DarkVersionTwo from './pages/DarkVersionTwo'
 
 
 
@@ -65,6 +59,8 @@ export default function Router() {
   }, [theme])
   return (
     <Routes>
+
+      <Route exact path="/" element={<DarkVersionTwo />} />
       {/* auth router  */}
 
       {/* special router page  */}
@@ -98,49 +94,13 @@ export default function Router() {
       <Route exact path="/wallet" element={<Wallet />} />
       <Route exact path="/activity" element={<Activity />} />
       <Route exact path="/item-detail-one" element={<ItemDetailOne />} />
+      <Route exact path="/nft/:nftAddress" element={<ItemDetailOne />} />
       <Route exact path="/item-detail-two" element={<ItemDetailTwo />} />
       <Route exact path="/auction" element={<Auction />} />
       <Route exact path="/explore-four" element={<ExploreFour />} />
       <Route exact path="/explore-three" element={<ExploreThree />} />
-      <Route exact path="/explore-two" element={<ExploreTwo />} />
+      <Route exact path="/explore" element={<ExploreTwo />} />
       <Route exact path="/explore-one" element={<ExploreOne />} />
-
-      <Route exact path="/index-dark" element={<DarkVersionOne />} />
-      <Route exact path="/index-dark-rtl" element={<DarkVersionOne />} />
-
-      <Route exact path="/index-two-dark" element={<DarkVersionTwo />} />
-      <Route exact path="/index-two-dark-rtl" element={<DarkVersionTwo />} />
-      <Route exact path="/index-two" element={<DarkVersionTwo />} />
-      <Route exact path="/index" element={<DarkVersionTwo />} />
-      <Route exact path="/" element={<DarkVersionTwo />} />
-      <Route exact path="/index-two-rtl" element={<DarkVersionTwo />} />
-
-      <Route exact path="/index-three-dark" element={<DarkVersionThree />} />
-      <Route
-        exact
-        path="/index-three-dark-rtl"
-        element={<DarkVersionThree />}
-      />
-      <Route exact path="/index-three" element={<DarkVersionThree />} />
-      <Route exact path="/index-three-rtl" element={<DarkVersionThree />} />
-
-      <Route exact path="/index-four-dark" element={<DarkVersionFour />} />
-      <Route
-        exact
-        path="/index-four-dark-rtl"
-        element={<DarkVersionFour />}
-      />
-      <Route exact path="/index-four" element={<DarkVersionFour />} />
-      <Route exact path="/index-four-rtl" element={<DarkVersionFour />} />
-
-      <Route exact path="/index-five-dark" element={<DarkVersionFive />} />
-      <Route
-        exact
-        path="/index-five-dark-rtl"
-        element={<DarkVersionFive />}
-      />
-      <Route exact path="/index-five" element={<DarkVersionFive />} />
-      <Route exact path="/index-five-rtl" element={<DarkVersionFive />} />
 
       <Route exact path="/subscriptions" element={<Subscriptions />} />
 

@@ -5,10 +5,14 @@ import Navbar from '../../components/Navbar'
 import { bg01, client01, set } from '../../components/imageImport'
 import { FiCamera } from 'react-icons/fi'
 import axiosConfig from '../../axiosConfig'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import Main from '../../Layouts/Main'
+import { setUser } from '../../Store/Slicers/theme'
 
 const CreatorProfileEdit = (props) => {
   const navigate = useNavigate()
+  const dispatch = useDispatch();
   const { user, account } = useSelector(state => state.theme)
   const [name, setName] = useState(user?.name || "")
   const [url, setUrl] = useState(user?.url || "")
@@ -82,19 +86,36 @@ const CreatorProfileEdit = (props) => {
       walletAddress: account,
     }
     try {
-      const res = await axiosConfig.put('/profile/updateprofile', data)
+      const res = await toast.promise(axiosConfig.put('/profile/updateprofile', data),{
+          pending: {
+            render(){
+              return "Updating Profile"
+            },
+            icon: false,
+          },
+          success: {
+            render({data}){
+              return `${data.data.message}`
+            },
+            icon: "🟢",
+          },
+          error: {
+            render({data}){
+              return data.data.message
+            }
+          }
+      })
+      
       setUpdating(false)
       console.log(res)
     } catch (error) {
+      toast.error(error)
       console.log(error)
     }
   }
 
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
-
+    <Main>
       {/* Start Home */}
       <section
         className="bg-half-170 d-table w-100"
@@ -125,10 +146,10 @@ const CreatorProfileEdit = (props) => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="index-two"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index-two')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance
@@ -497,10 +518,7 @@ const CreatorProfileEdit = (props) => {
       </section>
       {/*end section*/}
       {/* End */}
-
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 

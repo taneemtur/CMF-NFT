@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
 import { work1, client01, bg01 } from '../../components/imageImport'
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import { supportedChains } from '../../blockchain/supportedChains'
+import Main from '../../Layouts/Main'
+import { toast } from 'react-toastify'
 
 
 const UploadWork = () => {
@@ -108,6 +108,7 @@ const UploadWork = () => {
     formData.append('data', JSON.stringify(data))
     setCreating(true)
     if (!state) {
+      const id = toast.loading('Creating Collection');
       await axiosConfig.post("/collections/createcollection", formData, {
         body: data,
         headers: {
@@ -116,12 +117,18 @@ const UploadWork = () => {
       })
         .then(res => {
           console.log(res)
-          navigate(`/collection/${res.data.data.collectionAddress}`)
+          toast.update(id, {
+            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+          })
         })
         .catch(err => {
+          toast.update(id, {
+            render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+          })
           console.log(err)
         })
     } else {
+      const id = toast.loading('Updating Collection');
       await axiosConfig.put("/collections/updatecollection", formData, {
         body: data,
         headers: {
@@ -129,11 +136,14 @@ const UploadWork = () => {
         },
       })
         .then(res => {
-          console.log(res)
-          navigate(`/collection/${res.data.data.collectionAddress}`)
+          toast.update(id, {
+            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+          })
         })
         .catch(err => {
-          console.log(err)
+          toast.update(id, {
+            render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+          })
         })
     }
     setCreating(false)
@@ -141,9 +151,7 @@ const UploadWork = () => {
 
 
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
+    <Main>
       {/* Start Home */}
       <section
         className="bg-half-170 d-table w-100"
@@ -155,7 +163,7 @@ const UploadWork = () => {
             <div className="col-12">
               <div className="title-heading text-center">
                 <h5 className="heading fw-semibold sub-heading text-white title-dark">
-                  Upload Your Work
+                  Create Collection
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
                   Add your digital art and work
@@ -174,17 +182,17 @@ const UploadWork = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="/index"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  FAQs
+                  Create Collection
                 </li>
               </ul>
             </nav>
@@ -451,10 +459,7 @@ const UploadWork = () => {
       </section>
       {/*end section*/}
       {/* End */}
-
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 

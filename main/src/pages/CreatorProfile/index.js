@@ -14,6 +14,7 @@ import {
 
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
+import Main from '../../Layouts/Main'
 
 
 
@@ -184,18 +185,16 @@ const CreateProfile = () => {
   }
 
   const getUserCollection = async () => {
-    console.log("fetch user collections", account)
     await axiosConfig.get(`/collections/user/${account}`).then((res) => {
       setCollections(res.data.data)
+      console.log(res.data.data)
     }).catch((err) => {
       console.log(err)
     })
   }
 
   const getUserNFTs = async () => {
-    console.log("fetch user nfts", account)
     await axiosConfig.get(`/nfts/getnfts/${account}`).then((res) => {
-      console.log(res.data.data)
       setNfts(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -228,11 +227,7 @@ const CreateProfile = () => {
   }
 
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
-
-
+    <Main>
       {/* Start Home */}
       <section className="bg-creator-profile">
         <div className="container">
@@ -465,7 +460,7 @@ const CreateProfile = () => {
                           <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
                               <img
-                                src={client01}
+                                src={ user?.profileImage || client01}
                                 alt="user"
                                 className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
                               />
@@ -481,16 +476,16 @@ const CreateProfile = () => {
 
                           <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
                             <a
-                              href="/item-detail-one"
+                              href={`/nft/${nft?.nftAddress}`}
                               onClick={e => {
                                 e.preventDefault()
-                                navigate('/item-detail-one')
+                                navigate(`/nft/${nft?.nftAddress}`)
                               }}
                             >
                               <img
                                 src={nft?.image}
                                 className="img-fluid"
-                                alt=""
+                                alt={nft?.name}
                               />
                             </a>
                             {/* <div className="position-absolute top-0 start-0 m-2">
@@ -517,10 +512,10 @@ const CreateProfile = () => {
 
                           <div className="card-body content position-relative p-0 mt-3">
                             <a
-                              href="/item-detail-one"
+                              href={`nft/${nft?.nftAddress}`}
                               onClick={e => {
                                 e.preventDefault()
-                                navigate('/item-detail-one')
+                                navigate(`nft/${nft?.nftAddress}`)
                               }}
                               className="title text-dark h6"
                             >
@@ -896,9 +891,8 @@ const CreateProfile = () => {
       </section>
       {/*end section*/}
       {/* End Home */}
-      {/* footer */}
-      <Footer />
-    </>
+
+    </Main>
   )
 }
 

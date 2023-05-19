@@ -8,6 +8,7 @@ import {
   client09, client10, client11, client12, client13,
   c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15,
 } from '../../components/imageImport'
+import Main from '../../Layouts/Main'
 
 const Collections = () => {
   const navigate = useNavigate()
@@ -110,10 +111,7 @@ const Collections = () => {
     },
   ]
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
-
+    <Main>
       {/* Start Home */}
       <section
         className="bg-half-170 d-table w-100"
@@ -144,10 +142,10 @@ const Collections = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="/index"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance
@@ -260,9 +258,7 @@ const Collections = () => {
       {/*end section*/}
       {/* End */}
 
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 

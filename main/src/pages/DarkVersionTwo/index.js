@@ -395,19 +395,7 @@ const DarkVersionTwo = () => {
   const [type, setType] = useState('all')
   const location = useLocation()
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (location?.pathname === '/index-two-dark-rtl') {
-  //       document.getElementById('theme-opt').href = './css/style-dark-rtl.min.css'
-  //     } else if (location?.pathname === '/index-two') {
-  //       document.getElementById('theme-opt').href = './css/style.min.css'
-  //     } else if (location?.pathname === '/index-two-rtl') {
-  //       document.getElementById('theme-opt').href = './css/style-rtl.min.css'
-  //     } else {
-  //       document.getElementById('theme-opt').href = './css/style-dark.min.css'
-  //     }
-  //   }, 100)
-  // }, [location?.pathname])
+
   const setFilter = type => {
     setType(type)
     const newOne = AuctionData?.filter(data => data?.filter?.includes(type))

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Countdown from 'react-countdown'
 import Footer from '../../components/Footer'
@@ -28,9 +28,13 @@ import {
 } from '../../components/imageImport'
 
 import Choices from 'choices.js'
+import axiosConfig from '../../axiosConfig'
+import Main from '../../Layouts/Main'
+import { getChainByName } from '../../blockchain/supportedChains'
 
 const ExploreTwo = () => {
   const navigate = useNavigate()
+  const [nfts, setNfts] = useState([]);
 
   const AuctionData = [
     {
@@ -130,6 +134,22 @@ const ExploreTwo = () => {
       type: '',
     },
   ]
+
+  const getAllNfts = async () => {
+    await axiosConfig.get(`/nfts`).then((res)=>{
+      setNfts(res.data.data)
+      console.log(res.data.data)
+    })
+  }
+
+  useEffect(()=>{
+    getAllNfts()
+
+    return () => {
+      setNfts([])
+    }
+  },[])
+
   useEffect(() => {
     new Choices('#choices-criteria')
     var singleCategorie = document.getElementById('choices-type')
@@ -137,10 +157,10 @@ const ExploreTwo = () => {
       new Choices('#choices-type')
     }
   }, [])
+
+
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
+    <Main>
       {/* Start Home */}
       <section
         className="bg-half-170 d-table w-100"
@@ -279,9 +299,9 @@ const ExploreTwo = () => {
 
         <div className="container">
           <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1">
-            {AuctionData?.map(data => {
+            {nfts && nfts?.map((nft) => {
               return (
-                <div className="col mt-4 pt-2" key={data?.title}>
+                <div className="col mt-4 pt-2" key={nft?.name} >
                   <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
                     <div className="d-flex justify-content-between">
                       <div className="img-group">
@@ -294,35 +314,7 @@ const ExploreTwo = () => {
                           className="user-avatar"
                         >
                           <img
-                            src={client08}
-                            alt="user"
-                            className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                          />
-                        </a>
-                        <a
-                          href="/creator-profile"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/creator-profile')
-                          }}
-                          className="user-avatar ms-n3"
-                        >
-                          <img
-                            src={client05}
-                            alt="user"
-                            className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                          />
-                        </a>
-                        <a
-                          href="/creator-profile"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/creator-profile')
-                          }}
-                          className="user-avatar ms-n3"
-                        >
-                          <img
-                            src={client06}
+                            src={ nft?.owner?.profileImage || client08}
                             alt="user"
                             className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
                           />
@@ -342,57 +334,55 @@ const ExploreTwo = () => {
 
                     <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
                       <a
-                        href="/item-detail-one"
+                        href={`/nft/${nft.nftAddress}`}
                         onClick={e => {
                           e.preventDefault()
-                          navigate('/item-detail-one')
+                          navigate(`/nft/${nft.nftAddress}`)
                         }}
                       >
-                        <img src={data?.image} className="img-fluid" alt="" />
+                        <img src={nft?.image} className="img-fluid" alt={nft?.name} />
                       </a>
-                      {data?.type && (
+                      {nft?.collection?.category && (
                         <div className="position-absolute top-0 start-0 m-2">
                           <a
                             href=""
                             onClick={e => e.preventDefault()}
                             className="badge badge-link bg-primary"
                           >
-                            {data?.type}
+                            {nft?.collection?.category?.name}
                           </a>
                         </div>
                       )}
                       <div
-                        className={`${data?.id ? '' : 'hide-data'
-                          } position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
+                        className={`${nft?.auctionTimeEnd ? '' : 'hide-data'} 
+                        position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
                       >
                         <i className="uil uil-clock"></i>{' '}
                         <Countdown
-                          date={data?.id}
+                          date={'20 May, 2023'}
                           renderer={({ days, hours, minutes, seconds }) => (
                             <span>
                               {days}:{hours}:{minutes}:{seconds}
                             </span>
                           )}
                         />
-                        {/* <small className="fw-bold"></small> */}
                       </div>
                     </div>
 
                     <div className="card-body content position-relative p-0 mt-3">
                       <a
-                        href="/item-detail-one"
+                        href={`/nft/${nft.nftAddress}`}
                         onClick={e => {
                           e.preventDefault()
-                          navigate('/item-detail-one')
+                          navigate(`/nft/${nft.nftAddress}`)
                         }}
                         className="title text-dark h6"
                       >
-                        {data?.title}
+                        {nft?.name}
                       </a>
 
                       <div className="d-flex justify-content-between mt-2">
-                        <small className="rate fw-bold">20.5 ETH</small>
-                        <small className="text-dark fw-bold">1 out of 10</small>
+                        <small className="rate fw-bold"> {nft?.price} { getChainByName(nft?.blockchain) } </small>
                       </div>
                     </div>
                   </div>
@@ -470,9 +460,7 @@ const ExploreTwo = () => {
       </section>
       {/*end section*/}
       {/* CTA End */}
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 

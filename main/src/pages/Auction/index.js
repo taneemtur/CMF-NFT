@@ -114,10 +114,10 @@ const Auction = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="/index"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance

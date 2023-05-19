@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
 import { work1, client01, bg01 } from '../../components/imageImport'
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import { supportedChains } from '../../blockchain/supportedChains'
 import { v4 as uuid } from 'uuid';
+import Main from '../../Layouts/Main'
+import { toast } from 'react-toastify'
 
 
 const CreateNFT = () => {
@@ -36,11 +36,6 @@ const CreateNFT = () => {
     }
   }, [])
 
-  useEffect(() => {
-    if (!account) {
-      navigate('/')
-    }
-  }, [account, navigate])
 
   useEffect(() => {
     axiosConfig.get(`/collections/user/${account}`)
@@ -57,7 +52,7 @@ const CreateNFT = () => {
     return () => {
       setCollections([])
     }
-  }, [])
+  }, [account])
 
 
   const handleChange = (e) => {
@@ -84,6 +79,10 @@ const CreateNFT = () => {
   }
   const handleSubmit = async e => {
     e.preventDefault()
+
+    if(account == null){
+      return;
+    }
 
     const nftAddress = uuid()
 
@@ -116,6 +115,7 @@ const CreateNFT = () => {
     formData.append('data', JSON.stringify(data))
     setCreating(true)
     if (!state) {
+      const id = toast.loading('Creating Item');
       await axiosConfig.post("/nfts/createnft", formData, {
         body: data,
         headers: {
@@ -123,11 +123,14 @@ const CreateNFT = () => {
         },
       })
         .then(res => {
-          console.log(res)
-          navigate(`/creator-profile`)
+          toast.update(id, {
+            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
+          })
         })
         .catch(err => {
-          console.log(err)
+          toast.update(id, {
+            render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+          })
         })
     } else {
     //   await axiosConfig.put("/collections/updatecollection", formData, {
@@ -149,9 +152,7 @@ const CreateNFT = () => {
 
 
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
+    <Main>
       {/* Start Home */}
       <section
         className="bg-half-170 d-table w-100"
@@ -163,7 +164,7 @@ const CreateNFT = () => {
             <div className="col-12">
               <div className="title-heading text-center">
                 <h5 className="heading fw-semibold sub-heading text-white title-dark">
-                  Upload Your Work
+                  Create Item
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
                   Add your digital art and work
@@ -182,17 +183,17 @@ const CreateNFT = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="/index"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  FAQs
+                  Create Item
                 </li>
               </ul>
             </nav>
@@ -498,10 +499,7 @@ const CreateNFT = () => {
       </section>
       {/*end section*/}
       {/* End */}
-
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 

@@ -1,12 +1,33 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import axiosconfig from '../../axiosConfig'
 import Countdown from 'react-countdown'
 import { client01, client02, client03, client08, client09, client10, item1, item2, gif1, gif2, itemDetail1 } from '../../components/imageImport'
+import Main from '../../Layouts/Main'
+import { useSelector } from 'react-redux'
+
 
 const ItemDetailOne = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const {account} = useSelector(state => state.theme)
+  const {nftAddress} = useParams();
+  const [nft, setNft] = useState(null);
+
+  const getNftData = async () => {
+    await axiosconfig.get(`/nfts/${nftAddress}`).then((res)=>{
+      console.log(res.data);
+      setNft(res.data.data)
+    })
+  }
+
+  useEffect(()=>{
+    if(nftAddress){
+      getNftData()
+    }
+    return () => {
+      setNft(null)
+    }
+  },[nftAddress])
 
   const activityData = [
     {
@@ -66,20 +87,43 @@ const ItemDetailOne = () => {
     },
   ]
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
-
+    <Main>
       {/* Start */}
       <section className="bg-item-detail d-table w-100">
         <div className="container">
           <div className="row">
+          {
+            nft?.owner?.walletAddress == account && (
+            <div className='col-md-12 d-flex justify-content-end'>
+              <a
+                href="/"
+                onClick={e => {
+                  e.preventDefault()
+                  navigate('/')
+                }}
+                className="btn btn-pills btn-outline-primary mx-1"
+              >
+                Edit Item
+              </a>
+              <a
+                href="/"
+                onClick={e => {
+                  e.preventDefault()
+                  navigate('/')
+                }}
+                className="btn btn-pills btn-outline-primary mx-1"
+              >
+                List Item
+              </a>
+            </div>
+            )
+          }
             <div className="col-md-6">
               <div className="sticky-bar">
                 <img
-                  src={itemDetail1}
+                  src={ nft?.image || itemDetail1}
                   className="img-fluid rounded-md shadow"
-                  alt=""
+                  alt={nft?.walletAddress}
                 />
               </div>
             </div>
@@ -88,41 +132,17 @@ const ItemDetailOne = () => {
               <div className="ms-lg-5">
                 <div className="title-heading">
                   <h4 className="h3 fw-bold mb-0">
-                    Wolf with Skull{' '}
-                    <span className="text-gradient-primary">Orange</span> <br />{' '}
-                    <span className="text-gradient-primary">Illustration</span>{' '}
-                    T-shirt Tattoo
+                   {nft?.name}
                   </h4>
                 </div>
 
                 <div className="row">
                   <div className="col-md-6 mt-4 pt-2">
-                    <h6>Current Bid</h6>
-                    <h4 className="mb-0">4.85 ETH</h4>
-                    <small className="mb-0 text-muted">$450.48USD</small>
-                  </div>
-
-                  <div className="col-md-6 mt-4 pt-2">
-                    <h6>Auction Ending In</h6>
-                    <Countdown
-                      date={'Aug 20, 2022 1:6:3'}
-                      renderer={({ days, hours, minutes, seconds }) => (
-                        <span>
-                          {days}:{hours}:{minutes}:{seconds}
-                        </span>
-                      )}
-                    />
+                    <h6>Price</h6>
+                    <h4 className="mb-0"> {nft?.price} ETH</h4>
                   </div>
 
                   <div className="col-12 mt-4 pt-2">
-                    <a
-                      href="#"
-                      className="btn btn-l btn-pills btn-primary me-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#NftBid"
-                    >
-                      <i className="mdi mdi-gavel fs-5 me-2"></i> Place a Bid
-                    </a>
                     <a
                       href="#"
                       className="btn btn-l btn-pills btn-primary"
@@ -159,21 +179,6 @@ const ItemDetailOne = () => {
                       <li className="nav-item" role="presentation">
                         <button
                           className="nav-link"
-                          id="bids-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#bids"
-                          type="button"
-                          role="tab"
-                          aria-controls="bids"
-                          aria-selected="false"
-                        >
-                          Bids
-                        </button>
-                      </li>
-
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
                           id="activity-tab"
                           data-bs-toggle="tab"
                           data-bs-target="#activity"
@@ -195,27 +200,16 @@ const ItemDetailOne = () => {
                         aria-labelledby="detail-tab"
                       >
                         <p className="text-muted">
-                          Hey guys! New exploration about NFT Marketplace Web
-                          Design, this time I'm inspired by one of my favorite
-                          NFT website called Chain Master Finance (with crypto payment)! What
-                          do you think?
-                        </p>
-                        <p className="text-muted">
-                          What does it mean? Biomechanics is the study of the
-                          structure, function and motion of the mechanical
-                          aspects of biological systems, at any level from whole
-                          organisms to organs, cells and cell organelles, using
-                          the methods of mechanics. Biomechanics is a branch of
-                          biophysics.
+                          {nft?.description}
                         </p>
                         <h6>Owner</h6>
 
                         <div className="creators creator-primary d-flex align-items-center">
                           <div className="position-relative">
                             <img
-                              src={client09}
+                              src={nft?.owner?.profileImage || client09}
                               className="avatar avatar-md-sm shadow-md rounded-pill"
-                              alt=""
+                              alt={nft?.owner?.name}
                             />
                             <span className="verified text-primary">
                               <i className="mdi mdi-check-decagram"></i>
@@ -232,97 +226,9 @@ const ItemDetailOne = () => {
                                 }}
                                 className="text-dark name"
                               >
-                                PandaOne
+                                {nft?.owner?.name}
                               </a>
                             </h6>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        className="tab-pane fade"
-                        id="bids"
-                        role="tabpanel"
-                        aria-labelledby="bids-tab"
-                      >
-                        <div className="creators creator-primary d-flex align-items-center">
-                          <div className="position-relative">
-                            <img
-                              src={client01}
-                              className="avatar avatar-md-sm shadow-md rounded-pill"
-                              alt=""
-                            />
-                          </div>
-
-                          <div className="ms-3">
-                            <h6 className="mb-0">
-                              2 WETH <span className="text-muted">by</span>{' '}
-                              <a
-                                href="/creator-profile"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creator-profile')
-                                }}
-                                className="text-dark name"
-                              >
-                                0xe849fa28a...ea14
-                              </a>
-                            </h6>
-                            <small className="text-muted">6 hours ago</small>
-                          </div>
-                        </div>
-
-                        <div className="creators creator-primary d-flex align-items-center mt-4">
-                          <div className="position-relative">
-                            <img
-                              src={client08}
-                              className="avatar avatar-md-sm shadow-md rounded-pill"
-                              alt=""
-                            />
-                          </div>
-
-                          <div className="ms-3">
-                            <h6 className="mb-0">
-                              0.001 WETH <span className="text-muted">by</span>{' '}
-                              <a
-                                href="/creator-profile"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creator-profile')
-                                }}
-                                className="text-dark name"
-                              >
-                                VOTwear
-                              </a>
-                            </h6>
-                            <small className="text-muted">6 hours ago</small>
-                          </div>
-                        </div>
-
-                        <div className="creators creator-primary d-flex align-items-center mt-4">
-                          <div className="position-relative">
-                            <img
-                              src={client10}
-                              className="avatar avatar-md-sm shadow-md rounded-pill"
-                              alt=""
-                            />
-                          </div>
-
-                          <div className="ms-3">
-                            <h6 className="mb-0">
-                              1.225 WETH <span className="text-muted">by</span>{' '}
-                              <a
-                                href="/creator-profile"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creator-profile')
-                                }}
-                                className="text-dark name"
-                              >
-                                PandaOne
-                              </a>
-                            </h6>
-                            <small className="text-muted">6 hours ago</small>
                           </div>
                         </div>
                       </div>
@@ -390,6 +296,7 @@ const ItemDetailOne = () => {
                         {/*end row*/}
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -831,9 +738,7 @@ const ItemDetailOne = () => {
         </div>
       </div>
       {/* Buy Now NFt Modal */}
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 

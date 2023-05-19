@@ -166,10 +166,10 @@ const ExploreThree = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="/indec"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance

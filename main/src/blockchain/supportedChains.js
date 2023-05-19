@@ -49,3 +49,12 @@ export function isChainSupported(chainId) {
 export function getChainById(chainId) {
     return supportedChains.find(chain => chain.chainId === chainId);
 }
+
+export function getChainByName(chainName) {
+    const chain = supportedChains.find(chain => chain.chainName === chainName)
+    if(chain){
+        return chain?.nativeCurrency?.name;
+    }else{
+        return "Eth"
+    }
+}

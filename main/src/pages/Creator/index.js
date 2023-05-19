@@ -7,6 +7,7 @@ import {
   client09, client10, client11, client12, bg01,
   work1, work2, work3, work4, work5, work6, work7, work8, work9, work10, work11, work12,
 } from '../../components/imageImport'
+import Main from '../../Layouts/Main'
 
 const Creator = () => {
   const navigate = useNavigate()
@@ -85,12 +86,9 @@ const Creator = () => {
     },
   ]
   return (
-    <>
-      {/* Navbar */}
-      <Navbar />
-
-      {/*- Start Home */}
-      <section
+   <Main>
+     {/*- Start Home */}
+     <section
         className="bg-half-170 d-table w-100"
         style={{ background: `url(${bg01}) bottom` }}
       >
@@ -119,10 +117,10 @@ const Creator = () => {
               >
                 <li className="breadcrumb-item">
                   <a
-                    href="/index"
+                    href="/"
                     onClick={e => {
                       e.preventDefault()
-                      navigate('/index')
+                      navigate('/')
                     }}
                   >
                     Chain Master Finance
@@ -247,9 +245,7 @@ const Creator = () => {
       </section>
       {/*-end section*/}
       {/*- End Section */}
-      {/* footer */}
-      <Footer />
-    </>
+   </Main>
   )
 }
 

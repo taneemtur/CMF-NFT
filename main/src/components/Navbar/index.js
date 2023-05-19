@@ -143,15 +143,8 @@ const Navbar = () => {
       })
   }
 
-  const checkConnection = () => {
-    if(window.ethereum && window.ethereum.isConnected()){
-      account != null && fetchProfile(account)
-    }
-  }
-
   useEffect(() => {
     window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
-    checkConnection()
   }, []);
 
   useEffect(()=>{
@@ -246,10 +239,10 @@ const Navbar = () => {
           <a
 
             className="logo"
-            href="/index"
+            href="/"
             onClick={e => {
               e.preventDefault()
-              navigate('/index')
+              navigate('/')
               setTimeout(() => {
                 activateMenu()
               }, 1000)
@@ -393,9 +386,9 @@ const Navbar = () => {
                         aria-expanded="false"
                       >
                         <img
-                          src={client01}
+                          src={ user?.profileImage || client01}
                           className="rounded-pill avatar avatar-sm-sm"
-                          alt=""
+                          alt={user?.name}
                         />
                       </button>
                     }
@@ -408,9 +401,9 @@ const Navbar = () => {
                         <div className="px-3">
                           <div className="d-flex align-items-end mt-n4">
                             <img
-                              src={client01}
+                              src={ user?.profileImage || client01}
                               className="rounded-pill avatar avatar-md-sm img-thumbnail shadow-md"
-                              alt=""
+                              alt={user?.name}
                             />
                             <h6 className="text-dark fw-bold mb-0 ms-1">
                               {user ? user?.name : ''}
@@ -456,6 +449,19 @@ const Navbar = () => {
                         </a>
                         <a
                           className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
+                          href="/upload-work"
+                          onClick={e => {
+                            e.preventDefault()
+                            navigate('/upload-work')
+                          }}
+                        >
+                          <span className="mb-0 d-inline-block me-1">
+                            <i className="uil uil-grid align-middle h6 mb-0 me-1"></i>
+                          </span>{' '}
+                          Create Collection
+                        </a>
+                        <a
+                          className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
                           href="/creator-profile-edit"
                           onClick={e => {
                             e.preventDefault()
@@ -481,7 +487,21 @@ const Navbar = () => {
                           <span className="mb-0 d-inline-block me-1">
                             <i className="uil uil-cog align-middle h6 mb-0 me-1"></i>
                           </span>{' '}
-                          Change Chain
+                          Switch Chain
+                        </a>
+                        <a
+                          className="dropdown-item small fw-semibold text-dark d-flex align-items-center"
+                          href="/"
+                          onClick={e => {
+                            e.preventDefault()
+                            dispatch(setUser(null))
+                            dispatch(setAccount(null))
+                          }}
+                        >
+                          <span className="mb-0 d-inline-block me-1">
+                            <i className="uil uil-cog align-middle h6 mb-0 me-1"></i>
+                          </span>{' '}
+                          Logout
                         </a>
                       </div>
                     </div>
@@ -504,13 +524,13 @@ const Navbar = () => {
             >
               <li>
                 <a
-                  href="/index"
+                  href="/"
                   onClick={e => {
                     e.preventDefault()
                     setTimeout(() => {
                       activateMenu()
                     }, 1000)
-                    navigate('/index')
+                    navigate('/')
                   }}
                   className="sub-menu-item"
                 >
@@ -530,13 +550,13 @@ const Navbar = () => {
                 >
                   <li>
                     <a
-                      href="/explore-two"
+                      href="/explore"
                       onClick={e => {
                         e.preventDefault()
                         setTimeout(() => {
                           activateMenu()
                         }, 1000)
-                        navigate('/explore-two')
+                        navigate('/explore')
                       }}
                       className="sub-menu-item"
                     >
@@ -712,13 +732,13 @@ const Navbar = () => {
                     setTimeout(() => {
                       activateMenu()
                     }, 1000)
-                    navigate('/')
+                    navigate('/create-nft')
                   }}
                   className="sub-menu-item"
                 >
                   <IoIosAlbums />
                   {' '}
-                  Utility
+                  Create
                 </a>
               </li>
               <li>
