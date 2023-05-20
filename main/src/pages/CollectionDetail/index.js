@@ -31,6 +31,7 @@ import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import Main from '../../Layouts/Main'
 import { getChainByName } from '../../blockchain/supportedChains'
+import { toast } from 'react-toastify'
 
 
 
@@ -239,11 +240,14 @@ const CollectionDetail = () => {
                           href="/upload-work"
                           onClick={async (e) => {
                             e.preventDefault()
+                            const id = toast.loading('Collection Deleteing');
                             // navigate('/upload-work')
                             await axiosConfig.delete(`/collections/${collection.collectionAddress}`)
                             .then(res => {
-                              console.log(res)
-                              navigate("/creator-profile")
+                              toast.update(id, {
+                                render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/creator-profile`)
+                              })
+                              navigate(`/creator-profile`)
                             }).catch(err => {
                               console.log(err)
                             })

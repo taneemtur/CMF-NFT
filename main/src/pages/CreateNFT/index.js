@@ -29,10 +29,15 @@ const CreateNFT = () => {
 
   useEffect(() => {
     if (state) {
-    //   const collection = state.collection
-    //   setBlockchain(collection.blockchain)
-    //   setTitle(collection.name)
-    //   setDescription(collection.description)
+      const nft = state.nft
+      console.log(nft)
+      setTitle(nft.name)
+      setDescription(nft.description)
+      setBlockchain(nft.blockchain)
+      setPrice(nft.price)
+      setCollection(nft.collection)
+      setSupply(nft.supply)
+      setExternalLink(nft.externalLink)
     }
   }, [])
 
@@ -54,6 +59,15 @@ const CreateNFT = () => {
     }
   }, [account])
 
+  const resetFields = () => {
+    setTitle('')
+    setDescription('')
+    setBlockchain('Ethereum')
+    setPrice(0)
+    setSupply(1)
+    setImages(null)
+    setExternalLink('')
+  }
 
   const handleChange = (e) => {
     const fileUploader = document.querySelector('#input-file')
@@ -95,10 +109,10 @@ const CreateNFT = () => {
       price,
       supply,
       externalLink,
-      nftAddress
+      nftAddress: state ? state.nft.nftAddress : nftAddress
     }
     if (state) {
-      data["collectionAddress"] = state.collection.collectionAddress
+      data["collectionAddress"] = state.nft.collection.collectionAddress
     }
     if (!image && !state) {
       setError('Please upload an image')
@@ -133,20 +147,23 @@ const CreateNFT = () => {
           })
         })
     } else {
-    //   await axiosConfig.put("/collections/updatecollection", formData, {
-    //     body: data,
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data'
-    //     },
-    //   })
-    //     .then(res => {
-    //       console.log(res)
-    //       navigate(`/collection/${res.data.data.collectionAddress}`)
-    //     })
-    //     .catch(err => {
-    //       console.log(err)
-    //     })
+        const id = toast.loading('Updating Item');
+      await axiosConfig.put("/nfts/updatenft", formData, {
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      })
+        .then(res => {
+            toast.update(id, {
+                render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
+              })
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
+    resetFields()
     setCreating(false)
   }
 

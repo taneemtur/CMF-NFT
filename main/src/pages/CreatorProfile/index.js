@@ -477,10 +477,10 @@ const CreateProfile = () => {
                           <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
                             <a
                               href={`/nft/${nft?.nftAddress}`}
-                              onClick={e => {
-                                e.preventDefault()
-                                navigate(`/nft/${nft?.nftAddress}`)
-                              }}
+                              // onClick={e => {
+                              //   e.preventDefault()
+                              //   navigate(`/nft/${nft?.nftAddress}`)
+                              // }}
                             >
                               <img
                                 src={nft?.image}
@@ -513,10 +513,10 @@ const CreateProfile = () => {
                           <div className="card-body content position-relative p-0 mt-3">
                             <a
                               href={`nft/${nft?.nftAddress}`}
-                              onClick={e => {
-                                e.preventDefault()
-                                navigate(`nft/${nft?.nftAddress}`)
-                              }}
+                              // onClick={e => {
+                              //   e.preventDefault()
+                              //   navigate(`nft/${nft?.nftAddress}`)
+                              // }}
                               className="title text-dark h6"
                             >
                               {nft?.name}

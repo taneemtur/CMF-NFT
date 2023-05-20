@@ -194,21 +194,30 @@ router.get("/user/:useraddress", async (req: Request, res: Response) => {
             data: [],
         }).status(200)
     }
-    await new Promise((resolve, reject) => {
-        snapshot.forEach(async (doc) => {
+    const promises: Promise<CollectionModel>[] = []
+    snapshot.forEach(async (doc) => {
+        promises.push(new Promise(async (resolve, reject) => {
             const data = {
                 ...doc.data(),
                 category: (await doc.data()?.category.get()).data(),
                 owner: (await doc.data()?.owner.get()).data(),
             }
             collections.push(data as CollectionModel);
-            resolve(true);
-        });
+            resolve(data as CollectionModel);
+        }))
     });
-    return res.json({
-        message: "Collections",
-        data: collections,
-    }).status(200)
+    Promise.all(promises).then(() => {
+
+        return res.json({
+            message: "Collections",
+            data: collections,
+        }).status(200)
+    }).catch((error) => {
+        console.log(error);
+        return res.json({
+            message: "error getting collections",
+        }).status(500)
+    })
 })
 
 export { router as CollectionsRoute }

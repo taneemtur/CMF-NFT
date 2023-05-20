@@ -5,29 +5,32 @@ import Countdown from 'react-countdown'
 import { client01, client02, client03, client08, client09, client10, item1, item2, gif1, gif2, itemDetail1 } from '../../components/imageImport'
 import Main from '../../Layouts/Main'
 import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import NFTListModel from '../../components/NFTListModel'
 
 
 const ItemDetailOne = () => {
   const navigate = useNavigate();
-  const {account} = useSelector(state => state.theme)
-  const {nftAddress} = useParams();
+  const { account } = useSelector(state => state.theme)
+  const { nftAddress } = useParams();
   const [nft, setNft] = useState(null);
+  const [showListModal, setShowListModal] = useState(false);
 
   const getNftData = async () => {
-    await axiosconfig.get(`/nfts/${nftAddress}`).then((res)=>{
+    await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
       console.log(res.data);
       setNft(res.data.data)
     })
   }
 
-  useEffect(()=>{
-    if(nftAddress){
+  useEffect(() => {
+    if (nftAddress) {
       getNftData()
     }
     return () => {
       setNft(null)
     }
-  },[nftAddress])
+  }, [nftAddress])
 
   const activityData = [
     {
@@ -92,36 +95,58 @@ const ItemDetailOne = () => {
       <section className="bg-item-detail d-table w-100">
         <div className="container">
           <div className="row">
-          {
-            nft?.owner?.walletAddress == account && (
-            <div className='col-md-12 d-flex justify-content-end'>
-              <a
-                href="/"
-                onClick={e => {
-                  e.preventDefault()
-                  navigate('/')
-                }}
-                className="btn btn-pills btn-outline-primary mx-1"
-              >
-                Edit Item
-              </a>
-              <a
-                href="/"
-                onClick={e => {
-                  e.preventDefault()
-                  navigate('/')
-                }}
-                className="btn btn-pills btn-outline-primary mx-1"
-              >
-                List Item
-              </a>
-            </div>
-            )
-          }
+            {
+              nft?.owner?.walletAddress == account && (
+                <div className='col-md-12 d-flex justify-content-end'>
+                  <a
+                    href="/"
+                    onClick={e => {
+                      e.preventDefault()
+                      navigate('/create-nft', {
+                        state: { nft: nft }
+                      })
+                    }}
+                    className="btn btn-pills btn-outline-primary mx-1"
+                  >
+                    Edit Item
+                  </a>
+                  {
+                    nft.listed == false && (
+                      <a
+                        data-bs-toggle="modal"
+                        data-bs-target="#ListNFT"
+                        className="btn btn-pills btn-outline-primary mx-1"
+                      >
+                        List Item
+                      </a>
+                    )
+                  }
+                  <a
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      const id = toast.loading('NFT Deleteing');
+                      // navigate('/upload-work')
+                      await axiosconfig.delete(`/nfts/${nft.nftAddress}`)
+                        .then(res => {
+                          toast.update(id, {
+                            render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: () => navigate(`/creator-profile`)
+                          })
+                          navigate(`/creator-profile`)
+                        }).catch(err => {
+                          console.log(err)
+                        })
+                    }}
+                    className="btn btn-pills btn-icon btn-outline-primary mx-1"
+                  >
+                    <i className="uil uil-trash"></i>
+                  </a>
+                </div>
+              )
+            }
             <div className="col-md-6">
               <div className="sticky-bar">
                 <img
-                  src={ nft?.image || itemDetail1}
+                  src={nft?.image || itemDetail1}
                   className="img-fluid rounded-md shadow"
                   alt={nft?.walletAddress}
                 />
@@ -132,7 +157,7 @@ const ItemDetailOne = () => {
               <div className="ms-lg-5">
                 <div className="title-heading">
                   <h4 className="h3 fw-bold mb-0">
-                   {nft?.name}
+                    {nft?.name}
                   </h4>
                 </div>
 
@@ -146,14 +171,13 @@ const ItemDetailOne = () => {
                     <a
                       href="#"
                       className="btn btn-l btn-pills btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#NftBuynow"
+                    // data-bs-toggle="modal"
+                    // data-bs-target="#ListNFT"
                     >
                       <i className="mdi mdi-cart fs-5 me-2"></i> Buy Now
                     </a>
                   </div>
                 </div>
-
                 <div className="row mt-4 pt-2">
                   <div className="col-12">
                     <ul
@@ -432,6 +456,9 @@ const ItemDetailOne = () => {
       </section>
       {/*end section*/}
       {/* End */}
+
+      <NFTListModel id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
+
 
       {/* Place Bid Modal */}
       <div
