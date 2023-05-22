@@ -1,28 +1,31 @@
 Testnet deployment links for ERC1155 (Marketplace)
 
 Ethereum:
-https://sepolia.etherscan.io/address/0xf1ae16992400838d153fbeaa83ed1ac7ba6f6aa7
+https://sepolia.etherscan.io/address/0x15862b3a60dF85F30b0cDc22360C99ACe48741b6
 
 Binance:
-https://testnet.bscscan.com/address/0x919ede9b3f30567a53caa06340f25267af9367f9
+https://testnet.bscscan.com/address/0xcd3c7e99096eb6ab31262a45f39af9d4415a5b46
 
-Polygon:
-https://mumbai.polygonscan.com/address/0xec87bbd47468eab39d531083722685809d2533e1
 
-Avalanhe: https://testnet.snowtrace.io/address/0x085286adec8d2dac96e99f7682bca98907dc96e1
+Avalanhe: https://testnet.snowtrace.io/address/0xa459fec3d94b0c8262a677b3f9ac2ad66562cade
+
+Arbitrum:
+https://goerli.arbiscan.io/address/0x47461679a10a1118Da90B6224804ea4eFc3dC67b
 
 
 Testnet deployment links for ERC721 (Minting)
 
 Binance:
-https://testnet.bscscan.com/address/0xe0f011525506d47bfaade7c6740f4fba48db730a
+https://testnet.bscscan.com/address/0x1FCe84568ef3D4E30e10bb68d0E12e61F1D9Ac7D
 
-Polygon:
-https://mumbai.polygonscan.com/address/0x8fe5cb55cfcd148eb906d8ac5b9d4122c5023dad
 
 Ethereum:
-https://sepolia.etherscan.io/address/0x085286adec8d2dac96e99f7682bca98907dc96e1
+https://sepolia.etherscan.io/address/0x68B1Bb324BfC395626c48638DA019CC23d766f65
 
 Avalanche:
-https://testnet.snowtrace.io/address/0xf1ae16992400838d153fbeaa83ed1ac7ba6f6aa7
+https://testnet.snowtrace.io/address/0xbB2289bfbF477881FFd36d54c62A5321E3e24597
+
+Arbitrum:
+https://goerli.arbiscan.io/address/0xaC87db196C1e1BfEe2578deD29d7511114dceb8F
+
 

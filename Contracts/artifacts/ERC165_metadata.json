@@ -27,7 +27,11 @@
 		],
 		"devdoc": {
 			"kind": "dev",
-			"methods": {},
+			"methods": {
+				"supportsInterface(bytes4)": {
+					"details": "See {IERC165-supportsInterface}."
+				}
+			},
 			"version": 1
 		},
 		"userdoc": {
@@ -38,7 +42,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Contracts/ERC721.sol": "ERC165"
+			"Contracts/erc1155marketplace.sol": "ERC165"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -52,12 +56,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Contracts/ERC721.sol": {
-			"keccak256": "0x450d9b3d21068d461390bcdaf1e8b008c31dcc738d1676f86135e0eddedf6606",
-			"license": "GPL-3.0",
+		"Contracts/erc1155marketplace.sol": {
+			"keccak256": "0x31f4361d3eeae902c4b2816b83ed6a42b139073e41f9792dc53f3b4b00d375a2",
+			"license": "MIT",
 			"urls": [
-				"bzz-raw://76c497236a41a54443fbbe055cec63221b4d03ebc653c80b0034d7f569ed63c5",
-				"dweb:/ipfs/QmcrzKP8G9jRsx87jpjUdSwSQF6wkNsvCxo6xierp7YsSV"
+				"bzz-raw://e9a6a6cb8e66b8e5749f569e9c5b77a72617e0684dd21c587148e7c6b478405a",
+				"dweb:/ipfs/QmSi3oouJWhgeEFgyESCHnXugZnjgsirsRUFXDLP3nmuqi"
 			]
 		}
 	},
