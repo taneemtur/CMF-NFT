@@ -15,6 +15,7 @@ import {
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import Main from '../../Layouts/Main'
+import { splitWalletAddress } from '../../utils'
 
 
 
@@ -289,7 +290,7 @@ const CreateProfile = () => {
                 <div className="content mt-3">
                   <h5 className="mb-3">{user?.name}</h5>
                   <small className="text-muted px-2 py-1 rounded-lg shadow">
-                    {account}{' '}
+                    {splitWalletAddress(account)}{' '}
                     <a
                       href=""
                       onClick={e => e.preventDefault()}
@@ -460,7 +461,7 @@ const CreateProfile = () => {
                           <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
                               <img
-                                src={ user?.profileImage || client01}
+                                src={user?.profileImage || client01}
                                 alt="user"
                                 className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
                               />
@@ -477,10 +478,10 @@ const CreateProfile = () => {
                           <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
                             <a
                               href={`/nft/${nft?.nftAddress}`}
-                              // onClick={e => {
-                              //   e.preventDefault()
-                              //   navigate(`/nft/${nft?.nftAddress}`)
-                              // }}
+                            // onClick={e => {
+                            //   e.preventDefault()
+                            //   navigate(`/nft/${nft?.nftAddress}`)
+                            // }}
                             >
                               <img
                                 src={nft?.image}
@@ -875,11 +876,47 @@ const CreateProfile = () => {
                   role="tabpanel"
                   aria-labelledby="About-tab"
                 >
-                  <h5 className="mb-4">{user.name || "...."}</h5>
+                  {
+                    user?.name && (
+                      <h5 className="mb-4">{user.name || "...."}</h5>
+                    )
+                  }
 
-                  <p className="text-muted mb-0">
-                    {user.bio || "...."}
-                  </p>
+                  {
+                    user?.email && (
+                      <p className="text-muted mb-0">
+                        {user.email || "...."}
+                      </p>
+                    )
+                  }
+                  {
+                    user?.website && (
+                      <p className="text-muted mb-0">
+                        {user.website || "...."}
+                      </p>
+                    )
+                  }
+                  {
+                    user?.twitterAccount && (
+                      <p className="text-muted mb-0">
+                        {user.twitterAccount || "...."}
+                      </p>
+                    )
+                  }
+                  {
+                    user?.url && (
+                      <p className="text-muted mb-0">
+                        {user.url || "...."}
+                      </p>
+                    )
+                  }
+                  {
+                    user?.bio && (
+                      <p className="text-muted mb-0">
+                        {user.bio || "...."}
+                      </p>
+                    )
+                  }
                 </div>
               </div>
             </div>
