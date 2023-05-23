@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import axiosconfig from '../../axiosConfig'
 import Countdown from 'react-countdown'
 import { client01, client02, client03, client08, client09, client10, item1, item2, gif1, gif2, itemDetail1 } from '../../components/imageImport'
@@ -7,6 +7,7 @@ import Main from '../../Layouts/Main'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import NFTListModel from '../../components/NFTListModel'
+import { splitWalletAddress } from '../../utils'
 
 
 const ItemDetailOne = () => {
@@ -155,6 +156,10 @@ const ItemDetailOne = () => {
 
             <div className="col-md-6 mt-4 pt-2 mt-sm-0 pt-sm-0">
               <div className="ms-lg-5">
+                <Link to={`/collection/${nft
+                ?.collection?.collectionAddress}`}>
+                  <p>{nft?.collection.name}</p>
+                </Link>
                 <div className="title-heading">
                   <h4 className="h3 fw-bold mb-0">
                     {nft?.name}
@@ -242,7 +247,9 @@ const ItemDetailOne = () => {
 
                           <div className="ms-3">
                             <h6 className="mb-0">
-                              <a
+                              {
+                                nft && (
+                                  <a
                                 href="/creators"
                                 onClick={e => {
                                   e.preventDefault()
@@ -250,8 +257,10 @@ const ItemDetailOne = () => {
                                 }}
                                 className="text-dark name"
                               >
-                                {nft?.owner?.name}
+                                {splitWalletAddress(nft?.owner?.walletAddress)} - {nft?.owner?.name && nft?.owner?.name}
                               </a>
+                                )
+                              }
                             </h6>
                           </div>
                         </div>

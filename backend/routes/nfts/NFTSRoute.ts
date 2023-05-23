@@ -26,7 +26,8 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
         image: null,
         auctionTimeEnd: null,
         type: null,
-        listed: false
+        listed: false,
+        tokenID: body.tokenID
     }
 
     try {

@@ -25,7 +25,7 @@ const CreatorProfileEdit = (props) => {
   const [unsubscribe, setUnsubscribe] = useState(true)
 
   const [updating, setUpdating] = useState(false)
-  
+
   useEffect(() => {
     if (!account) {
       navigate('/')
@@ -52,7 +52,7 @@ const CreatorProfileEdit = (props) => {
   }, [user])
 
 
-  const loadFile = async function (event, banner=false) {
+  const loadFile = async function (event, banner = false) {
     var image = document.getElementById(event.target.name)
     image.src = URL.createObjectURL(event.target.files[0])
 
@@ -86,27 +86,38 @@ const CreatorProfileEdit = (props) => {
       walletAddress: account,
     }
     try {
-      const res = await toast.promise(axiosConfig.put('/profile/updateprofile', data),{
-          pending: {
-            render(){
-              return "Updating Profile"
-            },
-            icon: false,
+      const res = await toast.promise(axiosConfig.put('/profile/updateprofile', data), {
+        pending: {
+          render() {
+            return "Updating Profile"
           },
-          success: {
-            render({data}){
-              return `${data.data.message}`
-            },
-            icon: "🟢",
+          icon: false,
+        },
+        success: {
+          render({ data }) {
+            return `${data.data.message}`
           },
-          error: {
-            render({data}){
-              return data.data.message
-            }
+          icon: "🟢",
+        },
+        error: {
+          render({ data }) {
+            return data.data.message
           }
+        }
       })
-      
+
       setUpdating(false)
+      // dispatch(setUser(prev => {
+      //   return {
+      //     ...prev,
+      //     name,
+      //     url,
+      //     twitterAccount: twitter,
+      //     website,
+      //     email,
+      //     bio,
+      //   }
+      // }))
       console.log(res)
     } catch (error) {
       toast.error(error)
