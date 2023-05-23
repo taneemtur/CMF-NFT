@@ -3,10 +3,12 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from 'react-redux';
 
 
 
 const Main = ({children}) => {
+  const {theme} = useSelector(state => state.theme)
   return (
     <>
     <Navbar />
@@ -17,7 +19,7 @@ const Main = ({children}) => {
       newestOnTop={true}
       closeOnClick
       pauseOnHover
-      theme='dark'
+      theme={theme}
     />
     {children}
     <Footer />

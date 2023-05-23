@@ -11,6 +11,7 @@ import {
   gif1, gif2, gif3, gif4, gif5, gif6, item1, item2, item3, item4, item5, item6,
   c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12,
 } from '../../components/imageImport'
+import Main from '../../Layouts/Main';
 
 const DarkVersionTwo = () => {
   const navigate = useNavigate()
@@ -403,14 +404,11 @@ const DarkVersionTwo = () => {
   }
 
   return (
-    <>
-      {/* Navbar */}
+    <Main>
       <div className="round-effect">
         <div className="primary-round opacity-3"></div>
         <div className="gradient-round opacity-3"></div>
       </div>
-
-      <Navbar />
 
       {/* Start Home */}
       <section className="bg-half-174">
@@ -885,10 +883,7 @@ const DarkVersionTwo = () => {
       </section>
       {/*end section*/}
       {/* End Home */}
-
-      {/* footer */}
-      <Footer />
-    </>
+    </Main>
   )
 }
 
