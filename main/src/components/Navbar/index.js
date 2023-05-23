@@ -10,6 +10,7 @@ import AuthContext from '../../AuthContext'
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccount, setChain, setUser } from '../../Store/Slicers/theme';
 import { defaultChain, getChainById, isChainSupported } from '../../blockchain/supportedChains'
+import {toast} from 'react-toastify'
 require('dotenv').config()
 
 const Navbar = () => {
@@ -130,16 +131,19 @@ const Navbar = () => {
 
   const fetchProfile = async (account) => {
     //save user to firebase db when wallet connected
+    const id = toast.loading('Signing In...')
     await axiosConfig.post(`/profile/createprofile`, {
       walletAddress: account,
     })
       .then((res) => {
         dispatch(setUser(res.data.data))
         dispatch(setAccount(account))
+        toast.update(id, { render: `Signed In`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 })
         console.log(res.data)
       })
       .catch((err) => {
         console.log(err)
+        toast.update(id, { render: `${err}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 })
       })
   }
 
@@ -724,22 +728,46 @@ const Navbar = () => {
                   Tokenomics
                 </a>
               </li>
-              <li>
-                <a
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault()
-                    setTimeout(() => {
-                      activateMenu()
-                    }, 1000)
-                    navigate('/create-nft')
-                  }}
-                  className="sub-menu-item"
-                >
-                  <IoIosAlbums />
-                  {' '}
+              <li className="has-submenu parent-parent-menu-item">
+                <a href="" onClick={e => mobileHandler(e, 'pages')}>
                   Create
                 </a>
+                <span className="menu-arrow"></span>
+                <ul
+                  className={`submenu ${mobile.includes('pages') ? 'open' : ''
+                    }`}
+                >
+                  <li>
+                    <a
+                      href="/upload-work"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                        }, 1000)
+                        navigate('/upload-work')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Collection
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/create-nft"
+                      onClick={e => {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          activateMenu()
+                        }, 1000)
+                        navigate('/create-nft')
+                      }}
+                      className="sub-menu-item"
+                    >
+                      Create NFT
+                    </a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <a
