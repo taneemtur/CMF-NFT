@@ -111,7 +111,7 @@ const ItemDetailOne = () => {
                     Edit Item
                   </a>
                   {
-                    nft.listed == false && (
+                    nft?.listed == false && (
                       <a
                         data-bs-toggle="modal"
                         data-bs-target="#ListNFT"

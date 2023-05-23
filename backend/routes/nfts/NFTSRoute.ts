@@ -77,7 +77,7 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
-    const {nftAddress, listingType, endDate} = body
+    const { nftAddress, listingType, endDate } = body
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     const nft: NFTModel = doc.data() as NFTModel;
@@ -94,7 +94,7 @@ router.put("/listnft", async (req: Request, res: Response) => {
                 data: nft,
             }).status(200)
         }
-    } catch (err){
+    } catch (err) {
         console.log(err)
         return res.json({
             message: "Error Listing NFT",
@@ -153,7 +153,7 @@ router.put("/updatenft", upload, async (req: Request, res: Response) => {
     }
 })
 
-// Delete ListedNFT
+// Delete CreatedNFT
 router.delete("/:nftaddress", async (req: Request, res: Response) => {
     const nftAddress = req.params.nftaddress;
     const nftRef = db.collection("nfts").doc(nftAddress);
@@ -188,8 +188,10 @@ router.get("/getfixedpricenfts", async (req: Request, res: Response) => {
         promises.push(new Promise(async (resolve, reject) => {
             const nft = doc.data();
             const collection = (await doc.data()?.collection.get()).data();
-            collection.category = (await collection.category.get()).data();
+            if (collection) {
+                collection.category = (await collection.category.get()).data();
             collection.owner = (await collection.owner.get()).data();
+            }
             const nftModel = {
                 ...nft,
                 collection,
@@ -229,8 +231,10 @@ router.get("/getauctionednfts", async (req: Request, res: Response) => {
         promises.push(new Promise(async (resolve, reject) => {
             const nft = doc.data();
             const collection = (await doc.data()?.collection.get()).data();
-            collection.category = (await collection.category.get()).data();
+            if (collection) {
+                collection.category = (await collection.category.get()).data();
             collection.owner = (await collection.owner.get()).data();
+            }
             const nftModel = {
                 ...nft,
                 collection,
@@ -263,8 +267,10 @@ router.get("/:nftAddress", async (req: Request, res: Response) => {
         const promises: Promise<NFTModel>[] = [];
         promises.push(new Promise(async (resolve, reject) => {
             const collection = (await doc.data()?.collection.get()).data();
-            collection.category = (await collection.category.get()).data();
+            if (collection) {
+                collection.category = (await collection.category.get()).data();
             collection.owner = (await collection.owner.get()).data();
+            }
             const nftModel = {
                 ...nft,
                 collection,
@@ -302,32 +308,42 @@ router.get("/", async (req: Request, res: Response) => {
             data: [],
         }).status(200)
     }
-    querySnapshot.forEach(async (doc) => {
-        promises.push(new Promise(async (resolve, reject) => {
-            const nft = doc.data();
-            const collection = (await doc.data()?.collection.get()).data();
-            collection.category = (await collection.category.get()).data();
-            collection.owner = (await collection.owner.get()).data();
-            const nftModel = {
-                ...nft,
-                collection,
-                owner: (await doc.data()?.owner.get()).data()
-            } as NFTModel;
-            nfts.push(nftModel);
-            resolve(nftModel);
-        }))
-    })
-    Promise.all(promises).then((data) => {
-        return res.json({
-            message: "NFTs",
-            data: data,
-        }).status(200)
-    }).catch((err) => {
-        console.log(err);
+    try {
+        querySnapshot.forEach(async (doc) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await nft?.collection.get()).data();
+                if (collection) {
+
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const nftModel = {
+                    ...nft,
+                    collection,
+                    owner: (await nft?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                data: data,
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+            }).status(500)
+        })
+
+    } catch {
         return res.json({
             message: "Error Fetching NFTs",
         }).status(500)
-    })
+    }
 })
 
 // Get all fixedprice NFTS of a user
@@ -350,8 +366,10 @@ router.get("/getfixedpricenfts/:userAddress", async (req: Request, res: Response
             promises.push(new Promise(async (resolve, reject) => {
                 const nft = doc.data();
                 const collection = (await doc.data()?.collection.get()).data();
-                collection.category = (await collection.category.get()).data();
-                collection.owner = (await collection.owner.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
                 const nftModel = {
                     ...nft,
                     collection,
@@ -401,8 +419,10 @@ router.get("/getauctionednfts/:userAddress", async (req: Request, res: Response)
             promises.push(new Promise(async (resolve, reject) => {
                 const nft = doc.data();
                 const collection = (await doc.data()?.collection.get()).data();
-                collection.category = (await collection.category.get()).data();
-                collection.owner = (await collection.owner.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
                 const nftModel = {
                     ...nft,
                     collection,
@@ -450,8 +470,10 @@ router.get("/getnfts/:userAddress", async (req: Request, res: Response) => {
             promises.push(new Promise(async (resolve, reject) => {
                 const nft = doc.data();
                 const collection = (await doc.data()?.collection.get()).data();
-                collection.category = (await collection.category.get()).data();
-                collection.owner = (await collection.owner.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
                 const nftModel = {
                     ...nft,
                     collection,
@@ -499,8 +521,10 @@ router.get("/getcollectionnfts/:collectionAddress", async (req: Request, res: Re
             promises.push(new Promise(async (resolve, reject) => {
                 const nft = doc.data();
                 const collection = (await doc.data()?.collection.get()).data();
-                collection.category = (await collection.category.get()).data();
-                collection.owner = (await collection.owner.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
                 const nftModel = {
                     ...nft,
                     collection,

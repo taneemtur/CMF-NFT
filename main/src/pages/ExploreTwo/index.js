@@ -139,6 +139,8 @@ const ExploreTwo = () => {
     await axiosConfig.get(`/nfts`).then((res)=>{
       setNfts(res.data.data)
       console.log(res.data.data)
+    }).catch((err)=>{
+      console.log(err)
     })
   }
 

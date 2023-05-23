@@ -13,7 +13,7 @@ const UploadWork = () => {
   const { user, account } = useSelector(state => state.theme)
   const [title, setTitle] = React.useState('Collection 5')
   const [description, setDescription] = React.useState('This is collection')
-  const [blockchain, setBlockchain] = React.useState('Ethereum')
+  const [blockchain, setBlockchain] = React.useState('')
   const [paymentToken, setPaymentToken] = React.useState('Eth')
   const [categories, setCategories] = React.useState([])
   const [category, setCategory] = React.useState('Music')
@@ -374,6 +374,7 @@ const UploadWork = () => {
                             <select
                             required
                             value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
+                              <option value=''> Select Chain </option>
                               {supportedChains.map((item) => {
                                 return (
                                   <>

@@ -1,10 +1,10 @@
 export const supportedChains = [
     {
-        "chainId": '0x5',
-        "chainName": "Goerli",
+        "chainId": '0xaa36a7',
+        "chainName": "Sepolia",
         "rpcUrls": [
-            'https://rpc.goerli.eth.gateway.fm',
-            'https://eth-goerli.public.blastapi.io'
+            'https://rpc.sepolia.org',
+            'https://eth-sepolia.public.blastapi.io'
         ],
         "nativeCurrency": {
             'name': 'Eth',
@@ -13,15 +13,15 @@ export const supportedChains = [
         }
     },
     {
-        "chainId": '0xa869',
-        "chainName": "Avalanche Fuji Testnet",
+        "chainId": '0x61',
+        "chainName": "Binance Smart Chain Testnet",
         "rpcUrls": [
-            'https://api.avax-test.network/ext/bc/C/rpc',
-            'https://ava-testnet.public.blastapi.io/ext/bc/C/rpc',
+            'https://bsc-testnet.publicnode.com',
+            'https://bsc-testnet.public.blastapi.io'
         ],
         "nativeCurrency": {
-            'name': 'AVAX',
-            'symbol': 'AVAX',
+            'name': 'tBNB',
+            'symbol': 'tBNB',
             'decimals': 18,
         }
     },
@@ -29,12 +29,25 @@ export const supportedChains = [
         "chainId": '0x66eed',
         "chainName": "Arbitrum Goerli",
         "rpcUrls": [
-            'https://goerli-rollup.arbitrum.io/rpc',
-            'https://arbitrum-goerli.public.blastapi.io'
+            'https://arb-goerli.g.alchemy.com/v2/demo',
+            'https://arbitrum-goerli.public.blastapi.io',
         ],
         "nativeCurrency": {
             'name': 'AGOR',
             'symbol': 'AGOR',
+            'decimals': 18,
+        }
+    },
+    {
+        "chainId": '0xa869',
+        "chainName": "Avalanche Fuji Testnet",
+        "rpcUrls": [
+            'https://rpc.ankr.com/avalanche_fuji',
+            'https://api.avax-test.network/ext/bc/C/rpc',
+        ],
+        "nativeCurrency": {
+            'name': 'AVAX',
+            'symbol': 'AVAX',
             'decimals': 18,
         }
     },

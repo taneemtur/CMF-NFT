@@ -7,14 +7,16 @@ import { supportedChains } from '../../blockchain/supportedChains'
 import { v4 as uuid } from 'uuid';
 import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
+import { mint } from '../../blockchain/mintContracts'
+import { getChainById } from '../../blockchain/supportedChains'
 
 
 const CreateNFT = () => {
   const navigate = useNavigate()
-  const { user, account } = useSelector(state => state.theme)
+  const { user, account, chain } = useSelector(state => state.theme)
   const [title, setTitle] = React.useState('')
   const [description, setDescription] = React.useState('')
-  const [blockchain, setBlockchain] = React.useState('Ethereum')
+  const [blockchain, setBlockchain] = React.useState('')
   const [price, setPrice] = React.useState(0)
   const [supply, setSupply] = React.useState(1)
   const [creating, setCreating] = React.useState(false)
@@ -91,6 +93,8 @@ const CreateNFT = () => {
       reader.readAsDataURL(uploadedFile)
     }
   }
+
+
   const handleSubmit = async e => {
     e.preventDefault()
 
@@ -111,6 +115,7 @@ const CreateNFT = () => {
       externalLink,
       nftAddress: state ? state.nft.nftAddress : nftAddress
     }
+    
     if (state) {
       data["collectionAddress"] = state.nft.collection.collectionAddress
     }
@@ -129,25 +134,50 @@ const CreateNFT = () => {
     formData.append('data', JSON.stringify(data))
     setCreating(true)
     if (!state) {
-      const id = toast.loading('Creating Item');
-      await axiosConfig.post("/nfts/createnft", formData, {
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-      })
-        .then(res => {
-          toast.update(id, {
-            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
-          })
+      if(chain != data.blockchain){
+        const chainParam = getChainById(data.blockchain)
+          try {
+            await ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: data.blockchain }],
+            });
+          } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask.
+            if (switchError.code === 4902) {
+              try {
+                await ethereum.request({
+                  method: 'wallet_addEthereumChain',
+                  params: [chainParam],
+                });
+              } catch (addError) {
+                // handle "add" error
+              }
+            }
+            // handle other "switch" errors
+          }
+      }
+      const mintItem = await mint(data.blockchain, image.name ,account);
+      if(mintItem?.code == 200){
+        const id = toast.loading('Creating Item');
+        await axiosConfig.post("/nfts/createnft", formData, {
+          body: data,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
         })
-        .catch(err => {
-          toast.update(id, {
-            render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+          .then(res => {
+            toast.update(id, {
+              render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
+            })
           })
-        })
+          .catch(err => {
+            toast.update(id, {
+              render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+            })
+          })
+      }
     } else {
-        const id = toast.loading('Updating Item');
+      const id = toast.loading('Updating Item');
       await axiosConfig.put("/nfts/updatenft", formData, {
         body: data,
         headers: {
@@ -389,7 +419,8 @@ const CreateNFT = () => {
 
                           <div className="col-md-6 mb-4">
                             <label className="form-label fw-bold">Blockchain:</label>
-                            <select required value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
+                            <select required value={blockchain} className='form-control' onChange={(e) => setBlockchain(e.target.value) } >
+                              <option value=''> Select Chain </option>
                               {supportedChains.map((item) => {
                                 return (
                                   <>
