@@ -9,19 +9,19 @@ import { toast } from 'react-toastify';
 
 export const mintContracts = {
     'Sepolia': {
-        'address': '0x68B1Bb324BfC395626c48638DA019CC23d766f65',
+        'address': '0x299B2750e4e4E7D0AEF80E7982cEd219a5E48428',
         'abi': ethereumABI
     },
     'Binance Smart Chain Testnet': {
-        'address': '0x1FCe84568ef3D4E30e10bb68d0E12e61F1D9Ac7D',
+        'address': '0x7CD14887C1eA9bfd1a1417dC293df13f31Db6659',
         'abi': bscABI
     },
-    'Arbitrum Goerli': {
-        'address': '0xaC87db196C1e1BfEe2578deD29d7511114dceb8F',
-        'abi': arbitrumABI
-    },
+    // 'Arbitrum Goerli': {
+    //     'address': '0xaC87db196C1e1BfEe2578deD29d7511114dceb8F',
+    //     'abi': arbitrumABI
+    // },
     'Avalanche Fuji Testnet': {
-        'address': '0xbB2289bfbF477881FFd36d54c62A5321E3e24597',
+        'address': '0xaF7f34022AdfEfCcfaFFc83186a85d8B446E31d9',
         'abi': avalancheABI
     }
 };
@@ -38,14 +38,14 @@ export const getChainContract = (chain) => {
     return contractData;
 }
 
-export const mint = async (chainId, Uri, account) => {
+export const mint = async (chainId, account) => {
     const selectedContract = getChainContract(chainId);
     const id = toast.loading('Minting...');
     try {
         if(window.ethereum){
             const web3 = new Web3(window.ethereum);
             const mintContract = new web3.eth.Contract(selectedContract.abi, selectedContract.address);
-            const mintoTo = await mintContract.methods.mintTo(account, Uri).send({from: account});
+            const mintoTo = await mintContract.methods.mint().send({from: account});
             toast.update(id, {
                 render: `Minted Successfull.`, closeOnClick: true, type: 'success', autoClose: 5000, isLoading: false, closeButton: true
               });
