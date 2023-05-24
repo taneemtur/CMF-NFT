@@ -69,6 +69,8 @@ const CreateNFT = () => {
     setSupply(1)
     setImages(null)
     setExternalLink('')
+    const parent = document.querySelector('.preview-box')
+        parent.innerHTML = ``
   }
 
   const handleChange = (e) => {
