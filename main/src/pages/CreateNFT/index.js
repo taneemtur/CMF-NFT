@@ -161,7 +161,7 @@ const CreateNFT = () => {
         const id = toast.loading('Creating Item');
         const tokenId = mintItem.data.events.TokensMinted.returnValues.tokenIdMinted;
         console.log('token', tokenId)
-        data.tokenID = tokenId;
+        data["tokenID"] = "helloworld";
         formData.append('data', JSON.stringify(data))
         await axiosConfig.post("/nfts/createnft", formData, {
           body: data,
