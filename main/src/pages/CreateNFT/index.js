@@ -156,12 +156,12 @@ const CreateNFT = () => {
             // handle other "switch" errors
           }
       }
-      // const mintItem = await mint(data.blockchain, image.name ,account);
-      // if(mintItem?.code == 200){
+      const mintItem = await mint(data.blockchain, image.name ,account);
+      if(mintItem?.code == 200){
         const id = toast.loading('Creating Item');
-        // console.log("TOKENID",mintItem.data.Transfers.returnvalues.tokenId)
-        // const tokenId = mintItem.data.Transfers.returnvalues.tokenId;
-        data.tokenID = null;
+        const tokenId = mintItem.data.events.TokensMinted.returnValues.tokenIdMinted;
+        console.log('token', tokenId)
+        data.tokenID = tokenId;
         formData.append('data', JSON.stringify(data))
         await axiosConfig.post("/nfts/createnft", formData, {
           body: data,
@@ -179,7 +179,7 @@ const CreateNFT = () => {
               render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
             })
           })
-      // }
+      }
     } else {
       const id = toast.loading('Updating Item');
       await axiosConfig.put("/nfts/updatenft", formData, {
