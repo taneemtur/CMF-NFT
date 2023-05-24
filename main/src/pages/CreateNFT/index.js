@@ -215,7 +215,7 @@ const CreateNFT = () => {
             <div className="col-12">
               <div className="title-heading text-center">
                 <h5 className="heading fw-semibold sub-heading text-white title-dark">
-                  Create Item
+                  Create NFT
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
                   Add your digital art and work
@@ -244,7 +244,7 @@ const CreateNFT = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Create Item
+                  Create NFT
                 </li>
               </ul>
             </nav>
@@ -354,6 +354,15 @@ const CreateNFT = () => {
             <div className="col-lg-9 col-md-8 order-1 order-md-2">
               <div className="card rounded-md shadow p-4">
                 <div className="row">
+                  <div className='col-md-12'>
+                      {
+                      collections.length == 0 && (
+                        <>
+                        <p className="text-danger fw-semibold mb-4"> You need to create your first NFT collection before adding an NFT. <span onClick={()=>navigate('/upload-work')} role="button" tabindex="0" className='text-primary pe-auto' > Create Collection </span> </p>
+                        </>
+                        )
+                      }
+                  </div>
                   <div className="col-lg-5">
                     <div className="d-grid">
                       <p className="fw-semibold mb-4">
