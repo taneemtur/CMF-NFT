@@ -25,19 +25,19 @@ export const supportedChains = [
             'decimals': 18,
         }
     },
-    {
-        "chainId": '0x66eed',
-        "chainName": "Arbitrum Goerli",
-        "rpcUrls": [
-            'https://arb-goerli.g.alchemy.com/v2/demo',
-            'https://arbitrum-goerli.public.blastapi.io',
-        ],
-        "nativeCurrency": {
-            'name': 'AGOR',
-            'symbol': 'AGOR',
-            'decimals': 18,
-        }
-    },
+    // {
+    //     "chainId": '0x66eed',
+    //     "chainName": "Arbitrum Goerli",
+    //     "rpcUrls": [
+    //         'https://arb-goerli.g.alchemy.com/v2/demo',
+    //         'https://arbitrum-goerli.public.blastapi.io',
+    //     ],
+    //     "nativeCurrency": {
+    //         'name': 'AGOR',
+    //         'symbol': 'AGOR',
+    //         'decimals': 18,
+    //     }
+    // },
     {
         "chainId": '0xa869',
         "chainName": "Avalanche Fuji Testnet",
