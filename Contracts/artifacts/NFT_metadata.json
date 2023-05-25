@@ -259,58 +259,7 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_user",
-						"type": "address"
-					}
-				],
-				"name": "isWhitelisted",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
-				"name": "maxMintAmount",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "maxSupply",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_mintAmount",
-						"type": "uint256"
-					}
-				],
 				"name": "mint",
 				"outputs": [],
 				"stateMutability": "payable",
@@ -324,32 +273,6 @@
 						"internalType": "string",
 						"name": "",
 						"type": "string"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "nftPerAddressLimit",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "onlyWhitelisted",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -531,45 +454,6 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "_limit",
-						"type": "uint256"
-					}
-				],
-				"name": "setNftPerAddressLimit",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "bool",
-						"name": "_state",
-						"type": "bool"
-					}
-				],
-				"name": "setOnlyWhitelisted",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_newmaxMintAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "setmaxMintAmount",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "bytes4",
 						"name": "interfaceId",
 						"type": "bytes4"
@@ -730,38 +614,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address[]",
-						"name": "_users",
-						"type": "address[]"
-					}
-				],
-				"name": "whitelistUsers",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "whitelistedAddresses",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "withdraw",
 				"outputs": [],
@@ -786,9 +638,6 @@
 				},
 				"name()": {
 					"details": "See {IERC721Metadata-name}."
-				},
-				"owner()": {
-					"details": "Returns the address of the current owner."
 				},
 				"ownerOf(uint256)": {
 					"details": "See {IERC721-ownerOf}."
@@ -849,11 +698,11 @@
 	},
 	"sources": {
 		"Contracts/ERC721.sol": {
-			"keccak256": "0x450d9b3d21068d461390bcdaf1e8b008c31dcc738d1676f86135e0eddedf6606",
+			"keccak256": "0x3a25bb5c05329370d42fc3ea391fe79d412e62b4946b9085474a016b85d5449e",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://76c497236a41a54443fbbe055cec63221b4d03ebc653c80b0034d7f569ed63c5",
-				"dweb:/ipfs/QmcrzKP8G9jRsx87jpjUdSwSQF6wkNsvCxo6xierp7YsSV"
+				"bzz-raw://ea932eee30d476d3184b719471b9f6e6ae71c181d02f994a0e8e2a4e3eb7fc3b",
+				"dweb:/ipfs/QmXx7grvCyvJtEbZNd3SdmHQm26ZNAxQNted1FejULWFmR"
 			]
 		}
 	},

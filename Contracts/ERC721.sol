@@ -7,24 +7,10 @@ interface IERC165 {
 }
 
 interface IERC721 is IERC165 {
-    /**
-     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
-     */
+
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-
-    /**
-     * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
-     */
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-
-    /**
-     * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
-     */
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
-    /**
-     * @dev Returns the number of tokens in ``owner``'s account.
-     */
     function balanceOf(address owner) external view returns (uint256 balance);
 
     function ownerOf(uint256 tokenId) external view returns (address owner);
@@ -46,12 +32,6 @@ interface IERC721 is IERC165 {
     function getApproved(uint256 tokenId) external view returns (address operator);
 
     function setApprovalForAll(address operator, bool _approved) external;
-
-    /**
-     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.
-     *
-     * See {setApprovalForAll}
-     */
     function isApprovedForAll(address owner, address operator) external view returns (bool);
 
     function safeTransferFrom(
@@ -722,23 +702,14 @@ abstract contract Ownable is Context {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    /**
-     * @dev Initializes the contract setting the deployer as the initial owner.
-     */
     constructor() {
         _setOwner(_msgSender());
     }
 
-    /**
-     * @dev Returns the address of the current owner.
-     */
     function owner() public view virtual returns (address) {
         return _owner;
     }
 
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
     modifier onlyOwner() {
         require(owner() == _msgSender(), "Ownable: caller is not the owner");
         _;
@@ -760,18 +731,14 @@ abstract contract Ownable is Context {
     }
 }
 
-contract NFT is ERC721Enumerable, Ownable {
+contract CMFNFT is ERC721Enumerable, Ownable {
   using Strings for uint256;
 
   string public baseURI;
   string public baseExtension = ".json";
-  uint256 public cost = 0.05 ether;
-  uint256 public maxSupply = 10000;
-  uint256 public maxMintAmount = 20;
-  uint256 public nftPerAddressLimit = 3;
+  uint256 public cost = 0.00;
+    uint256 _mintAmount = 1;
   bool public paused = false;
-  bool public onlyWhitelisted = true;
-  address[] public whitelistedAddresses;
   mapping(address => uint256) public addressMintedBalance;
 
   constructor(
@@ -789,21 +756,14 @@ contract NFT is ERC721Enumerable, Ownable {
   }
 
   // public
-  function mint(uint256 _mintAmount) public payable {
+  function mint() public {
     require(!paused, "the contract is paused");
     uint256 supply = totalSupply();
     require(_mintAmount > 0, "need to mint at least 1 NFT");
-    require(_mintAmount <= maxMintAmount, "max mint amount per session exceeded");
-    require(supply + _mintAmount <= maxSupply, "max NFT limit exceeded");
 
-    if (msg.sender != owner()) {
-        if(onlyWhitelisted == true) {
-            require(isWhitelisted(msg.sender), "user is not whitelisted");
-            uint256 ownerMintedCount = addressMintedBalance[msg.sender];
-            require(ownerMintedCount + _mintAmount <= nftPerAddressLimit, "max NFT per address exceeded");
-        }
-        require(msg.value >= cost * _mintAmount, "insufficient funds");
-    }
+    // if (msg.sender != owner()) {
+    //     require(msg.value >= cost * _mintAmount, "insufficient funds");
+    // }
 
     for (uint256 i = 1; i <= _mintAmount; i++) {
       addressMintedBalance[msg.sender]++;
@@ -811,15 +771,6 @@ contract NFT is ERC721Enumerable, Ownable {
     }
   }
   
-  function isWhitelisted(address _user) public view returns (bool) {
-    for (uint i = 0; i < whitelistedAddresses.length; i++) {
-      if (whitelistedAddresses[i] == _user) {
-          return true;
-      }
-    }
-    return false;
-  }
-
   function walletOfOwner(address _owner)
     public
     view
@@ -850,17 +801,9 @@ contract NFT is ERC721Enumerable, Ownable {
         ? string(abi.encodePacked(currentBaseURI, tokenId.toString(), baseExtension))
         : "";
   }
-  
-  function setNftPerAddressLimit(uint256 _limit) public onlyOwner {
-    nftPerAddressLimit = _limit;
-  }
-  
+    
   function setCost(uint256 _newCost) public onlyOwner {
     cost = _newCost;
-  }
-
-  function setmaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner {
-    maxMintAmount = _newmaxMintAmount;
   }
 
   function setBaseURI(string memory _newBaseURI) public onlyOwner {
@@ -874,16 +817,7 @@ contract NFT is ERC721Enumerable, Ownable {
   function pause(bool _state) public onlyOwner {
     paused = _state;
   }
-  
-  function setOnlyWhitelisted(bool _state) public onlyOwner {
-    onlyWhitelisted = _state;
-  }
-  
-  function whitelistUsers(address[] calldata _users) public onlyOwner {
-    delete whitelistedAddresses;
-    whitelistedAddresses = _users;
-  }
- 
+   
   function withdraw() public payable onlyOwner {
     (bool os, ) = payable(owner()).call{value: address(this).balance}("");
     require(os);

@@ -18,7 +18,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Contracts/erc1155marketplace.sol": "Context"
+			"Contracts/ERC721.sol": "Context"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -32,12 +32,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Contracts/erc1155marketplace.sol": {
-			"keccak256": "0x31f4361d3eeae902c4b2816b83ed6a42b139073e41f9792dc53f3b4b00d375a2",
-			"license": "MIT",
+		"Contracts/ERC721.sol": {
+			"keccak256": "0xbc5c09ce34eaef9f8361fdc1fb748e4b1290004e0e0b27e0038e4f33525c0580",
+			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://e9a6a6cb8e66b8e5749f569e9c5b77a72617e0684dd21c587148e7c6b478405a",
-				"dweb:/ipfs/QmSi3oouJWhgeEFgyESCHnXugZnjgsirsRUFXDLP3nmuqi"
+				"bzz-raw://b9b50a7dfb5344163c257253a343c1f32765e951f0052f0beb229db742dfb942",
+				"dweb:/ipfs/QmZpEp8FZ5VpxWYwv5c7DsvZnbN2FGkNR8C2fqr4s8M69c"
 			]
 		}
 	},
