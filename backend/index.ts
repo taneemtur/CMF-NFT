@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import { CategoriesRoute, CollectionsRoute, NFTSRoute, ProfileRoute } from './routes';
+import { BestCreatorsSellersRoute, CategoriesRoute, CollectionsRoute, MostPopularCollectionRoute, NFTSRoute, ProfileRoute } from './routes';
 import cors from 'cors';
 dotenv.config();
 
@@ -32,6 +32,8 @@ app.use('/profile', ProfileRoute);
 app.use('/collections', CollectionsRoute);
 app.use('/nfts', NFTSRoute);
 app.use('/categories', CategoriesRoute);
+app.use("/landingpage/bestcreatorssellers", BestCreatorsSellersRoute)
+app.use("/landingpage/mostpopularcollection", MostPopularCollectionRoute)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
