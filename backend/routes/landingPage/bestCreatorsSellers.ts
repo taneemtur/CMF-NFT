@@ -56,13 +56,14 @@ router.get("/", async (req: Request, res: Response) => {
         const data = snapshot.data();
         if (data) {
             const promises = []
-            const bestCreatorsSellersArray = data.best_creators_sellers || [];
+            let bestCreatorsSellersArray = data.best_creators_sellers || [];
             if (bestCreatorsSellersArray.length === 0) {
                 return res.json({
                     message: "No Best Creators Sellers",
                     data: [],
                 }).status(200)
             }
+            bestCreatorsSellersArray = bestCreatorsSellersArray.slice(0, 10);
             for (let i = 0; i < bestCreatorsSellersArray.length; i++) {
                 const walletAddress = bestCreatorsSellersArray[i];
                 const promise = db.collection("users").doc(walletAddress).get();

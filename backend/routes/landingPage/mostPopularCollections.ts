@@ -55,13 +55,14 @@ router.get("/", async (req: Request, res: Response) => {
         const data = snapshot.data();
         if (data) {
             const promises: DocumentData[] = []
-            const mostPopularCollectionsArray = data.most_popular_collections || [];
+            let mostPopularCollectionsArray = data.most_popular_collections || [];
             if (mostPopularCollectionsArray.length === 0) {
                 return res.json({
                     message: "No Most Popular Collections",
                     data: [],
                 }).status(200)
             } else {
+                mostPopularCollectionsArray = mostPopularCollectionsArray.slice(0, 10);
                 mostPopularCollectionsArray.forEach((collectionAddress: string) => {
                     promises.push(db.collection("collections").doc(collectionAddress).get())
                 })
