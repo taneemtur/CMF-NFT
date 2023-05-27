@@ -41,9 +41,22 @@ router.post("/", async (req: Request, res: Response) => {
             }
         }
     } else {
-        return res.json({
-            message: "Most Popular Collections does not exist",
-        }).status(400)
+        // create new document
+        try {
+            const response = await mostPopularCollections.set({
+                most_popular_collections: [collectionAddress]
+            });
+            if (response) {
+                return res.json({
+                    message: "Collection Address added",
+                }).status(200)
+            }
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                message: "error adding collection address",
+            }).status(500)
+        }
     }
 })
 

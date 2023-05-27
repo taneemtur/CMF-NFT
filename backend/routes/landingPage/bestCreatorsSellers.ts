@@ -42,9 +42,22 @@ router.post("/", async (req: Request, res: Response) => {
             }
         }
     } else {
-        return res.json({
-            message: "Best Creators Sellers does not exist",
-        }).status(400)
+        // create new document
+        try {
+            const response = await bestCreatorsSellers.set({
+                best_creators_sellers: [walletAddress]
+            });
+            if (response) {
+                return res.json({
+                    message: "Wallet Address added",
+                }).status(200)
+            }
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                message: "error adding wallet address",
+            }).status(500)
+        }
     }
 })
 
