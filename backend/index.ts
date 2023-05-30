@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import { AuctionPricedNFTsRoute, BestCreatorsSellersRoute, CategoriesRoute, CollectionsRoute, FixedPricedNFTsRoute, HeroSectionRouter, MostPopularCollectionRoute, NFTSRoute, ProfileRoute } from './routes';
+import { AuctionPricedNFTsRoute, BestCreatorsSellersRoute, CategoriesRoute, CollectionsRoute, ExploreItemsRoute, FixedPricedNFTsRoute, HeroSectionRouter, MostPopularCollectionRoute, NFTSRoute, ProfileRoute } from './routes';
 import cors from 'cors';
 dotenv.config();
 
@@ -35,6 +35,7 @@ app.use('/categories', CategoriesRoute);
 app.use("/landingpage/bestcreatorssellers", BestCreatorsSellersRoute)
 app.use("/landingpage/mostpopularcollection", MostPopularCollectionRoute)
 app.use("/landingpage/herosection", HeroSectionRouter)
+app.use("/landingpage/exploreitems", ExploreItemsRoute)
 app.use("/transactions/fixedpricednfts", FixedPricedNFTsRoute)
 app.use("/transactions/auctionpricednfts", AuctionPricedNFTsRoute)
 
