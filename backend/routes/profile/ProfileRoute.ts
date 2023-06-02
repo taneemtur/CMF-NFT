@@ -3,8 +3,7 @@ import { db, bucket } from '../../utils/Firebase';
 import { UserModel } from "../../models/profile/User";
 import multer from "multer";
 import { v4 as uuid } from 'uuid';
-import sharp from "sharp";
-import { url } from "inspector";
+import { NFTModel } from "../../models/nfts/NFTS";
 
 const router = express.Router();
 // Firebase :=> User => WalletAddress => Profile
@@ -197,5 +196,158 @@ router.put("/updateprofile", async (req: Request, res: Response) => {
         message: "User Not Found",
     }).status(404)
 })
+
+
+// add liked NFTs to user profile
+router.post("/addlikednfts", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { walletAddress, nft } = body;
+    const userRef = db.collection("users").doc(walletAddress);
+
+    // check if user exist
+    const doc = await userRef.get();
+    if (doc.exists) {
+        // update user
+        const response = await userRef.update({
+            likedNFTs: [...doc.data()?.likedNFTs, nft]
+        });
+        if (response) {
+            return res.json({
+                message: "Liked NFTs Updated",
+                data: nft,
+            }).status(200)
+        }
+        return res.json({
+            message: "error updating liked NFTs",
+        }).status(500)
+    }
+    return res.json({
+        message: "User Not Found",
+    }).status(404)
+})
+
+// remove liked NFTs from user profile
+router.post("/removelikednfts", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { walletAddress, nftAddress } = body;
+    const userRef = db.collection("users").doc(walletAddress);
+
+    // check if user exist
+    const doc = await userRef.get();
+    if (doc.exists) {
+        // update user
+        const response = await userRef.update({
+            likedNFTs: doc.data()?.likedNFTs.filter((nft: NFTModel) => nft.nftAddress !== nftAddress)
+        });
+        if (response) {
+            return res.json({
+                message: "Liked NFTs Updated",
+                data: nftAddress,
+            }).status(200)
+        }
+        return res.json({
+            message: "error updating liked NFTs",
+        }).status(500)
+    }
+    return res.json({
+        message: "User Not Found",
+    }).status(404)
+})
+
+// get liked NFTs from user profile
+router.get("/getlikednfts/:walletAddress", async (req: Request, res: Response) => {
+    const walletAddress = req.params.walletAddress;
+    const userRef = db.collection("users").doc(walletAddress);
+
+    // check if user exist
+    const doc = await userRef.get();
+    if (doc.exists) {
+        return res.json({
+            message: "Liked NFTs",
+            data: doc.data()?.likedNFTs,
+        }).status(200)
+    }
+    return res.json({
+        message: "User Not Found",
+    }).status(404)
+})
+
+// add followed users to user profile
+router.post("/addfollowedusers", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { walletAddress, user } = body;
+    const userRef = db.collection("users").doc(walletAddress);
+
+    // check if user exist
+    const doc = await userRef.get();
+    if (doc.exists) {
+        // update user
+        const response = await userRef.update({
+            followedUsers: [...doc.data()?.followedUsers, user]
+        });
+        if (response) {
+            return res.json({
+                message: "Followed Users Updated",
+                data: user,
+            }).status(200)
+        }
+        return res.json({
+            message: "error updating followed users",
+        }).status(500)
+    }
+    return res.json({
+
+        message: "User Not Found",
+    }).status(404)
+})
+
+// remove followed users from user profile
+router.post("/removefollowedusers", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { walletAddress, userAddress } = body;
+    const userRef = db.collection("users").doc(walletAddress);
+
+    // check if user exist
+    const doc = await userRef.get();
+    if (doc.exists) {
+        // update user
+        const response = await userRef.update({
+            followedUsers: doc.data()?.followedUsers.filter((user: UserModel) => user.walletAddress !== userAddress)
+        });
+        if (response) {
+            return res.json({
+                message: "Followed Users Updated",
+                data: userAddress,
+            }).status(200)
+        }
+        return res.json({
+            message: "error updating followed users",
+        }).status(500)
+    }
+    return res.json({
+        message: "User Not Found",
+    }).status(404)
+})
+
+// get followed users from user profile
+router.get("/getfollowedusers/:walletAddress", async (req: Request, res: Response) => {
+    const walletAddress = req.params.walletAddress;
+    const userRef = db.collection("users").doc(walletAddress);
+
+    // check if user exist
+    const doc = await userRef.get();
+    if (doc.exists) {
+        return res.json({
+            message: "Followed Users",
+            data: doc.data()?.followedUsers,
+        }).status(200)
+    }
+    return res.json({
+        message: "User Not Found",
+    }).status(404)
+})
+
+
+
 
 export { router as ProfileRoute }
