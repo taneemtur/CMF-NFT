@@ -227,7 +227,7 @@ router.post("/addlikednfts", async (req: Request, res: Response) => {
 })
 
 // remove liked NFTs from user profile
-router.post("/removelikednfts", async (req: Request, res: Response) => {
+router.put("/removelikednfts", async (req: Request, res: Response) => {
     const body = req.body;
     const { walletAddress, nftAddress } = body;
     const userRef = db.collection("users").doc(walletAddress);
@@ -302,7 +302,7 @@ router.post("/addfollowedusers", async (req: Request, res: Response) => {
 })
 
 // remove followed users from user profile
-router.post("/removefollowedusers", async (req: Request, res: Response) => {
+router.put("/removefollowedusers", async (req: Request, res: Response) => {
     const body = req.body;
     const { walletAddress, userAddress } = body;
     const userRef = db.collection("users").doc(walletAddress);
