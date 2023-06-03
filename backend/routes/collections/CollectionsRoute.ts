@@ -13,11 +13,10 @@ const upload = multer({ storage: storage }).single('file');
 router.post("/createcollection", upload, async (req: Request, res: Response) => {
     const body = JSON.parse(req.body.data);
     const file = req.file;
-    const collectionID = uuid();
     const collection: CollectionModel = {
         name: body.name,
         description: body.description,
-        collectionAddress: collectionID,
+        collectionAddress: body.collectionAddress,
         owner: body.owner,
         paymentTokens: body.paymentTokens,
         blockchain: body.blockchain,
@@ -36,7 +35,7 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
                 contentType: file.mimetype,
                 cacheControl: 'public, max-age=31536000',
             };
-            const filepath = `collections/${collectionID}/collectionImage`;
+            const filepath = `collections/${collection.collectionAddress}/collectionImage`;
 
             const fileUpload = bucket.file(filepath);
             await fileUpload.save(file.buffer, {
@@ -50,7 +49,7 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
             collection.category = categoryref;
 
 
-            const response = await db.collection("collections").doc(collectionID).set(collection);
+            const response = await db.collection("collections").doc(collection.collectionAddress).set(collection);
             if (response) {
                 return res.json({
                     message: "Collection Created",

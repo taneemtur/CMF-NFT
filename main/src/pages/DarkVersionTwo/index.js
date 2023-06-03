@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import { tns } from 'tiny-slider/src/tiny-slider';
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
+
 import {
   work1, work2, work3, work4, work5, work6, work7, work8, work9, work10, work11, work12,
   client01, client02, client03, client04, client05, client06, client07, client08,
@@ -12,185 +11,16 @@ import {
   c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12,
 } from '../../components/imageImport'
 import Main from '../../Layouts/Main';
+import axiosConfig from '../../axiosConfig'
+import { getChainByName } from '../../blockchain/supportedChains';
+import { useSelector } from 'react-redux';
+import { splitWalletAddress } from '../../utils';
+
+
 
 const DarkVersionTwo = () => {
+  const {chain} = useSelector(state => state.theme)
   const navigate = useNavigate()
-  useEffect(() => {
-    if (document.getElementsByClassName('tiny-three-item-nav-arrow').length > 0) {
-      var slider = tns({
-        container: '.tiny-three-item-nav-arrow',
-        controls: true,
-        mouseDrag: true,
-        loop: true,
-        rewind: true,
-        autoplay: true,
-        autoplayButtonOutput: false,
-        autoplayTimeout: 3000,
-        navPosition: 'bottom',
-        controlsText: [
-          '<i class="mdi mdi-chevron-left "></i>',
-          '<i class="mdi mdi-chevron-right"></i>',
-        ],
-        nav: false,
-        speed: 400,
-        gutter: 12,
-        responsive: {
-          992: {
-            items: 3,
-          },
-
-          767: {
-            items: 2,
-          },
-
-          320: {
-            items: 1,
-          },
-        },
-      })
-    }
-    if (document.getElementsByClassName('tiny-five-item').length > 0) {
-      var slider = tns({
-        container: '.tiny-five-item',
-        controls: false,
-        mouseDrag: true,
-        loop: true,
-        rewind: true,
-        autoplay: true,
-        autoplayButtonOutput: false,
-        autoplayTimeout: 3000,
-        navPosition: 'bottom',
-        speed: 400,
-        gutter: 12,
-        responsive: {
-          1025: {
-            items: 5,
-          },
-
-          992: {
-            items: 3,
-          },
-
-          767: {
-            items: 2,
-          },
-
-          320: {
-            items: 1,
-          },
-        },
-      })
-    }
-    if (document.getElementsByClassName('tiny-five-item-nav-arrow').length > 0) {
-      var slider6 = tns({
-        container: '.tiny-five-item-nav-arrow',
-        controls: true,
-        mouseDrag: true,
-        loop: true,
-        rewind: true,
-        autoplay: true,
-        autoplayButtonOutput: false,
-        autoplayTimeout: 3000,
-        navPosition: 'bottom',
-        controlsText: [
-          '<i class="mdi mdi-chevron-left "></i>',
-          '<i class="mdi mdi-chevron-right"></i>',
-        ],
-        nav: false,
-        speed: 400,
-        gutter: 10,
-        responsive: {
-          992: {
-            items: 5,
-          },
-
-          767: {
-            items: 3,
-          },
-
-          320: {
-            items: 1,
-          },
-        },
-      })
-    }
-  }, [])
-
-
-  const creator = [
-    {
-      background: work1,
-      Image: client01,
-      name: 'Steven Townsend',
-      author: 'StreetBoy',
-    },
-    {
-      background: work2,
-      Image: client02,
-      name: 'Tiffany Betancourt',
-      author: 'CutieGirl',
-    },
-    {
-      background: work3,
-      Image: client03,
-      name: 'Mari Harrington',
-      author: 'NorseQueen',
-    },
-    {
-      background: work4,
-      Image: client04,
-      name: 'Floyd Glasgow',
-      author: 'BigBull',
-    },
-    {
-      background: work5,
-      Image: client05,
-      name: 'Donna Schultz',
-      author: 'Angel',
-    },
-    {
-      background: work6,
-      Image: client06,
-      name: 'Joshua Morris',
-      author: 'CrazyAnyone',
-    },
-    {
-      background: work7,
-      Image: client07,
-      name: 'Carl Williams',
-      author: 'LooserBad',
-    },
-    {
-      background: work8,
-      Image: client08,
-      name: 'Eugene Green',
-      author: 'KristyHoney',
-    },
-    {
-      background: work9,
-      Image: client09,
-      name: 'Julius Canale',
-      author: 'PandaOne',
-    },
-    {
-      background: work10,
-      Image: client10,
-      name: 'Michael Williams',
-      author: 'FunnyGuy',
-    },
-    {
-      background: work11,
-      Image: client11,
-      name: 'Jacqueline Burns',
-      author: 'ButterFly',
-    },
-    {
-      background: work12,
-      Image: client12,
-      name: 'Rosaria Vargas',
-      author: 'Princess',
-    },
-  ]
 
   const AuctionData = [
     {
@@ -267,141 +97,115 @@ const DarkVersionTwo = () => {
     },
   ]
 
-  const bestCreator = [
-    {
-      profileIcon: true,
-      image: client01,
-      name: 'StreetBoy',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: false,
-      image: client13,
-      name: 'FunnyGuy',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: true,
-      image: client02,
-      name: 'CutieGirl',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: true,
-      image: client09,
-      name: 'PandaOne',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: false,
-      image: client03,
-      name: 'NorseQueen',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: false,
-      image: client04,
-      name: 'BigBull',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: true,
-      image: client10,
-      name: 'KristyHoney',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: false,
-      image: client05,
-      name: 'Angel',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: true,
-      image: client11,
-      name: 'ButterFly',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: true,
-      image: client06,
-      name: 'CrazyAnyone',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: false,
-      image: client07,
-      name: 'LooserBad',
-      eth: '20.5 ETH',
-    },
-    {
-      profileIcon: true,
-      image: client12,
-      name: 'Princess',
-      eth: '20.5 ETH',
-    },
-  ]
-
-  const collectionData = [
-    {
-      title: 'Digital Arts',
-      img1: c3,
-      img2: c1,
-      img3: c4,
-      img4: c10,
-      client: client01,
-    },
-    {
-      title: 'Sports',
-      img1: c2,
-      img2: c5,
-      img3: c6,
-      img4: c7,
-      client: client10,
-    },
-    {
-      title: 'Photography',
-      img1: c8,
-      img2: c9,
-      img3: c11,
-      img4: c12,
-      client: client12,
-    },
-    {
-      title: 'Illustrations',
-      img1: c4,
-      img2: c1,
-      img3: c10,
-      img4: c3,
-      client: client02,
-    },
-    {
-      title: 'Animations',
-      img1: c5,
-      img2: c6,
-      img3: c2,
-      img4: c7,
-      client: client09,
-    },
-    {
-      title: 'Virtual Reality',
-      img1: c11,
-      img2: c9,
-      img3: c8,
-      img4: c12,
-      client: client11,
-    },
-  ]
   const [allData, setAllData] = useState(AuctionData)
+  const [hero, setHero] = useState(null);
+  const [collections, setCollections] = useState(null);
+  const [creators, setCreators] = useState(null);
   const [type, setType] = useState('all')
   const location = useLocation()
 
+  const getHeroNFTs = async () => {
+    await axiosConfig.get('/landingpage/herosection/').then((res)=>{
+      setHero(res.data.data)
+      console.log(res.data);
+    })
+  }
+
+  const getPopularCollections = async () => {
+    await axiosConfig.get('/landingpage/mostpopularcollection/').then((res)=>{
+      setCollections(res.data.data)
+      console.log(res.data);
+    })
+  }
+
+  const getBestCreatorsSellers = async () => {
+    await axiosConfig.get('/landingpage/bestcreatorssellers/').then((res)=>{
+      setCreators(res.data.data)
+      console.log(res.data);
+    })
+  }
 
   const setFilter = type => {
     setType(type)
     const newOne = AuctionData?.filter(data => data?.filter?.includes(type))
     setAllData(newOne)
   }
+
+  useEffect( async ()=>{
+    await getHeroNFTs();
+    if (document.getElementsByClassName('tiny-five-item').length > 0) {
+      tns({
+        container: '.tiny-five-item',
+        controls: false,
+        mouseDrag: true,
+        loop: true,
+        rewind: true,
+        autoplay: true,
+        autoplayButtonOutput: false,
+        autoplayTimeout: 3000,
+        navPosition: 'bottom',
+        speed: 400,
+        gutter: 12,
+        responsive: {
+          1025: {
+            items: 5,
+          },
+
+          992: {
+            items: 3,
+          },
+
+          767: {
+            items: 2,
+          },
+
+          320: {
+            items: 1,
+          },
+        },
+      })
+    }
+    await getPopularCollections();
+    if (document.getElementsByClassName('tiny-three-item-nav-arrow').length > 0) {
+      var slider = tns({
+        container: '.tiny-three-item-nav-arrow',
+        controls: true,
+        mouseDrag: true,
+        loop: true,
+        rewind: true,
+        autoplay: true,
+        autoplayButtonOutput: false,
+        autoplayTimeout: 3000,
+        navPosition: 'bottom',
+        controlsText: [
+          '<i class="mdi mdi-chevron-left "></i>',
+          '<i class="mdi mdi-chevron-right"></i>',
+        ],
+        nav: false,
+        speed: 400,
+        gutter: 12,
+        responsive: {
+          992: {
+            items: 3,
+          },
+
+          767: {
+            items: 2,
+          },
+
+          320: {
+            items: 1,
+          },
+        },
+      })
+    }
+    await getBestCreatorsSellers()
+    return () => {
+      setHero(null)
+      setCollection(null)
+      setCreators(null)
+    }
+  },[])
 
   return (
     <Main>
@@ -415,23 +219,24 @@ const DarkVersionTwo = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-12">
-              <div className="tiny-five-item">
-                {allData?.map(data => {
+              <div className="tiny-five-item">                  
+                {hero && hero?.map(data => {
                   return (
-                    <div className="tiny-slide" key={data?.title}>
+                    <div className="tiny-slide" key={data?.name}>
                       <div className="card bg-white nft-items nft-primary rounded-md shadow-md overflow-hidden mx-2 my-3">
                         <div className="nft-image position-relative overflow-hidden">
                           <a
-                            href="/item-detail-one"
+                            href={`/nft/${data?.nftAddress}`}
                             onClick={e => {
                               e.preventDefault()
-                              navigate('/item-detail-one')
+                              navigate(`/nft/${data?.nftAddress}`)
                             }}
                           >
                             <img
                               src={data?.image}
                               className="img-fluid"
                               alt=""
+                              style={{ width: '100%', height: '250px', objectFit: 'cover', }}
                             />
                           </a>
                           <div className="position-absolute top-0 start-0 m-3">
@@ -458,22 +263,19 @@ const DarkVersionTwo = () => {
 
                         <div className="card-body content position-relative">
                           <a
-                            href="/item-detail-one"
+                            href={`/nft/${data?.nftAddress}`}
                             onClick={e => {
                               e.preventDefault()
-                              navigate('/item-detail-one')
+                              navigate(`/nft/${data?.nftAddress}`)
                             }}
                             className="title text-dark h6"
                           >
-                            {data?.title}
+                            {data?.name}
                           </a>
 
                           <div className="d-flex align-items-center justify-content-between mt-3">
                             <div className="">
-                              <small className="mb-0 d-block fw-semibold">
-                                Current Bid:
-                              </small>
-                              <small className="rate fw-bold">20.5 ETH</small>
+                              <small className="rate fw-bold"> {data?.price} {getChainByName(chain)} </small>
                             </div>
                             <a
                               href="/item-detail-one"
@@ -730,9 +532,9 @@ const DarkVersionTwo = () => {
           </div>
           {/*end row*/}
           <div className="row">
-            {bestCreator?.map((data, index) => {
+            {creators && creators?.map((data, index) => {
               return (
-                <div className="col-lg-3 col-md-4 mt-5" key={data?.name}>
+                <div className="col-lg-3 col-md-4 mt-5" key={index}>
                   <div className="creators creator-primary d-flex align-items-center">
                     <span className="fw-bold text-muted">
                       {index < 10 ? `0${index}.` : `${index}.`}
@@ -741,7 +543,7 @@ const DarkVersionTwo = () => {
                     <div className="d-flex align-items-center ms-3">
                       <div className="position-relative d-inline-flex">
                         <img
-                          src={data?.image}
+                          src={data?.profileImage}
                           className="avatar avatar-md-sm shadow-md rounded-pill"
                           alt=""
                         />
@@ -770,7 +572,7 @@ const DarkVersionTwo = () => {
                             {data?.name}
                           </a>
                         </h6>
-                        <small className="text-muted">{data?.eth}</small>
+                        <small className="text-muted">{splitWalletAddress(data?.walletAddress)}</small>
                       </div>
                     </div>
                   </div>
@@ -800,42 +602,16 @@ const DarkVersionTwo = () => {
           <div className="row">
             <div className="col">
               <div className="tiny-three-item-nav-arrow">
-                {collectionData?.map(data => {
-                  return (<div className="tiny-slide" key={data?.title}>
+                {collections && collections?.map((data, index) => {
+                  return (<div className="tiny-slide" key={index}>
                     <div className="card bg-white collections collection-primary rounded-md shadow p-2 pb-0 m-1">
                       <div className="row g-2">
                         <div className="col-12">
                           <img
-                            src={data?.img1}
+                            src={data?.collectionImage}
                             className="img-fluid shadow-sm rounded-md"
                             alt=""
-                          />
-                        </div>
-                        {/*end col*/}
-
-                        <div className="col-4">
-                          <img
-                            src={data?.img2}
-                            className="img-fluid shadow-sm rounded-md"
-                            alt=""
-                          />
-                        </div>
-                        {/*end col*/}
-
-                        <div className="col-4">
-                          <img
-                            src={data?.img3}
-                            className="img-fluid shadow-sm rounded-md"
-                            alt=""
-                          />
-                        </div>
-                        {/*end col*/}
-
-                        <div className="col-4">
-                          <img
-                            src={data?.img4}
-                            className="img-fluid shadow-sm rounded-md"
-                            alt=""
+                            style={{ width: '100%', height: '250px', objectFit: 'cover' }}
                           />
                         </div>
                         {/*end col*/}
@@ -845,7 +621,7 @@ const DarkVersionTwo = () => {
                       <div className="content text-center p-4 mt-n5">
                         <div className="position-relative d-inline-flex">
                           <img
-                            src={data?.client}
+                            src={data?.owner?.profileImage}
                             className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
                             alt=""
                           />
@@ -856,17 +632,16 @@ const DarkVersionTwo = () => {
 
                         <div className="mt-2">
                           <a
-                            href="/explore-four"
+                            href={`/collection/${data?.collectionAddress}`}
                             onClick={e => {
                               e.preventDefault()
-                              navigate('/explore-four')
+                              navigate(`/collection/${data?.collectionAddress}`)
                             }}
                             className="text-dark title h5"
                           >
-                            {data?.title}
+                            {data?.name}
                           </a>
-
-                          <p className="text-muted mb-0 small">27 Items</p>
+                          {/* <p className="text-muted mb-0 small">27 Items</p> */}
                         </div>
                       </div>
                     </div>

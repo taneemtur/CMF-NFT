@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux'
 import { supportedChains } from '../../blockchain/supportedChains'
 import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
+import { deployContract } from '../../blockchain/mintContracts'
+import { switchChain } from '../../utils'
 
 
 const UploadWork = () => {
@@ -32,11 +34,12 @@ const UploadWork = () => {
       setCategory(collection.category.name)
       setTitle(collection.name)
       setDescription(collection.description)
+      setImages(collection.collectionImage)
+      editPreviewImage(collection.collectionImage)
     }
   }, [])
 
   useEffect(() => {
-    console.log(account)
     if (!account) {
       navigate('/')
     }
@@ -80,6 +83,12 @@ const UploadWork = () => {
       reader.readAsDataURL(uploadedFile)
     }
   }
+
+  const editPreviewImage = (imagePath) => {
+    const parent = document.querySelector('.preview-box')
+    parent.innerHTML = `<img className="preview-content" src=${imagePath} />`
+  }
+
   const handleSubmit = async e => {
     e.preventDefault()
     const data = {
@@ -104,31 +113,42 @@ const UploadWork = () => {
     }
 
     const formData = new FormData()
-    formData.append('file', image)
-    formData.append('data', JSON.stringify(data))
     setCreating(true)
     if (!state) {
       const id = toast.loading('Creating Collection');
-      await axiosConfig.post("/collections/createcollection", formData, {
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-      })
-        .then(res => {
-          console.log(res)
-          toast.update(id, {
-            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+      try {
+        const contractAddress = await deployContract(account, data.blockchain, data.name, '');
+        if(contractAddress){
+          console.log(contractAddress);
+          data.collectionAddress = contractAddress;
+          formData.append('file', image)
+          formData.append('data', JSON.stringify(data))
+          await axiosConfig.post("/collections/createcollection", formData, {
+            body: data,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
           })
-        })
-        .catch(err => {
-          toast.update(id, {
-            render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+          .then(res => {            
+            toast.update(id, {
+              render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+            })
           })
-          console.log(err)
+          .catch(err => {
+            toast.update(id, {
+              render: `${err.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+            })
+          })
+        }
+      } catch (error) {
+        toast.update(id, {
+          render: `${error.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
         })
+      }
     } else {
       const id = toast.loading('Updating Collection');
+      formData.append('file', image)
+      formData.append('data', JSON.stringify(data))
       await axiosConfig.put("/collections/updatecollection", formData, {
         body: data,
         headers: {
@@ -142,7 +162,7 @@ const UploadWork = () => {
         })
         .catch(err => {
           toast.update(id, {
-            render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+            render: `${err.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
           })
         })
     }
@@ -369,6 +389,8 @@ const UploadWork = () => {
                           </div>
                           {/*end col*/}
 
+                          {!state ? (
+                          <>
                           <div className="col-md-6 mb-4">
                             <label className="form-label fw-bold">Blockchain:</label>
                             <select
@@ -384,7 +406,6 @@ const UploadWork = () => {
                               })}
                             </select>
                           </div>
-                          {/*end col*/}
 
                           <div className="col-md-6 mb-4">
                             <label className="form-label fw-bold">Payment Token:</label>
@@ -396,7 +417,8 @@ const UploadWork = () => {
                               <option>Eth</option>
                             </select>
                           </div>
-                          {/*end col*/}
+                          </>
+                          ) : ''}
 
                           <div className="col-12 mb-4">
                             <label className="form-label fw-bold">Category:</label>
