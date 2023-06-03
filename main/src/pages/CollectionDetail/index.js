@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
 import {
   bg01,
   item1,
@@ -30,9 +28,9 @@ import {
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import Main from '../../Layouts/Main'
-import { getChainByName } from '../../blockchain/supportedChains'
 import { toast } from 'react-toastify'
-
+import NftCard from '../../components/NftCard'
+import { getChainName } from '../../blockchain/supportedChains'
 
 
 const CollectionDetail = () => {
@@ -143,13 +141,14 @@ const CollectionDetail = () => {
   ]
 
   const getCollectionData = async () => {
-    await axiosConfig.get(`collections/${collectionAddress}`).then((res) => {
+    await axiosConfig.get(`/collections/${collectionAddress}`).then((res) => {
+      console.log(res.data)
       setCollection(res.data.data)
     })
   }
 
   const getCollectionNfts = async () => {
-    await axiosConfig.get(`nfts/getcollectionnfts/${collectionAddress}`).then((res) => {
+    await axiosConfig.get(`/nfts/getcollectionnfts/${collectionAddress}`).then((res) => {
       console.log(res.data)
       setNfts(res.data.data)
     })
@@ -214,8 +213,8 @@ const CollectionDetail = () => {
                   <h5 className="m-2"> {collection?.name} </h5>
                   <div className='row align-items-baseline '>
                     <div className='col-lg-9 col-md-9 col-sm-12 d-lg-flex d-sm-block d-md-flex' >
-                      <p className='m-2'> Owner:  {collection?.owner.walletAddress} </p>
-                      <p className='m-2'> Chain: {collection?.blockchain} </p>
+                      <p className='m-2'> Owner:  { (collection?.owner.walletAddress == account ? 'YOU' : collection?.owner?.walletAddress) } </p>
+                      <p className='m-2'> Chain: {getChainName(collection?.blockchain)} </p>
                       <p className='m-2'> Category: {collection?.category.name} </p>
                     </div>
                     {/* edit and delete button for owner only */}
@@ -473,91 +472,7 @@ const CollectionDetail = () => {
               <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-1">
                 {nfts && nfts?.map((nft, index) => {
                   return (
-                    <div
-                      className={index < 3 ? 'col' : 'col pt-2 mt-4'}
-                      key={index}
-                    >
-                      <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
-                        <div className="d-flex justify-content-between">
-                          <div className="img-group">
-                            <a
-                              href="/creator-profile"
-                              onClick={e => {
-                                e.preventDefault()
-                                navigate('/creator-profile')
-                              }}
-                              className="user-avatar"
-                            >
-                              <img
-                                src={nft?.owner?.profileImage || client08}
-                                alt="user"
-                                className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                              />
-                            </a>
-                          </div>
-
-                          <span className="like-icon shadow-sm">
-                            <a
-                              href=""
-                              onClick={e => e.preventDefault()}
-                              className="text-muted icon"
-                            >
-                              <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                            </a>
-                          </span>
-                        </div>
-
-                        <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
-                          <a
-                            href={`/nft/${nft?.nftAddress}`}
-                            onClick={e => {
-                              e.preventDefault()
-                              navigate(`/nft/${nft?.nftAddress}`)
-                            }}
-                          >
-                            <img
-                              src={nft?.image}
-                              className="img-fluid"
-                              alt={nft?.name}
-                            />
-                          </a>
-                          {nft?.collection?.category && (
-                            <div className="position-absolute top-0 start-0 m-2">
-                              <a
-                                href=""
-                                onClick={e => e.preventDefault()}
-                                className="badge badge-link bg-primary"
-                              >
-                                {nft?.collection?.category?.name}
-                              </a>
-                            </div>
-                          )}
-                          <div
-                            className={`${nft?.id ? '' : 'hide-data'
-                              } position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
-                          >
-                            <i className="uil uil-clock"></i>{' '}
-                          </div>
-                        </div>
-
-                        <div className="card-body content position-relative p-0 mt-3">
-                          <a
-                            href={`/nft/${nft?.nftAddress}`}
-                            onClick={e => {
-                              e.preventDefault()
-                              navigate(`/nft/${nft?.nftAddress}`)
-                            }}
-                            className="title text-dark h6"
-                          >
-                            {nft?.name}
-                          </a>
-
-                          <div className="d-flex justify-content-between mt-2">
-                            <small className="rate fw-bold">{nft?.price} {getChainByName(nft?.blockchain)} </small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                   <NftCard nft={nft} index={index} />
                   )
                 })}
                 {/*end col*/}
