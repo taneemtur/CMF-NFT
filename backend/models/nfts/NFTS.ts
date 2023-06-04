@@ -22,6 +22,7 @@ interface NFTModel  {
     supply: string;
     listed?: boolean;
     tokenID?: string;
+    category?: string;
 }
 
 

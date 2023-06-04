@@ -50,7 +50,9 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
             nft.image = url;
 
             const collectionRef = db.collection("collections").doc(body.collectionAddress);
+            const categoryName = (await collectionRef.get()).data()?.category;
             nft.collection = collectionRef;
+            nft.category = categoryName;
             const response = await db.collection("nfts").doc(body.nftAddress).set(nft);
             if (response) {
                 return res.json({
