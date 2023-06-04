@@ -80,13 +80,14 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
-    const { nftAddress, listingType, endDate } = body
+    const { nftAddress, listingType, endDate, price } = body
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     const nft: NFTModel = doc.data() as NFTModel;
     nft.listed = true;
     nft.type = listingType;
     nft.auctionTimeEnd = endDate;
+    nft.price = price;
 
 
     try {

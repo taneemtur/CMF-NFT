@@ -11,10 +11,11 @@ const LISTINGTYPE = {
     fixedprice: 'fixedprice'
 }
 
-const NFTListModel = ({ id, labelledby, nftAddress, setNFT }) => {
+const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice }) => {
     const navigate = useNavigate()
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
+    const [price, setPrice] = React.useState(prevPrice)
     const btnRef = React.useRef(null)
 
     const handleListNFT = async () => {
@@ -22,7 +23,8 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT }) => {
         await axiosConfig.put("/nfts/listnft", {
             listingType,
             endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
-            nftAddress
+            nftAddress,
+            price
         }).then(res => {
             toast.update(id, {
                 render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
@@ -88,6 +90,14 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT }) => {
                                                 showTimeSelect
                                                 dateFormat="Pp"
                                             />
+                                        </div>
+                                    )
+                                }
+                                {
+                                    listingType === LISTINGTYPE.fixedprice && (
+                                        <div className="col-12 mb-4">
+                                            <label className="form-label fw-bold">Price</label>
+                                            <input type="number" value={price} onChange={e => setPrice(e.target.value)} />
                                         </div>
                                     )
                                 }

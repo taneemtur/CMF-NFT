@@ -466,7 +466,7 @@ const ItemDetailOne = () => {
       {/*end section*/}
       {/* End */}
 
-      <NFTListModel id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
+      <NFTListModel prevPrice={nft?.price} id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
 
 
       {/* Place Bid Modal */}
