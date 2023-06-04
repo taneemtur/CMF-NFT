@@ -5,14 +5,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { type } from 'os';
+import { approveCollection } from '../../blockchain/mintContracts';
+import { useSelector } from 'react-redux';
 
 const LISTINGTYPE = {
     auction: 'auction',
     fixedprice: 'fixedprice'
 }
 
-const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice }) => {
+const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) => {
     const navigate = useNavigate()
+    const {account} = useSelector(state => state.theme);
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
     const [price, setPrice] = React.useState(prevPrice)
@@ -20,6 +23,7 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice }) => {
 
     const handleListNFT = async () => {
         const id = toast.loading('Listing NFT')
+        const approve = await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress);
         await axiosConfig.put("/nfts/listnft", {
             listingType,
             endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,

@@ -32,7 +32,7 @@ const CreateNFT = () => {
   useEffect(() => {
     if (state) {
       const nft = state.nft
-      console.log(nft)
+      console.log('nft', nft)
       setTitle(nft.name)
       setDescription(nft.description)
       setBlockchain(nft.blockchain)
@@ -40,6 +40,7 @@ const CreateNFT = () => {
       setCollection(nft.collection)
       setSupply(nft.supply)
       setExternalLink(nft.externalLink)
+      previewNFT(nft.image)
     }
   }, [])
 
@@ -96,6 +97,11 @@ const CreateNFT = () => {
     }
   }
 
+  const previewNFT = (path) => {
+    const parent = document.querySelector('.preview-box')
+    parent.innerHTML = `<img className="preview-content" src=${path} />`
+  }
+
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -109,8 +115,8 @@ const CreateNFT = () => {
     const data = {
       name: title,
       description,
-      blockchain,
-      collectionAddress: collection.collectionAddress,
+      blockchain: collection?.blockchain,
+      collectionAddress: collection?.collectionAddress,
       owner: account,
       price,
       supply,
@@ -136,69 +142,41 @@ const CreateNFT = () => {
     
     setCreating(true)
     if (!state) {
-      if(chain != data.blockchain){
-        const chainParam = getChainById(data.blockchain)
-          try {
-            await ethereum.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: data.blockchain }],
-            });
-          } catch (switchError) {
-            // This error code indicates that the chain has not been added to MetaMask.
-            if (switchError.code === 4902) {
-              try {
-                await ethereum.request({
-                  method: 'wallet_addEthereumChain',
-                  params: [chainParam],
-                });
-              } catch (addError) {
-                // handle "add" error
-              }
-            }
-            // handle other "switch" errors
-          }
-      }
-      const mintItem = await mint(data.blockchain, account);
-      console.log(mintItem)
-      if(mintItem?.code == 200){
-        const id = toast.loading('Creating Item');
-        const tokenId = mintItem.data.events.Transfer.returnValues.tokenId;
-        console.log('token', tokenId)
-        data["tokenID"] = tokenId;
+      const id = toast.loading('Creating Item');
+      try {
         formData.append('data', JSON.stringify(data))
-        await axiosConfig.post("/nfts/createnft", formData, {
-          body: data,
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
+        const res = await axiosConfig.post("/nfts/createnft", formData, { body: data, headers: { 'Content-Type': 'multipart/form-data' } })
+        console.log(res.data);
+        if(res.data.code == 400){
+          toast.update(id, {
+            render: `${res.data.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+          })
+          return;
+        }else{
+          await mint(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), data.supply );
+          toast.update(id, {
+            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${nftAddress}`)
+          }) 
+        }
+      } catch (error) {
+        await axiosConfig.delete(`/nfts/${nftAddress}`)
+        toast.update(id, {
+          render: `${error.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
         })
-          .then(res => {
-            toast.update(id, {
-              render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
-            })
-          })
-          .catch(err => {
-            toast.update(id, {
-              render: `${err}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
-            })
-          })
       }
     } else {
       const id = toast.loading('Updating Item');
-      await axiosConfig.put("/nfts/updatenft", formData, {
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-      })
-        .then(res => {
-            toast.update(id, {
-                render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
-              })
+      try {
+        formData.append('data', JSON.stringify(data))
+        const res = await axiosConfig.put("/nfts/updatenft", formData, { body: data, headers: { 'Content-Type': 'multipart/form-data' } })
+        toast.update(id, {
+          render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
         })
-        .catch(err => {
-          console.log(err)
+      } catch (error) {
+        toast.update(id, {
+          render: `${error.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
         })
+      }
     }
     resetFields()
     setCreating(false)
@@ -359,7 +337,7 @@ const CreateNFT = () => {
                 <div className="row">
                   <div className='col-md-12'>
                       {
-                      collections.length == 0 && (
+                      !state && collections.length == 0 && (
                         <>
                         <p className="text-danger fw-semibold mb-4"> You need to create your first NFT collection before adding an NFT. <span onClick={()=>navigate('/upload-work')} role="button" tabindex="0" className='text-primary pe-auto' > Create Collection </span> </p>
                         </>
@@ -433,59 +411,46 @@ const CreateNFT = () => {
                           </div>
                           {/*end col*/}
 
-                          <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">Blockchain:</label>
-                            <select required value={blockchain} className='form-control' onChange={(e) => setBlockchain(e.target.value) } >
-                              <option value=''> Select Chain </option>
-                              {supportedChains.map((item) => {
-                                return (
-                                  <>
-                                    <option value={item.chainId}> {item.chainName} </option>
-                                  </>
+                          { !state && (
+                          <>
+                            <div className="col-md-12 mb-4">
+                              <label className="form-label fw-bold">Price:</label>
+                              <input
+                              required
+                                onChange={e => setPrice(e.target
+                                  .value)}
+                                name="price"
+                                id="price"
+                                value={price}
+                                min="0"
+                                step={"any"}
+                                type="number"
+                                className="form-control"
+                                placeholder="Price :"
+                              />
+                            </div>
+                            <div className="col-12 mb-4">
+                              <label className="form-label fw-bold">Collection:</label>
+                              {
+                                collections && (
+                                  <select
+                                  required
+                                    onChange={e => {
+                                      setCollection(collections.find(collection => collection.name === e.target.value))
+                                    }}
+                                    value={collection?.name}
+                                    className="form-control">
+                                    {
+                                      collections?.map((collection, index) => (
+                                        <option key={collection.collectionAddress}>{collection.name}</option>
+                                      ))
+                                    }
+                                  </select>
                                 )
-                              })}
-                            </select>
-                          </div>
-                          {/*end col*/}
-
-                          <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">Price:</label>
-                            <input
-                            required
-                              onChange={e => setPrice(e.target
-                                .value)}
-                              name="price"
-                              id="price"
-                              value={price}
-                              min="0"
-                              step={"any"}
-                              type="number"
-                              className="form-control"
-                              placeholder="Price :"
-                            />
-                          </div>
-                          {/*end col*/}
-
-                          <div className="col-12 mb-4">
-                            <label className="form-label fw-bold">Collection:</label>
-                            {
-                              collections && (
-                                <select
-                                required
-                                  onChange={e => {
-                                    setCollection(collections.find(collection => collection.name === e.target.value))
-                                  }}
-                                  value={collection?.name}
-                                  className="form-control">
-                                  {
-                                    collections?.map((collection, index) => (
-                                      <option key={collection.collectionAddress}>{collection.name}</option>
-                                    ))
-                                  }
-                                </select>
-                              )
-                            }
-                          </div>
+                              }
+                            </div>
+                          </>
+                          )}
                           {/*end col*/}
 
                           <div className="col-12 mb-4">

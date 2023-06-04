@@ -27,7 +27,6 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
         auctionTimeEnd: null,
         type: null,
         listed: false,
-        tokenID: body.tokenID
     }
 
     try {
@@ -58,15 +57,18 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
                 return res.json({
                     message: "NFT Created",
                     data: nft,
+                    code: 200
                 }).status(200)
             } else {
                 return res.json({
                     message: "Error Creating NFT",
+                    code: 400
                 }).status(500)
             }
         } else {
             return res.json({
                 message: "Error Creating NFT",
+                code: 400
             }).status(500)
         }
 
