@@ -16,6 +16,7 @@ import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux'
 import Main from '../../Layouts/Main'
 import { splitWalletAddress } from '../../utils'
+import NftCard from '../../components/NftCard'
 
 
 
@@ -456,94 +457,7 @@ const CreateProfile = () => {
                   {/* if value select created */}
                   <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
                     {nfts && nfts?.map((nft, index) => (
-                      <div className="col" key={nft.nftAddress}>
-                        <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <img
-                                src={user?.profileImage || client01}
-                                alt="user"
-                                className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                              />
-                              <a
-                                href=""
-                                onClick={e => e.preventDefault()}
-                                className="text-dark small creator-name h6 mb-0 ms-2"
-                              >
-                                @{user?.name}
-                              </a>
-                            </div>
-                          </div>
-
-                          <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
-                            <a
-                              href={`/nft/${nft?.nftAddress}`}
-                            // onClick={e => {
-                            //   e.preventDefault()
-                            //   navigate(`/nft/${nft?.nftAddress}`)
-                            // }}
-                            >
-                              <img
-                                src={nft?.image}
-                                className="img-fluid"
-                                alt={nft?.name}
-                              />
-                            </a>
-                            {/* <div className="position-absolute top-0 start-0 m-2">
-                              <a
-                                href=""
-                                onClick={e => e.preventDefault()}
-                                className="badge badge-link bg-primary"
-                              >
-                                {onSale?.type}
-                              </a>
-                            </div> */}
-                            <div className="position-absolute top-0 end-0 m-2">
-                              <span className="like-icon shadow-sm">
-                                <a
-                                  href=""
-                                  onClick={e => e.preventDefault()}
-                                  className="text-muted icon"
-                                >
-                                  <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                                </a>
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="card-body content position-relative p-0 mt-3">
-                            <a
-                              href={`nft/${nft?.nftAddress}`}
-                              // onClick={e => {
-                              //   e.preventDefault()
-                              //   navigate(`nft/${nft?.nftAddress}`)
-                              // }}
-                              className="title text-dark h6"
-                            >
-                              {nft?.name}
-                            </a>
-
-                            {/* <div className="d-flex align-items-center justify-content-between mt-3">
-                              <div className="">
-                                <small className="mb-0 d-block fw-semibold">
-                                  Current Bid:
-                                </small>
-                                <small className="rate fw-bold">20.5 ETH</small>
-                              </div>
-                              <a
-                                href="/item-detail-one"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/item-detail-one')
-                                }}
-                                className="btn btn-icon btn-pills btn-primary"
-                              >
-                                <i className="uil uil-shopping-bag"></i>
-                              </a>
-                            </div> */}
-                          </div>
-                        </div>
-                      </div>
+                      <NftCard nft={nft} index={index} />
                     ))}
                   </div>
                 </div>
@@ -679,50 +593,49 @@ const CreateProfile = () => {
                   role="tabpanel"
                   aria-labelledby="Collection-tab"
                 >
-                  <div className="row justify-content-center">
-                    <div className="col-lg-12 col-md-12 text-center">
-                      {collections != [] && collections.map((collection, index) => (
-                        <div className="col-lg-3 col-md-3" key={index}>
-                          <div className="card collections collection-primary rounded-md shadow p-2 pb-0">
-                            <div className="row g-2">
-                              <div className="col-12">
-                                <img
-                                  src={collection?.collectionImage}
-                                  className="img-fluid shadow-sm rounded-md"
-                                  alt=""
-                                />
-                              </div>
+                  <div className="row">
+                    {collections != [] && collections.map((collection, index) => (
+                      <div className="col-lg-3 col-md-3 mt-5" key={index}>
+                        <div className="card collections collection-primary rounded-md shadow p-2 pb-0">
+                          <div className="row g-2">
+                            <div className="col-12">
+                              <img
+                                src={collection?.collectionImage}
+                                className="img-fluid shadow-sm rounded-md"
+                                alt=""
+                                style={{ width: '100%', height: '250px', objectFit: 'cover', }}
+                              />
                             </div>
+                          </div>
 
-                            <div className="content text-center p-4 mt-n5">
-                              <div className="position-relative d-inline-flex">
-                                <img
-                                  src={collection?.owner.profileImage}
-                                  className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
-                                  alt=""
-                                />
-                                <span className="verified text-primary">
-                                  <i className="mdi mdi-check-decagram"></i>
-                                </span>
-                              </div>
-                              <div className="mt-2">
-                                <a
-                                  href={`/collection/${collection.collectionAddress}`}
-                                  onClick={e => {
-                                    e.preventDefault()
-                                    navigate(`/collection/${collection.collectionAddress}`)
-                                  }}
-                                  className="text-dark title h5"
-                                >
-                                  {collection?.name}
-                                </a>
-                                <p className="text-muted mb-0 small">27 Items</p>
-                              </div>
+                          <div className="content text-center p-4 mt-n5">
+                            <div className="position-relative d-inline-flex">
+                              <img
+                                src={collection?.owner.profileImage}
+                                className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
+                                alt=""
+                              />
+                              <span className="verified text-primary">
+                                <i className="mdi mdi-check-decagram"></i>
+                              </span>
+                            </div>
+                            <div className="mt-2">
+                              <a
+                                href={`/collection/${collection.collectionAddress}`}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  navigate(`/collection/${collection.collectionAddress}`)
+                                }}
+                                className="text-dark title h5"
+                              >
+                                {collection?.name}
+                              </a>
+                              <p className="text-muted mb-0 small">27 Items</p>
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                     {/*end col*/}
                   </div>
                   {/*end row*/}

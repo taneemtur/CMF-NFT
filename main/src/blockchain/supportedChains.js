@@ -25,19 +25,19 @@ export const supportedChains = [
             'decimals': 18,
         }
     },
-    // {
-    //     "chainId": '0x66eed',
-    //     "chainName": "Arbitrum Goerli",
-    //     "rpcUrls": [
-    //         'https://arb-goerli.g.alchemy.com/v2/demo',
-    //         'https://arbitrum-goerli.public.blastapi.io',
-    //     ],
-    //     "nativeCurrency": {
-    //         'name': 'AGOR',
-    //         'symbol': 'AGOR',
-    //         'decimals': 18,
-    //     }
-    // },
+    {
+        "chainId": '0x66eed',
+        "chainName": "Arbitrum Goerli",
+        "rpcUrls": [
+            'https://arb-goerli.g.alchemy.com/v2/demo',
+            'https://arbitrum-goerli.public.blastapi.io',
+        ],
+        "nativeCurrency": {
+            'name': 'AGOR',
+            'symbol': 'AGOR',
+            'decimals': 18,
+        }
+    },
     {
         "chainId": '0xa869',
         "chainName": "Avalanche Fuji Testnet",
@@ -63,11 +63,12 @@ export function getChainById(chainId) {
     return supportedChains.find(chain => chain.chainId === chainId);
 }
 
-export function getChainByName(chainName) {
-    const chain = supportedChains.find(chain => chain.chainName === chainName)
-    if(chain){
-        return chain?.nativeCurrency?.name;
-    }else{
-        return "Eth"
-    }
+export function getChainByName(chainId) {
+    const chain = supportedChains.find(chain => chain.chainId === chainId)
+    return chain?.nativeCurrency?.name;
+}
+
+export function getChainName(chainId){
+    const chain = supportedChains.find(chain => chain.chainId === chainId)
+    return chain?.chainName;
 }
