@@ -5,40 +5,45 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { type } from 'os';
+import { approveCollection } from '../../blockchain/mintContracts';
+import { useSelector } from 'react-redux';
 
 const LISTINGTYPE = {
     auction: 'auction',
     fixedprice: 'fixedprice'
 }
 
-const NFTListModel = ({ id, labelledby, nftAddress, setNFT }) => {
+const NFTListModel = ({ id, labelledby, nftAddress, setNFT, nft }) => {
     const navigate = useNavigate()
+    const {account} = useSelector(state => state.theme);
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
     const btnRef = React.useRef(null)
 
     const handleListNFT = async () => {
-        const id = toast.loading('Listing NFT')
-        await axiosConfig.put("/nfts/listnft", {
-            listingType,
-            endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
-            nftAddress
-        }).then(res => {
-            toast.update(id, {
-                render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
-            })
-            setNFT(prev => ({
-                ...prev,
-                listed: true,
-                type: listingType,
-                endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
-            }))
-        }).catch(err => {
-            console.log(err)
-            toast.update(id, {
-                render: `${err}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
-            })
-        })
+        const id = toast.loading('Listing NFT...')
+        console.log(account, nft.blockchain, nft?.collection?.collectionAddress)
+        const approve = await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress);
+        // await axiosConfig.put("/nfts/listnft", {
+        //     listingType,
+        //     endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
+        //     nftAddress
+        // }).then(res => {
+        //     toast.update(id, {
+        //         render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+        //     })
+        //     setNFT(prev => ({
+        //         ...prev,
+        //         listed: true,
+        //         type: listingType,
+        //         endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
+        //     }))
+        // }).catch(err => {
+        //     console.log(err)
+        //     toast.update(id, {
+        //         render: `${err}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+        //     })
+        // })
     }
 
     return (
