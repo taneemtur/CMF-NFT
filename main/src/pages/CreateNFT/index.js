@@ -146,19 +146,20 @@ const CreateNFT = () => {
       try {
         formData.append('data', JSON.stringify(data))
         const res = await axiosConfig.post("/nfts/createnft", formData, { body: data, headers: { 'Content-Type': 'multipart/form-data' } })
-        console.log(res.data);
         if(res.data.code == 400){
           toast.update(id, {
             render: `${res.data.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
           })
           return;
         }else{
-          await mint(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), data.supply );
+          console.log(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), parseInt(data.supply))
+          await mint(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), parseInt(data.supply) );
           toast.update(id, {
             render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${nftAddress}`)
           }) 
         }
       } catch (error) {
+        console.log(error.message)
         await axiosConfig.delete(`/nfts/${nftAddress}`)
         toast.update(id, {
           render: `${error.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true

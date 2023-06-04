@@ -14,7 +14,7 @@ import Web3 from 'web3'
 import { toast } from 'react-toastify';
 import { switchChain } from '../utils'
 
-
+const zeroAddress = '0x0000000000000000000000000000000000000000';
 
 export const marketplaceContracts = {
     'Sepolia': {
@@ -92,6 +92,20 @@ export const initContract = (selectedContract) => {
     }
 }
 
+export const convertToWei = (price) => {
+    try {
+        if(window.ethereum){
+            const web3 = new Web3(window.ethereum);
+            const weiPrice = web3.utils.toWei(price, "ether");
+            return weiPrice
+        }else{
+            toast.error('Metamask Not installed');
+        }
+    } catch (error) {
+        toast.error(error);
+    }
+}
+
 export const deployContract = async (account, chain, contractName, URI) => {
     await switchChain(chain);
     const selectedContract = await getfactoryContract(chain);
@@ -117,4 +131,29 @@ export const approveCollection = async (account, chainId, collectionAddress) => 
     return approve;
 }
 
+export const listNFT = async (paymentToken, tokenId, amount, price, nftCollectionAddress, chainId, account) => {
+    paymentToken == 'Eth' ? paymentToken = zeroAddress : paymentToken = 'USDT';
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const list = await contract.methods.listItemForFixedPrice(paymentToken, tokenId, amount, convertToWei(price), nftCollectionAddress).send({from: account})
+    console.log(list.events.OfferSale.returnValues._fixeditemid)
+    return list.events.OfferSale.returnValues._fixeditemid;
+}
+
+export const listingCancel = async (listingId, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const cancel = await contract.methods.cancelListing(listingId).send({from: account})
+    return cancel;
+}
+
+export const buyNFT = async (listingId, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const buy = await contract.methods.BuyFixedPriceItem(listingId).send({from: account})
+    return buy;
+}
 

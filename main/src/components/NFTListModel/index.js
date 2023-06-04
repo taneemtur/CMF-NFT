@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import DatePicker from "react-datepicker";
 import axiosConfig from '../../axiosConfig';
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { type } from 'os';
-import { approveCollection } from '../../blockchain/mintContracts';
+import { approveCollection, listNFT } from '../../blockchain/mintContracts';
 import { useSelector } from 'react-redux';
 
 const LISTINGTYPE = {
@@ -18,34 +18,54 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
     const {account} = useSelector(state => state.theme);
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
-    const [price, setPrice] = React.useState(prevPrice)
+    const [price, setPrice] = React.useState(nft?.price)
+    const [paymentToken, setPaymentToken] = React.useState('Eth')
     const btnRef = React.useRef(null)
-
+    
     const handleListNFT = async () => {
         const id = toast.loading('Listing NFT')
-        const approve = await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress);
-        await axiosConfig.put("/nfts/listnft", {
-            listingType,
-            endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
-            nftAddress,
-            price
-        }).then(res => {
-            toast.update(id, {
-                render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+        try {
+            nft?.collection?.approved == false && (
+                await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress),
+                await updateCollectionApproval(nft?.collection?.collectionAddress, true)
+            )
+            const fixedListingId = await listNFT(paymentToken, parseInt(nft?.nftAddress), 1, nft?.price, nft?.collection?.collectionAddress, nft?.blockchain, account);
+            await axiosConfig.put("/nfts/listnft", {
+                listingType,
+                endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
+                nftAddress,
+                price,
+                fixedListingId
+            }).then(res => {
+                toast.update(id, {
+                    render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
+                })
+                setNFT(prev => ({
+                    ...prev,
+                    listed: true,
+                    type: listingType,
+                    endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
+                }))
+            }).catch(error => {
+                toast.update(id, {
+                    render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+                })
             })
-            setNFT(prev => ({
-                ...prev,
-                listed: true,
-                type: listingType,
-                endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
-            }))
-        }).catch(err => {
-            console.log(err)
+        } catch (error) {
             toast.update(id, {
-                render: `${err}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+                render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
             })
-        })
+        }
     }
+
+    const updateCollectionApproval = async (collectionAddress, approve) => {
+        const body = { collectionAddress, approve };
+        await axiosConfig.put(`/collections/approvecollection`, body)
+    }
+
+    useEffect(()=>{
+        nft && setPrice(nft?.price)
+    },[nft])
 
     return (
         <div
@@ -91,24 +111,19 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                                     console.log(date)
                                                     setStartDate(date)
                                                 }}
+                                                className='form-control'
                                                 showTimeSelect
                                                 dateFormat="Pp"
                                             />
                                         </div>
                                     )
                                 }
-                                {
-                                    listingType === LISTINGTYPE.fixedprice && (
-                                        <div className="col-12 mb-4">
-                                            <label className="form-label fw-bold">Price</label>
-                                            <input type="number" value={price} onChange={e => setPrice(e.target.value)} />
-                                        </div>
-                                    )
-                                }
+                                <div className="col-12 mb-4">
+                                    <label className="form-label fw-bold">Price</label>
+                                    <input className='form-control' type="text" value={price} onChange={e => setPrice(e.target.value)} />
+                                </div>
                             </div>
                         </form>
-
-
 
                         <div className="mt-4">
                             <button

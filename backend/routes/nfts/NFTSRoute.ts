@@ -82,7 +82,7 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
-    const { nftAddress, listingType, endDate, price } = body
+    const { nftAddress, listingType, endDate, price, fixedListingId } = body
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     const nft: NFTModel = doc.data() as NFTModel;
@@ -90,6 +90,7 @@ router.put("/listnft", async (req: Request, res: Response) => {
     nft.type = listingType;
     nft.auctionTimeEnd = endDate;
     nft.price = price;
+    nft.fixedListingId = fixedListingId;
 
 
     try {
@@ -190,6 +191,36 @@ router.put("/updatenft", upload, async (req: Request, res: Response) => {
         const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileUpload.name)}?alt=media&token=${fileMetada.metadata.firebaseStorageDownloadTokens}`;
         restBody.image = url;
     }
+    // convert doc to nftModel
+    const nft: NFTModel = doc.data() as NFTModel;
+    // update the NFT
+    const updatedNFT: NFTModel = { ...nft, ...restBody };
+    // update nft in firebase
+    try {
+        const response = await nftRef.set(updatedNFT);
+        if (response) {
+            return res.json({
+                message: "NFT Updated",
+                data: updatedNFT,
+            }).status(200)
+        }
+    } catch {
+        return res.json({
+            message: "Error Updating NFT",
+        }).status(500)
+    }
+})
+
+// Update NFT Owner
+router.put("/updatenftowner", async (req: Request, res: Response) => {
+    const body = JSON.parse(req.body.data);
+    const { nftAddress, ...restBody } = body;
+    const nftRef = db.collection("nfts").doc(nftAddress);
+    const doc = await nftRef.get();
+    // get user ref
+    const userRef = db.collection("users").doc(restBody.owner);
+    restBody.owner = userRef;
+
     // convert doc to nftModel
     const nft: NFTModel = doc.data() as NFTModel;
     // update the NFT
