@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import { AuctionPricedNFTsRoute, BestCreatorsSellersRoute, CategoriesRoute, CollectionsRoute, ExploreItemsRoute, FixedPricedNFTsRoute, HeroSectionRouter, MostPopularCollectionRoute, NFTSRoute, ProfileRoute } from './routes';
+import { AuctionPricedNFTsRoute, BestCreatorsSellersRoute, CategoriesRoute, CollectionsRoute, ExploreItemsRoute, FixedPricedNFTsRoute, HeroSectionRouter, MostPopularCollectionRoute, NFTActivityRouter, NFTSRoute, ProfileRoute, UserActivityRouter } from './routes';
 import cors from 'cors';
 dotenv.config();
 
@@ -38,6 +38,9 @@ app.use("/landingpage/herosection", HeroSectionRouter)
 app.use("/landingpage/exploreitems", ExploreItemsRoute)
 app.use("/transactions/fixedpricednfts", FixedPricedNFTsRoute)
 app.use("/transactions/auctionpricednfts", AuctionPricedNFTsRoute)
+app.use("/activity/useractivity", UserActivityRouter)
+app.use("/activity/nftactivity", NFTActivityRouter)
+
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
