@@ -76,14 +76,15 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
 })
 
 // Approve Collection
-router.put("/approvecollection/:collectionAddress", async (req: Request, res: Response) => {
-    const collectionAddress = req.params.collectionAddress;
+router.put("/approvecollection", async (req: Request, res: Response) => {
+    const collectionAddress = req.body.collectionAddress;
     const collectionRef = db.collection("collections").doc(collectionAddress);
+    const approve = req.body.approve;
     const doc = await collectionRef.get();
     if (doc.exists) {
         try {
             const response = await collectionRef.update({
-                approved: true,
+                approved: approve,
             });
             if (response) {
                 return res.json({
