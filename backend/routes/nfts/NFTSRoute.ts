@@ -106,6 +106,57 @@ router.put("/listnft", async (req: Request, res: Response) => {
     }
 })
 
+// UnlistNFT
+router.put("/unlistnft", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { nftAddress } = body
+    const nftRef = db.collection("nfts").doc(nftAddress);
+    const doc = await nftRef.get();
+    const nft: NFTModel = doc.data() as NFTModel;
+    nft.listed = false;
+    nft.type = null;
+    nft.auctionTimeEnd = null;
+
+    try {
+        const response = await nftRef.set(nft);
+        if (response) {
+            return res.json({
+                message: "NFT Unlisted",
+                data: nft,
+            }).status(200)
+        }
+    } catch {
+        return res.json({
+            message: "Error Unlisting NFT",
+        }).status(500)
+    }
+})
+
+// Update Listing
+router.put("/updatelisting", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { nftAddress, price } = body
+    const nftRef = db.collection("nfts").doc(nftAddress);
+    const doc = await nftRef.get();
+    const nft: NFTModel = doc.data() as NFTModel;
+    nft.price = price;
+
+    try {
+        const response = await nftRef.set(nft);
+        if (response) {
+            return res.json({
+                message: "NFT Listing Updated",
+                data: nft,
+            }).status(200)
+        }
+    } catch {
+        return res.json({
+            message: "Error Updating NFT Listing",
+        }).status(500)
+    }
+})
+
+
 // Update CreatedNFT
 router.put("/updatenft", upload, async (req: Request, res: Response) => {
     const body = JSON.parse(req.body.data);
