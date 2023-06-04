@@ -21,7 +21,8 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
         paymentTokens: body.paymentTokens,
         blockchain: body.blockchain,
         collectionImage: body.collectionImage || null,
-        category: body.categoryID
+        category: body.categoryID,
+        approved: false,
     }
 
     try {
@@ -73,6 +74,33 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
         }).status(500)
     }
 })
+
+// Approve Collection
+router.put("/approvecollection/:collectionAddress", async (req: Request, res: Response) => {
+    const collectionAddress = req.params.collectionAddress;
+    const collectionRef = db.collection("collections").doc(collectionAddress);
+    const doc = await collectionRef.get();
+    if (doc.exists) {
+        try {
+            const response = await collectionRef.update({
+                approved: true,
+            });
+            if (response) {
+                return res.json({
+                    message: "Collection Approved",
+                }).status(200)
+            }
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                message: "error approving collection",
+            }).status(500)
+        }
+    }
+    return res.json({
+        message: "Collection Not Found",
+    }).status(404)
+});
 
 
 // Update Collection
