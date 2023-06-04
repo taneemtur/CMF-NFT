@@ -78,29 +78,35 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
 // Approve Collection
 router.put("/approvecollection", async (req: Request, res: Response) => {
     const collectionAddress = req.body.collectionAddress;
-    const collectionRef = db.collection("collections").doc(collectionAddress);
-    const approve = req.body.approve;
-    const doc = await collectionRef.get();
-    if (doc.exists) {
-        try {
-            const response = await collectionRef.update({
-                approved: approve,
-            });
-            if (response) {
+    try {
+        const collectionRef = db.collection("collections").doc(collectionAddress);
+        const approve = req.body.approve;
+        const doc = await collectionRef.get();
+        if (doc.exists) {
+            try {
+                const response = await collectionRef.update({
+                    approved: approve,
+                });
+                if (response) {
+                    return res.json({
+                        message: "Collection Approved",
+                    }).status(200)
+                }
+            } catch (error) {
+                console.log(error);
                 return res.json({
-                    message: "Collection Approved",
-                }).status(200)
+                    message: "error approving collection",
+                }).status(500)
             }
-        } catch (error) {
-            console.log(error);
-            return res.json({
-                message: "error approving collection",
-            }).status(500)
         }
+        return res.json({
+            message: "Collection Not Found",
+        }).status(404)
+    }catch {
+        return res.json({
+            message: "Collection Not Found",
+        }).status(404)
     }
-    return res.json({
-        message: "Collection Not Found",
-    }).status(404)
 });
 
 
