@@ -12,6 +12,7 @@ interface CollectionModel {
     blockchain: string;
     collectionImage?: string;
     category: DocumentData | string | CategoryModel | DocumentReference<DocumentData> | DocumentReference<CategoryModel>;
+    approved: boolean;
 }
 
 export { CollectionModel }

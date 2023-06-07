@@ -27,7 +27,6 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
         auctionTimeEnd: null,
         type: null,
         listed: false,
-        tokenID: body.tokenID
     }
 
     try {
@@ -50,21 +49,26 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
             nft.image = url;
 
             const collectionRef = db.collection("collections").doc(body.collectionAddress);
+            const categoryName = (await collectionRef.get()).data()?.category;
             nft.collection = collectionRef;
+            nft.category = categoryName;
             const response = await db.collection("nfts").doc(body.nftAddress).set(nft);
             if (response) {
                 return res.json({
                     message: "NFT Created",
                     data: nft,
+                    code: 200
                 }).status(200)
             } else {
                 return res.json({
                     message: "Error Creating NFT",
+                    code: 400
                 }).status(500)
             }
         } else {
             return res.json({
                 message: "Error Creating NFT",
+                code: 400
             }).status(500)
         }
 
@@ -78,13 +82,15 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
-    const { nftAddress, listingType, endDate } = body
+    const { nftAddress, listingType, endDate, price, fixedListingId } = body
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     const nft: NFTModel = doc.data() as NFTModel;
     nft.listed = true;
     nft.type = listingType;
     nft.auctionTimeEnd = endDate;
+    nft.price = price;
+    nft.fixedListingId = fixedListingId;
 
 
     try {
@@ -102,6 +108,57 @@ router.put("/listnft", async (req: Request, res: Response) => {
         }).status(500)
     }
 })
+
+// UnlistNFT
+router.put("/unlistnft", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { nftAddress } = body
+    const nftRef = db.collection("nfts").doc(nftAddress);
+    const doc = await nftRef.get();
+    const nft: NFTModel = doc.data() as NFTModel;
+    nft.listed = false;
+    nft.type = null;
+    nft.auctionTimeEnd = null;
+
+    try {
+        const response = await nftRef.set(nft);
+        if (response) {
+            return res.json({
+                message: "NFT Unlisted",
+                data: nft,
+            }).status(200)
+        }
+    } catch {
+        return res.json({
+            message: "Error Unlisting NFT",
+        }).status(500)
+    }
+})
+
+// Update Listing
+router.put("/updatelisting", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { nftAddress, price } = body
+    const nftRef = db.collection("nfts").doc(nftAddress);
+    const doc = await nftRef.get();
+    const nft: NFTModel = doc.data() as NFTModel;
+    nft.price = price;
+
+    try {
+        const response = await nftRef.set(nft);
+        if (response) {
+            return res.json({
+                message: "NFT Listing Updated",
+                data: nft,
+            }).status(200)
+        }
+    } catch {
+        return res.json({
+            message: "Error Updating NFT Listing",
+        }).status(500)
+    }
+})
+
 
 // Update CreatedNFT
 router.put("/updatenft", upload, async (req: Request, res: Response) => {
@@ -134,6 +191,36 @@ router.put("/updatenft", upload, async (req: Request, res: Response) => {
         const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileUpload.name)}?alt=media&token=${fileMetada.metadata.firebaseStorageDownloadTokens}`;
         restBody.image = url;
     }
+    // convert doc to nftModel
+    const nft: NFTModel = doc.data() as NFTModel;
+    // update the NFT
+    const updatedNFT: NFTModel = { ...nft, ...restBody };
+    // update nft in firebase
+    try {
+        const response = await nftRef.set(updatedNFT);
+        if (response) {
+            return res.json({
+                message: "NFT Updated",
+                data: updatedNFT,
+            }).status(200)
+        }
+    } catch {
+        return res.json({
+            message: "Error Updating NFT",
+        }).status(500)
+    }
+})
+
+// Update NFT Owner
+router.put("/updatenftowner", async (req: Request, res: Response) => {
+    const body = JSON.parse(req.body.data);
+    const { nftAddress, ...restBody } = body;
+    const nftRef = db.collection("nfts").doc(nftAddress);
+    const doc = await nftRef.get();
+    // get user ref
+    const userRef = db.collection("users").doc(restBody.owner);
+    restBody.owner = userRef;
+
     // convert doc to nftModel
     const nft: NFTModel = doc.data() as NFTModel;
     // update the NFT

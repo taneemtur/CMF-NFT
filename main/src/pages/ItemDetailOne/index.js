@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import NFTListModel from '../../components/NFTListModel'
 import { splitWalletAddress } from '../../utils'
+import { getChainByName } from '../../blockchain/supportedChains'
+import { buyNFT, listingCancel } from '../../blockchain/mintContracts'
 
 
 const ItemDetailOne = () => {
@@ -22,6 +24,30 @@ const ItemDetailOne = () => {
       console.log(res.data);
       setNft(res.data.data)
     })
+  }
+
+  async function cancel() {
+    const id = toast.loading('Cancel Listing...');
+    try {
+      await listingCancel(parseInt(nft?.fixedListingId), nft?.blockchain, account);
+      const res = await axiosconfig.put(`/nfts/unlistnft`, {nftAddress})
+      toast.update(id, {render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 })
+    } catch (error) {
+      toast.update(id, {render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 }) 
+    }
+    getNftData()
+  }
+
+  async function buy() {
+    const id = toast.loading('Buying NFT...');
+    try {
+      await buyNFT(nft?.fixedListingId, nft?.blockchain, account)
+      const res = await axiosconfig.put(`/nfts/updatenftowner`, {nftAddress, account});
+      toast.update(id, {render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 }) 
+    } catch (error) {
+      toast.update(id, {render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 }) 
+    }
+    getNftData()
   }
 
   useEffect(() => {
@@ -122,6 +148,16 @@ const ItemDetailOne = () => {
                       </a>
                     )
                   }
+                  {
+                    nft?.listed == true && (
+                      <a
+                        onClick={cancel}
+                        className="btn btn-pills btn-outline-primary mx-1"
+                      >
+                        Cancel Listing
+                      </a>
+                    )
+                  }
                   <a
                     onClick={async (e) => {
                       e.preventDefault()
@@ -169,19 +205,25 @@ const ItemDetailOne = () => {
                 <div className="row">
                   <div className="col-md-6 mt-4 pt-2">
                     <h6>Price</h6>
-                    <h4 className="mb-0"> {nft?.price} ETH</h4>
+                    <h4 className="mb-0"> {nft?.price} {getChainByName(nft?.blockchain)} </h4>
                   </div>
 
+                 {
+                  nft?.listed && (
                   <div className="col-12 mt-4 pt-2">
                     <a
-                      href="#"
+                      href=""
                       className="btn btn-l btn-pills btn-primary"
-                    // data-bs-toggle="modal"
-                    // data-bs-target="#ListNFT"
+                      onClick={(e)=>{
+                        e.preventDefault(); 
+                        buy();
+                      }}
                     >
                       <i className="mdi mdi-cart fs-5 me-2"></i> Buy Now
                     </a>
                   </div>
+                  )
+                 }
                 </div>
                 <div className="row mt-4 pt-2">
                   <div className="col-12">
@@ -466,7 +508,7 @@ const ItemDetailOne = () => {
       {/*end section*/}
       {/* End */}
 
-      <NFTListModel id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
+      <NFTListModel prevPrice={nft?.price} nft={nft} id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
 
 
       {/* Place Bid Modal */}

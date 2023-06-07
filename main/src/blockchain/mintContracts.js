@@ -8,12 +8,13 @@ import factoryBsc from './factoryABIs/factoryBsc.json'
 import factoryArb from './factoryABIs/factoryArb.json'
 import factoryAvax from './factoryABIs/factorryAvax.json'
 // factory contract abis above
+import collectioABI from './collectionABI/collection.json'
 import { getChainById } from './supportedChains';
 import Web3 from 'web3'
 import { toast } from 'react-toastify';
 import { switchChain } from '../utils'
 
-
+const zeroAddress = '0x0000000000000000000000000000000000000000';
 
 export const marketplaceContracts = {
     'Sepolia': {
@@ -82,14 +83,26 @@ export const initContract = (selectedContract) => {
         if(window.ethereum){
             const web3 = new Web3(window.ethereum);
             const currentContract = new web3.eth.Contract(selectedContract.abi, selectedContract.address);
-            return {'code': 200, 'data': currentContract};
+            return currentContract
         }else{
             toast.error('Metamask Not installed');
-            return {'code': 404};
         }
     } catch (error) {
         toast.error(error);
-        return {'code': 404};
+    }
+}
+
+export const convertToWei = (price) => {
+    try {
+        if(window.ethereum){
+            const web3 = new Web3(window.ethereum);
+            const weiPrice = web3.utils.toWei(price, "ether");
+            return weiPrice
+        }else{
+            toast.error('Metamask Not installed');
+        }
+    } catch (error) {
+        toast.error(error);
     }
 }
 
@@ -97,32 +110,50 @@ export const deployContract = async (account, chain, contractName, URI) => {
     await switchChain(chain);
     const selectedContract = await getfactoryContract(chain);
     const contract = await initContract(selectedContract);
-    const contractAddress = await contract.data.methods.deployERC1155(contractName, URI).send({from: account});
+    const contractAddress = await contract.methods.deployERC1155(contractName, URI).send({from: account});
     return contractAddress.events.ERC1155Created.returnValues.tokenContract;
 }
 
-export const mint = async (chainId, account) => {
-    const selectedContract = getfactoryContract(chainId);
-    const id = toast.loading('Minting...');
-    try {
-        if(window.ethereum){
-            const web3 = new Web3(window.ethereum);
-            const mintContract = new web3.eth.Contract(selectedContract.abi, selectedContract.address);
-            const mintoTo = await mintContract.methods.mint().send({from: account});
-            toast.update(id, {
-                render: `Minted Successfull.`, closeOnClick: true, type: 'success', autoClose: 5000, isLoading: false, closeButton: true
-              });
-            return {'code': 200, data: mintoTo};
-        }else{
-            toast.update(id, {
-                render: `Metamask Not Installed.`, closeOnClick: true, type: 'error', autoClose: 5000, isLoading: false, closeButton: true
-              });
-        }
-    } catch (error) {
-        toast.update(id, {
-            render: `${error.message}.`, closeOnClick: true, type: 'error', autoClose: 5000, isLoading: false, closeButton: true
-        });
-    }
+export const mint = async (chainId, collectionAddress, account, tokenId, supply) => {
+    await switchChain(chainId);
+    const selectedContract = { 'address': collectionAddress, 'abi': collectioABI }
+    const contract = await initContract(selectedContract);
+    const mintItem = await contract.methods.mint(account, tokenId, supply).send({from: account})
+    return mintItem;
 }
 
+export const approveCollection = async (account, chainId, collectionAddress) => {
+    await switchChain(chainId);
+    const marketplaceAddress = getMarketplaceContract(chainId);
+    const selectedContract = { 'address': collectionAddress, 'abi': collectioABI }
+    const contract = await initContract(selectedContract);
+    const approve = await contract.methods.setApprovalForAll(marketplaceAddress.address, true).send({from: account})
+    return approve;
+}
+
+export const listNFT = async (paymentToken, tokenId, amount, price, nftCollectionAddress, chainId, account) => {
+    paymentToken == 'Eth' ? paymentToken = zeroAddress : paymentToken = 'USDT';
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const list = await contract.methods.listItemForFixedPrice(paymentToken, tokenId, amount, convertToWei(price), nftCollectionAddress).send({from: account})
+    console.log(list.events.OfferSale.returnValues._fixeditemid)
+    return list.events.OfferSale.returnValues._fixeditemid;
+}
+
+export const listingCancel = async (listingId, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const cancel = await contract.methods.cancelListing(listingId).send({from: account})
+    return cancel;
+}
+
+export const buyNFT = async (listingId, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const buy = await contract.methods.BuyFixedPriceItem(listingId).send({from: account})
+    return buy;
+}
 

@@ -21,7 +21,9 @@ interface NFTModel  {
     auctionTimeEnd: string | null;
     supply: string;
     listed?: boolean;
-    tokenID?: string;
+    category?: string;
+    fixedListingId?: number | null;
+    auctionListingId?: number | null;
 }
 
 
