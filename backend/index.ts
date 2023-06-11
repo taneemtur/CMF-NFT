@@ -8,7 +8,7 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 8080;
 
-const whitelist = ["http://localhost:3000", "https://superex-nft.vercel.app/", "*"]
+const whitelist = ["http://localhost:3000", "https://superex-nft.vercel.app/", "https://cmf-nft.vercel.app/" ,"*"]
 const corsOptions = {
   origin: function (origin:any, callback:any) {
     if (!origin || whitelist.indexOf(origin) !== -1) {
