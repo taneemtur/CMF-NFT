@@ -8,7 +8,6 @@ interface CollectionModel {
     description: string;
     collectionAddress: string;
     owner: DocumentData | UserModel;
-    paymentTokens: string[];
     blockchain: string;
     collectionImage?: string;
     category: DocumentData | string | CategoryModel | DocumentReference<DocumentData> | DocumentReference<CategoryModel>;

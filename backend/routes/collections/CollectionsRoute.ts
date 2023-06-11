@@ -18,7 +18,6 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
         description: body.description,
         collectionAddress: body.collectionAddress,
         owner: body.owner,
-        paymentTokens: body.paymentTokens,
         blockchain: body.blockchain,
         collectionImage: body.collectionImage || null,
         category: body.categoryID,
@@ -55,15 +54,18 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
                 return res.json({
                     message: "Collection Created",
                     data: collection,
+                    code: 200
                 }).status(200)
             } else {
                 return res.json({
                     message: "error creating collection",
+                    code: 500
                 }).status(500)
             }
         } else {
             return res.json({
                 message: "error creating collection",
+                code: 500
             }).status(500)
         }
 
@@ -71,6 +73,7 @@ router.post("/createcollection", upload, async (req: Request, res: Response) => 
         console.log(error);
         return res.json({
             message: "error creating collection",
+            code: 500
         }).status(500)
     }
 })

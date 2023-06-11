@@ -84,7 +84,7 @@ const NftCard = ({nft, index}) => {
         </a>
 
         <div className="d-flex justify-content-between mt-2">
-          <small className="rate fw-bold">{nft?.price} {getChainByName(nft?.blockchain)} </small>
+          <small className="rate fw-bold">{nft?.price} { nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain) } </small>
         </div>
       </div>
     </div>

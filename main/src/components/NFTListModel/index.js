@@ -19,23 +19,26 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
     const [price, setPrice] = React.useState(nft?.price)
-    const [paymentToken, setPaymentToken] = React.useState('Eth')
     const btnRef = React.useRef(null)
+
+    const getNftData = async () => {
+        await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
+          setNft(res.data.data)
+        })
+      }
     
-    const handleListNFT = async () => {
+    const handleListNFT = async (paymentToken = 'Eth') => {
         const id = toast.loading('Listing NFT')
         try {
-            nft?.collection?.approved == false && (
-                await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress),
-                await updateCollectionApproval(nft?.collection?.collectionAddress, true)
-            )
+            await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress)
             const fixedListingId = await listNFT(paymentToken, parseInt(nft?.nftAddress), 1, nft?.price, nft?.collection?.collectionAddress, nft?.blockchain, account);
             await axiosConfig.put("/nfts/listnft", {
                 listingType,
                 endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
                 nftAddress,
                 price,
-                fixedListingId
+                fixedListingId,
+                paymentToken
             }).then(res => {
                 toast.update(id, {
                     render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
@@ -46,6 +49,7 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                     type: listingType,
                     endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
                 }))
+            getNftData()
             }).catch(error => {
                 toast.update(id, {
                     render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
@@ -56,11 +60,6 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                 render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
             })
         }
-    }
-
-    const updateCollectionApproval = async (collectionAddress, approve) => {
-        const body = { collectionAddress, approve };
-        await axiosConfig.put(`/collections/approvecollection`, body)
     }
 
     useEffect(()=>{
@@ -130,11 +129,22 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                 className="btn btn-pills btn-primary w-100"
                                 data-bs-dismiss="modal"
                                 id="close-modal"
-                                onClick={handleListNFT}
+                                onClick={()=>handleListNFT('Eth')}
                                 ref={btnRef}
                             >
-                                List NFT
+                                List NFT with Native Token
                             </button>
+                        </div>
+                        <div className='mt-4'>
+                        <button
+                            className="btn btn-pills btn-primary w-100"
+                            data-bs-dismiss="modal"
+                            id="close-modal"
+                            onClick={()=>handleListNFT('USDT')}
+                            ref={btnRef}
+                        >
+                            List NFT with USDT
+                        </button>
                         </div>
                     </div>
                 </div>

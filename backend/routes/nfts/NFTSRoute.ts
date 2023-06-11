@@ -82,7 +82,7 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
-    const { nftAddress, listingType, endDate, price, fixedListingId } = body
+    const { nftAddress, listingType, endDate, price, fixedListingId, paymentToken } = body
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     const nft: NFTModel = doc.data() as NFTModel;
@@ -91,6 +91,7 @@ router.put("/listnft", async (req: Request, res: Response) => {
     nft.auctionTimeEnd = endDate;
     nft.price = price;
     nft.fixedListingId = fixedListingId;
+    nft.paymentToken = paymentToken;
 
 
     try {
@@ -162,7 +163,7 @@ router.put("/updatelisting", async (req: Request, res: Response) => {
 
 // Update CreatedNFT
 router.put("/updatenft", upload, async (req: Request, res: Response) => {
-    const body = JSON.parse(req.body.data);
+    const body = JSON.parse(req.body.data)
     const file = req.file;
     const { nftAddress, ...restBody } = body;
     const nftRef = db.collection("nfts").doc(nftAddress);
@@ -213,12 +214,12 @@ router.put("/updatenft", upload, async (req: Request, res: Response) => {
 
 // Update NFT Owner
 router.put("/updatenftowner", async (req: Request, res: Response) => {
-    const body = JSON.parse(req.body.data);
+    const body = req.body;
     const { nftAddress, ...restBody } = body;
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     // get user ref
-    const userRef = db.collection("users").doc(restBody.owner);
+    const userRef = db.collection("users").doc(restBody.owner); 
     restBody.owner = userRef;
 
     // convert doc to nftModel
