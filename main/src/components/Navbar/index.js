@@ -352,6 +352,9 @@ const Navbar = () => {
                   <i className="uil uil-wallet fs-6"></i>
                 </a>
               ) : (
+              <>
+                {
+                !account && (
                 <p id="connectWallet" onClick={connectWallet}>
                   <span className="btn-icon-dark">
                     <span className="btn btn-icon btn-pills btn-primary">
@@ -364,6 +367,25 @@ const Navbar = () => {
                     </span>
                   </span>
                 </p>
+                  )
+                }
+                {
+                account && (
+                  <p>
+                    <span className="btn-icon-dark" onClick={e=>{ e.preventDefault(); showChainModal() }} >
+                      <span className="btn btn-icon btn-pills btn-primary">
+                        <i className="uil uil-cog fs-6"></i>
+                      </span>
+                    </span>
+                    <span className="btn-icon-light" onClick={e=>{ e.preventDefault(); showChainModal() }} >
+                      <span className="btn btn-icon btn-pills btn-light">
+                        <i className="uil uil-cog fs-6"></i>
+                      </span>
+                    </span>
+                  </p>
+                  )
+                }
+              </>
               )}
             </li>
 

@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import NFTListModel from '../../components/NFTListModel'
 import { splitWalletAddress } from '../../utils'
 import { getChainByName } from '../../blockchain/supportedChains'
-import { buyNFT, listingCancel } from '../../blockchain/mintContracts'
+import { approveUSDT, buyNFT, listingCancel } from '../../blockchain/mintContracts'
 
 
 const ItemDetailOne = () => {
@@ -21,7 +21,6 @@ const ItemDetailOne = () => {
 
   const getNftData = async () => {
     await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
-      console.log(res.data);
       setNft(res.data.data)
     })
   }
@@ -41,9 +40,11 @@ const ItemDetailOne = () => {
   async function buy() {
     const id = toast.loading('Buying NFT...');
     try {
-      await buyNFT(nft?.fixedListingId, nft?.blockchain, account)
-      const res = await axiosconfig.put(`/nfts/updatenftowner`, {nftAddress, account});
-      toast.update(id, {render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 }) 
+      nft?.paymentToken == 'USDT' ? await approveUSDT(account, nft?.blockchain, nft?.price) : '';
+      await buyNFT(nft?.fixedListingId, nft?.price, nft?.blockchain, account)
+      const res = await axiosconfig.put(`/nfts/updatenftowner`, {nftAddress, owner: account});
+      await axiosconfig.put(`/nfts/unlistnft`, {nftAddress});
+      toast.update(id, {render: `NFT Bought`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 }) 
     } catch (error) {
       toast.update(id, {render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 }) 
     }
@@ -82,40 +83,7 @@ const ItemDetailOne = () => {
       image: item2,
     },
   ]
-  const createdData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      id: 'May 29, 2022 6:0:0',
-      type: 'GIFs',
-      client: client01,
-      author: 'StreetBoy',
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      id: 'June 03, 2022 5:3:1',
-      type: 'Arts',
-      client: client09,
-      author: 'PandaOne',
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      id: 'June 10, 2022 1:0:1',
-      type: 'GIFs',
-      client: client02,
-      author: 'CutieGirl',
-    },
-    {
-      image: item2,
-      title: 'Colorful Abstract Painting',
-      id: 'June 18, 2022 1:2:1',
-      type: 'Memes',
-      client: client03,
-      author: 'NorseQueen',
-    },
-  ]
+
   return (
     <Main>
       {/* Start */}
@@ -205,11 +173,11 @@ const ItemDetailOne = () => {
                 <div className="row">
                   <div className="col-md-6 mt-4 pt-2">
                     <h6>Price</h6>
-                    <h4 className="mb-0"> {nft?.price} {getChainByName(nft?.blockchain)} </h4>
+                    <h4 className="mb-0"> {nft?.price} { nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain) } </h4>
                   </div>
 
                  {
-                  nft?.listed && (
+                  nft?.listed && nft?.owner?.walletAddress != account && (
                   <div className="col-12 mt-4 pt-2">
                     <a
                       href=""
@@ -382,127 +350,6 @@ const ItemDetailOne = () => {
         </div>
         {/*end container*/}
 
-        <div className="container mt-100 mt-60">
-          <div className="row justify-content-center">
-            <div className="col">
-              <div className="section-title text-center mb-4 pb-2">
-                <h4 className="title mb-4">Related Auction Items</h4>
-                <p className="text-muted para-desc mb-0 mx-auto">
-                  CMF is a top marketplace dedicated to connecting great
-                  artists of all Chain Master Finance with their fans and unique token
-                  collectors!
-                </p>
-              </div>
-            </div>
-            {/*end col*/}
-          </div>
-          {/*end row*/}
-
-          <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1">
-            {createdData?.map(data => {
-              return (
-                <div className="col mt-4 pt-2" key={data?.title}>
-                  <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={data?.client}
-                          alt="user"
-                          className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                        />
-                        <a
-                          href=""
-                          onClick={e => e.preventDefault()}
-                          className="text-dark small creator-name h6 mb-0 ms-2"
-                        >
-                          @{data?.author}
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
-                      <a
-                        href="/item-detail-one"
-                        onClick={e => {
-                          e.preventDefault()
-                          navigate('/item-detail-one')
-                        }}
-                      >
-                        <img src={data?.image} className="img-fluid" alt="" />
-                      </a>
-                      <div className="position-absolute top-0 start-0 m-2">
-                        <a
-                          href=""
-                          onClick={e => e.preventDefault()}
-                          className="badge badge-link bg-primary"
-                        >
-                          {data?.type}
-                        </a>
-                      </div>
-                      <div className="position-absolute top-0 end-0 m-2">
-                        <span className="like-icon shadow-sm">
-                          <a
-                            href=""
-                            onClick={e => e.preventDefault()}
-                            className="text-muted icon"
-                          >
-                            <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                          </a>
-                        </span>
-                      </div>
-
-                      <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
-                        <i className="uil uil-clock"></i>{' '}
-                        <Countdown
-                          date={data?.id}
-                          renderer={({ days, hours, minutes, seconds }) => (
-                            <span>
-                              {days}:{hours}:{minutes}:{seconds}
-                            </span>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="card-body content position-relative p-0 mt-3">
-                      <a
-                        href="/item-detail-one"
-                        onClick={e => {
-                          e.preventDefault()
-                          navigate('/item-detail-one')
-                        }}
-                        className="title text-dark h6"
-                      >
-                        {data?.title}
-                      </a>
-
-                      <div className="d-flex align-items-center justify-content-between mt-3">
-                        <div className="">
-                          <small className="mb-0 d-block fw-semibold">
-                            Current Bid:
-                          </small>
-                          <small className="rate fw-bold">20.5 ETH</small>
-                        </div>
-                        <a
-                          href="/item-detail-one"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/item-detail-one')
-                          }}
-                          className="btn btn-icon btn-pills btn-primary"
-                        >
-                          <i className="uil uil-shopping-bag"></i>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-            {/*end col*/}
-          </div>
-          {/*end row*/}
-        </div>
         {/*end container*/}
       </section>
       {/*end section*/}

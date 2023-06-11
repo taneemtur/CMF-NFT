@@ -8,6 +8,11 @@ import factoryBsc from './factoryABIs/factoryBsc.json'
 import factoryArb from './factoryABIs/factoryArb.json'
 import factoryAvax from './factoryABIs/factorryAvax.json'
 // factory contract abis above
+import usdtETH from './usdtABIs/usdtEth.json'
+import usdtBsc from './usdtABIs/usdtBsc.json'
+import usdtArb from './usdtABIs/usdtArb.json'
+import usdtAvax from './usdtABIs/usdtAvax.json'
+// usdt contract abis above
 import collectioABI from './collectionABI/collection.json'
 import { getChainById } from './supportedChains';
 import Web3 from 'web3'
@@ -54,6 +59,25 @@ export const factoryContracts = {
     }
 };
 
+export const usdtContracts = {
+    'Sepolia': {
+        'address': '0x597DE5C3200b9A73596c963466aB5Fb05eC1a9FD',
+        'abi': usdtETH
+    },
+    'Binance Smart Chain Testnet': {
+        'address': '0x597DE5C3200b9A73596c963466aB5Fb05eC1a9FD',
+        'abi': usdtBsc
+    },
+    'Arbitrum Goerli': {
+        'address': '0x56f00dD6b1c8013fE51A8fc286363E70CC19f5a4',
+        'abi': usdtArb
+    },
+    'Avalanche Fuji Testnet': {
+        'address': '0x5Ce69143F7bECFe2a229E89a0e2bd943929164a8',
+        'abi': usdtAvax
+    }
+};
+
 
 // most important function for multichain, comparing supportedchains and mintContract for minting
 export const getfactoryContract = (chain) => {
@@ -73,6 +97,17 @@ export const getMarketplaceContract = (chain) => {
     Object.keys(marketplaceContracts).find(function (chain) {
         if(chain === selectedChain.chainName){
             contractData = marketplaceContracts[chain]
+        }
+    });
+    return contractData;
+}
+
+export const getUSDTContract = (chain) => {
+    const selectedChain = getChainById(chain)
+    let contractData;
+    Object.keys(usdtContracts).find(function (chain) {
+        if(chain === selectedChain.chainName){
+            contractData = usdtContracts[chain]
         }
     });
     return contractData;
@@ -131,9 +166,19 @@ export const approveCollection = async (account, chainId, collectionAddress) => 
     return approve;
 }
 
-export const listNFT = async (paymentToken, tokenId, amount, price, nftCollectionAddress, chainId, account) => {
-    paymentToken == 'Eth' ? paymentToken = zeroAddress : paymentToken = 'USDT';
+export const approveUSDT = async (account, chainId, price) => {
     await switchChain(chainId);
+    const marketplaceAddress = getMarketplaceContract(chainId);
+    const selectedContract = getUSDTContract(chainId);
+    const contract = await initContract(selectedContract);
+    const approve = await contract.methods.approve(marketplaceAddress.address, convertToWei(price)).send({from: account})
+    return approve;
+}
+
+export const listNFT = async (paymentToken, tokenId, amount, price, nftCollectionAddress, chainId, account) => {
+    await switchChain(chainId);
+    const usdt = await getUSDTContract(chainId)
+    paymentToken == 'Eth' ? paymentToken = zeroAddress : paymentToken = usdt.address;
     const selectedContract = await getMarketplaceContract(chainId);
     const contract = await initContract(selectedContract);
     const list = await contract.methods.listItemForFixedPrice(paymentToken, tokenId, amount, convertToWei(price), nftCollectionAddress).send({from: account})
@@ -149,11 +194,12 @@ export const listingCancel = async (listingId, chainId, account) => {
     return cancel;
 }
 
-export const buyNFT = async (listingId, chainId, account) => {
+export const buyNFT = async (listingId, price, chainId, account) => {
     await switchChain(chainId);
     const selectedContract = await getMarketplaceContract(chainId);
     const contract = await initContract(selectedContract);
-    const buy = await contract.methods.BuyFixedPriceItem(listingId).send({from: account})
+    console.log(listingId, price);
+    const buy = await contract.methods.BuyFixedPriceItem(listingId).send({from: account, value: convertToWei(price)})
     return buy;
 }
 

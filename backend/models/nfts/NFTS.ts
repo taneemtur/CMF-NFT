@@ -24,6 +24,7 @@ interface NFTModel  {
     category?: string;
     fixedListingId?: number | null;
     auctionListingId?: number | null;
+    paymentToken?: string | null;
 }
 
 

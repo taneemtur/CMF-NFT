@@ -16,7 +16,6 @@ const UploadWork = () => {
   const [title, setTitle] = React.useState('Collection 5')
   const [description, setDescription] = React.useState('This is collection')
   const [blockchain, setBlockchain] = React.useState('')
-  const [paymentToken, setPaymentToken] = React.useState('Eth')
   const [categories, setCategories] = React.useState([])
   const [category, setCategory] = React.useState('Music')
   const [creating, setCreating] = React.useState(false)
@@ -30,7 +29,6 @@ const UploadWork = () => {
     if (state) {
       const collection = state.collection
       setBlockchain(collection.blockchain)
-      setPaymentToken(collection.paymentTokens[0])
       setCategory(collection.category.name)
       setTitle(collection.name)
       setDescription(collection.description)
@@ -95,7 +93,6 @@ const UploadWork = () => {
       name: title,
       description,
       blockchain,
-      paymentTokens: [paymentToken],
       categoryID: category.id,
       owner: state ? state.collection.owner.walletAddress : account
     }
@@ -129,10 +126,16 @@ const UploadWork = () => {
               'Content-Type': 'multipart/form-data'
             },
           })
-          .then(res => {            
-            toast.update(id, {
-              render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
-            })
+          .then(res => {   
+            res.data.code == 200 ? (         
+              toast.update(id, {
+                render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+              })
+            ) : (
+              toast.update(id, {
+                render: `${res.data.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+              })
+            )
           })
           .catch(err => {
             toast.update(id, {
@@ -391,7 +394,7 @@ const UploadWork = () => {
 
                           {!state ? (
                           <>
-                          <div className="col-md-6 mb-4">
+                          <div className="col-md-12 mb-4">
                             <label className="form-label fw-bold">Blockchain:</label>
                             <select
                             required
@@ -404,17 +407,6 @@ const UploadWork = () => {
                                   </>
                                 )
                               })}
-                            </select>
-                          </div>
-
-                          <div className="col-md-6 mb-4">
-                            <label className="form-label fw-bold">Payment Token:</label>
-                            <select
-                            required
-                              onChange={e => setPaymentToken(e.target.value)}
-                              value={paymentToken}
-                              className="form-control">
-                              <option>Eth</option>
                             </select>
                           </div>
                           </>

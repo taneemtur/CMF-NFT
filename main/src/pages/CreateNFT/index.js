@@ -453,7 +453,9 @@ const CreateNFT = () => {
                           </>
                           )}
                           {/*end col*/}
-
+                            
+                        {
+                          !state && (
                           <div className="col-12 mb-4">
                             <label className="form-label fw-bold">Supply:</label>
                             <input
@@ -469,6 +471,8 @@ const CreateNFT = () => {
                               placeholder="Supply :"
                             />
                           </div>
+                          )
+                        }
                           {/*end col*/}
 
                           <div className="col-12 mb-4">
