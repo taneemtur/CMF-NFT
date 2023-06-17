@@ -101,7 +101,9 @@ const DarkVersionTwo = () => {
   const [hero, setHero] = useState(null);
   const [collections, setCollections] = useState(null);
   const [creators, setCreators] = useState(null);
-  const [type, setType] = useState('all')
+  const [type, setType] = useState('All')
+  const [allExploreitems, setAllExploreitems] = useState()
+  const [categories, setCategories] = useState([])
   const location = useLocation()
 
   const getHeroNFTs = async () => {
@@ -125,10 +127,20 @@ const DarkVersionTwo = () => {
     })
   }
 
+  const getAllExploreItems = async () => {
+    await axiosConfig.get('/landingpage/exploreitems/categoriessnfts').then((res)=>{
+      const data = res.data.data
+      const cats = data["categories"]
+      const nfts = data["categoriesNFTs"]
+      setCategories(["All", ...cats])
+      setAllExploreitems(nfts)
+    })
+  }
+
   const setFilter = type => {
     setType(type)
-    const newOne = AuctionData?.filter(data => data?.filter?.includes(type))
-    setAllData(newOne)
+    // const newOne = AuctionData?.filter(data => data?.filter?.includes(type))
+    // setAllData(newOne)
   }
 
   useEffect( async ()=>{
@@ -200,10 +212,12 @@ const DarkVersionTwo = () => {
       })
     }
     await getBestCreatorsSellers()
+    await getAllExploreItems()
     return () => {
       setHero(null)
-      setCollection(null)
+      setCategories(null)
       setCreators(null)
+      setAllExploreitems(null)
     }
   },[])
 
@@ -336,7 +350,21 @@ const DarkVersionTwo = () => {
             <div className="col filters-group-wrap">
               <div className="filters-group">
                 <ul className="container-filter mb-0 categories-filter list-unstyled filter-options">
-                  <li
+                  {
+                    categories && categories?.map((data, index) => {
+                      return (
+                        <li
+                          className={`list-inline-item categories position-relative text-dark ${type === data ? 'active' : ''
+                            }`}
+                          onClick={() => setFilter(data)}
+                          key={index}
+                        >
+                          <i className="uil uil-browser"></i> {data}
+                        </li>
+                      )
+                    })
+                  }
+                  {/* <li
                     className={`list-inline-item categories position-relative text-dark ${type === 'all' ? 'active' : ''
                       }`}
                     onClick={() => setFilter('all')}
@@ -378,7 +406,7 @@ const DarkVersionTwo = () => {
                     onClick={() => setFilter('meme')}
                   >
                     <i className="uil uil-rocket"></i> Memes
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </div>
@@ -390,7 +418,7 @@ const DarkVersionTwo = () => {
             className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 g-4"
             id="grid"
           >
-            {allData?.map((data, index) => {
+            {allExploreitems && allExploreitems[type].map((data, index) => {
               return (
                 <div className="col picture-item" key={index}>
                   <div className="card bg-white nft-items nft-primary rounded-md shadow overflow-hidden mb-1">
@@ -425,7 +453,7 @@ const DarkVersionTwo = () => {
 
                     <div className="card-body content position-relative">
                       <div className="img-group">
-                        <a
+                        {/* <a
                           href="/creator-profile"
                           onClick={e => {
                             e.preventDefault()
@@ -438,7 +466,7 @@ const DarkVersionTwo = () => {
                             alt="user"
                             className="avatar avatar-sm-sm img-thumbnail border-0 shadow-md rounded-circle"
                           />
-                        </a>
+                        </a> */}
                         <a
                           href="/creator-profile"
                           onClick={e => {
@@ -448,12 +476,12 @@ const DarkVersionTwo = () => {
                           className="user-avatar ms-n3"
                         >
                           <img
-                            src={client05}
+                            src={data?.owner?.profileImage}
                             alt="user"
                             className="avatar avatar-sm-sm img-thumbnail border-0 shadow-md rounded-circle"
                           />
                         </a>
-                        <a
+                        {/* <a
                           href="/creator-profile"
                           onClick={e => {
                             e.preventDefault()
@@ -466,7 +494,7 @@ const DarkVersionTwo = () => {
                             alt="user"
                             className="avatar avatar-sm-sm img-thumbnail border-0 shadow-md rounded-circle"
                           />
-                        </a>
+                        </a> */}
                       </div>
 
                       <div className="mt-2">
