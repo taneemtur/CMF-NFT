@@ -74,45 +74,44 @@ router.delete("/:categoryName", async (req: Request, res: Response) => {
 
 // get all categires, all Nfts in each category
 router.get("/categoriessnfts", async (req: Request, res: Response) => {
+    // fetch all categories
     const categoriesRef = db.collection("categories")
     const categoriesDoc = await categoriesRef.get();
-    // fetch all collections with the categoryRef
     const categories: any[] = [];
-    const categoriesNFTs: any = {};
     for (const doc of categoriesDoc.docs) {
         const category = doc.data()
         const categoryName = category.name;
         categories.push(categoryName);
-        // fetch all NFTs containing the categoryName
-        const nftsRef = db.collection("nfts")
-        const nftsDoc = await nftsRef.where("category", "==", categoryName).get();
-        const nfts: any[] = [];
-        for (const doc of nftsDoc.docs) {
-            const nft = doc.data()
-            const owner = await nft.owner.get();
-            const collection = await nft.collection.get();
-            const data = {
-                name: nft.name,
-                price: nft.price,
-                image: nft.image,
-                supply: nft.supply,
-                listed: nft.listed,
-                collection: {
-                    name: collection.data()?.name,
-                },
-                owner: {
-                    name: owner.data()?.name,
-                    address: owner.data()?.walletAddress,
-                }
-            }
-            nfts.push(data);
-        }
-        categoriesNFTs[categoryName] = [
-            ...categoriesNFTs[categoryName] || [],
-            ...nfts
-        ];
-
     }
+
+
+    const landingpageRef = db.collection("landing_page").doc("explore_items");
+    const categoriesNFTs: any = {};
+    for (const category of categories) {
+        try {
+            const exploreItemsRef = landingpageRef.collection(category).doc("NFTs");
+            const doc = await exploreItemsRef.get();
+            if (!doc.exists) {
+                categoriesNFTs[category] = [];
+            }
+            else {
+                const NFTs = doc.data()?.NFTs;
+                const newNFTs = NFTs.slice(0, 10);
+                categoriesNFTs[category] = newNFTs;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    // add new category "All" and add all NFTs to it
+    const allNFTs: any[] = [];
+    for (const category in categoriesNFTs) {
+        allNFTs.push(...categoriesNFTs[category]);
+    }
+
+    categoriesNFTs["All"] = allNFTs;
+
     res.status(200).send({
         message: "Successfully retrieved categories and NFTs",
         data: {
@@ -120,6 +119,7 @@ router.get("/categoriessnfts", async (req: Request, res: Response) => {
             categoriesNFTs: categoriesNFTs,
         },
     });
+
 });
 
 // delete by NFT Address in a category
