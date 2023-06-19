@@ -31,6 +31,7 @@ import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
 import NftCard from '../../components/NftCard'
 import { getChainName } from '../../blockchain/supportedChains'
+import { USER_ACTIVITIES } from '../../activities'
 
 
 const CollectionDetail = () => {
@@ -242,7 +243,16 @@ const CollectionDetail = () => {
                             const id = toast.loading('Collection Deleteing');
                             // navigate('/upload-work')
                             await axiosConfig.delete(`/collections/${collection.collectionAddress}`)
-                            .then(res => {
+                            .then(async (res) => {
+                              await axiosConfig.post("/activity/useractivity", {
+                                // userId, activityName, activityData
+                                userId: account,
+                                activityName: USER_ACTIVITIES.DELETE_COLLECTION,
+                                activityData: {
+                                  ...res.data.data,
+                                  deleteAt: new Date()
+                                }
+                              })
                               toast.update(id, {
                                 render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/creator-profile`)
                               })
