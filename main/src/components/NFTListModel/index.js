@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 import { type } from 'os';
 import { approveCollection, listNFT } from '../../blockchain/mintContracts';
 import { useSelector } from 'react-redux';
-import { USER_ACTIVITIES } from '../../activities';
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities';
 
 const LISTINGTYPE = {
     auction: 'auction',
@@ -50,6 +50,14 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                         listedAt: new Date()
                     }
                 })
+                await axiosConfig.post("/activity/nftactivity", {
+                    nftId: res.data.data.nftAddress,
+                    activityData: {
+                      activity: NFT_ACTIVITIES.LIST_NFT,
+                      listedAt: new Date(),
+                      ...res.data.data
+                    }
+                  })
                 toast.update(id, {
                     render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
                 })

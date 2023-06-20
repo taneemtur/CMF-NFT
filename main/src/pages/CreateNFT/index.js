@@ -9,7 +9,7 @@ import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
 import { mint } from '../../blockchain/mintContracts'
 import { getChainById } from '../../blockchain/supportedChains'
-import { USER_ACTIVITIES } from '../../activities'
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities'
 
 
 const CreateNFT = () => {
@@ -164,6 +164,14 @@ const CreateNFT = () => {
               createdAt: new Date()
             }
           })
+          await axiosConfig.post("/activity/nftactivity", {
+            nftId: res.data.data.nftAddress,
+            activityData: {
+              activity: NFT_ACTIVITIES.CREATE_NFT,
+              createdAt: new Date(),
+              ...res.data.data
+            }
+          })
           toast.update(id, {
             render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${nftAddress}`)
           }) 
@@ -187,6 +195,14 @@ const CreateNFT = () => {
           activityData: {
             ...res.data.data,
             updatedAt: new Date()
+          }
+        })
+        await axiosConfig.post("/activity/nftactivity", {
+          nftId: res.data.data.nftAddress,
+          activityData: {
+            activity: NFT_ACTIVITIES.UPDATE_NFT,
+            updatedAt: new Date(),
+            ...res.data.data
           }
         })
         toast.update(id, {

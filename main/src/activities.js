@@ -13,4 +13,10 @@ export const USER_ACTIVITIES = {
     EDIT_COLLECTION: 'Edit Collection',
 }
 
-export const NFT_ACTIVITIES = {}
+export const NFT_ACTIVITIES = {
+    CREATE_NFT: 'Create NFT',
+    UPDATE_NFT: 'Update NFT',
+    LIST_NFT: 'List NFT',
+    SELL_NFT: 'Sell NFT',
+
+}

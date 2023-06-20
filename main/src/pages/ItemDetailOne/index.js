@@ -10,7 +10,7 @@ import NFTListModel from '../../components/NFTListModel'
 import { splitWalletAddress } from '../../utils'
 import { getChainByName } from '../../blockchain/supportedChains'
 import { approveUSDT, buyNFT, listingCancel } from '../../blockchain/mintContracts'
-import { USER_ACTIVITIES } from '../../activities'
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities'
 
 
 const ItemDetailOne = () => {
@@ -19,6 +19,7 @@ const ItemDetailOne = () => {
   const { nftAddress } = useParams();
   const [nft, setNft] = useState(null);
   const [showListModal, setShowListModal] = useState(false);
+  const [nftActivity, setNftActivity] = useState(null);
 
   const getNftData = async () => {
     await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
@@ -38,6 +39,14 @@ const ItemDetailOne = () => {
         activityData: {
           ...res.data.data,
           unlistedAt: new Date()
+        }
+      })
+      await axiosconfig.post("/activity/nftactivity", {
+        nftId: res.data.data.nftAddress,
+        activityData: {
+          activity: NFT_ACTIVITIES.CANCEL_LISTING,
+          canceledAt: new Date(),
+          ...res.data.data
         }
       })
       toast.update(id, { render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 })
@@ -62,6 +71,14 @@ const ItemDetailOne = () => {
           buyAt: new Date()
         }
       })
+      await axiosconfig.post("/activity/nftactivity", {
+        nftId: res.data.data.nftAddress,
+        activityData: {
+          activity: NFT_ACTIVITIES.SELL_NFT,
+          soldAt: new Date(),
+          ...res.data.data
+        }
+      })
       await axiosconfig.post("/activity/useractivity", {
         // userId, activityName, activityData
         userId: nft?.owner.walletAddress,
@@ -79,9 +96,20 @@ const ItemDetailOne = () => {
     getNftData()
   }
 
+  async function getActivity() {
+    await axiosconfig.get(`/activity/nftactivity/${nftAddress}`)
+      .then((res) => {
+        console.log(res.data.data)
+        setNftActivity(res.data.data)
+      }).catch(err => {
+        console.log(err)
+      })
+  }
+
   useEffect(() => {
     if (nftAddress) {
       getNftData()
+      getActivity()
     }
     return () => {
       setNft(null)
