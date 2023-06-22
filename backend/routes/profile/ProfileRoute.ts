@@ -26,7 +26,8 @@ router.post("/createprofile", async (req: Request, res: Response) => {
         bio: body.bio || null,
         twitterAccount: body.twitterAccount || null,
         wesite: body.wesite || null,
-        url: body.url || null
+        url: body.url || null,
+        isVerified: false
     }
     // Check if user exist
     const userRef = db.collection("users").doc(walletAddress);
@@ -97,7 +98,7 @@ router.post("/uploadprofileimage/:walletAddress", upload, async (req: Request, r
                 message: "error uploading profile image",
             }).status(500)
     }
-    
+
     return res.json({
         message: "error uploading profile image",
     }).status(500)
@@ -145,7 +146,7 @@ router.post("/uploadbannerimage/:walletAddress", upload, async (req: Request, re
                 message: "error uploading banner image",
             }).status(500)
     }
-    
+
     return res.json({
         message: "error uploading banner image",
     }).status(500)
@@ -155,7 +156,7 @@ router.post("/uploadbannerimage/:walletAddress", upload, async (req: Request, re
 
 
 // Get User Profile
-router.get("/:walletaddress", async (req: Request, res: Response) => {
+router.get("/user/:walletaddress", async (req: Request, res: Response) => {
     const walletaddress = req.params.walletaddress;
     // get the user profile from firebase
     const userRef = db.collection("users").doc(walletaddress);
@@ -348,6 +349,50 @@ router.get("/getfollowedusers/:walletAddress", async (req: Request, res: Respons
 })
 
 
+// get all user
+router.get("/getusers", async (req: Request, res: Response) => {
+    try {
+        const userRef = db.collection("users");
+        const snapshot = await userRef.get();
+        const users: UserModel[] = [];
+        snapshot.forEach((doc) => {
+            users.push(doc.data() as UserModel);
+        });
+        return res.json({
+            message: "All Users",
+            data: users,
+        }).status(200)
+    } catch {
+        return res.json({
+            message: "error getting all users",
+        }).status(500)
+    }
+})
+
+// verify user
+router.put("/verifyuser", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { walletAddress, isVerified } = body;
+    try {
+        const userRef = db.collection("users").doc(walletAddress);
+        const response = await userRef.update({
+            isVerified: isVerified
+        });
+        if (response) {
+            return res.json({
+                message: "User Verified",
+                data: isVerified,
+            }).status(200)
+        }
+        return res.json({
+            message: "error verifying user",
+        }).status(500)
+    } catch {
+        return res.json({
+            message: "error verifying user",
+        }).status(500)
+    }
+})
 
 
 export { router as ProfileRoute }
