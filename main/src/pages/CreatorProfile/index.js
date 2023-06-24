@@ -26,6 +26,7 @@ const CreateProfile = () => {
   const [loading, setLoading] = useState(false)
   const [collections, setCollections] = useState([]);
   const [nfts, setNfts] = useState([]);
+  const [userActivities, setUserActivities] = useState([])
 
   useEffect(() => {
     if (!account) {
@@ -203,13 +204,34 @@ const CreateProfile = () => {
     })
   }
 
+  const getUserActivities = async () => {
+    console.log("account", account)
+    await axiosConfig.get(`/activity/useractivity/${account}`).then((res) => {
+      console.log(res.data.data)
+      setUserActivities(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
   useEffect(() => {
     if (account) {
       getUserNFTs();
+      
     }
     return () => {
       // cleanup
       setNfts([])
+    }
+  }, [account])
+
+  useEffect(() => {
+    if (account) {
+      getUserActivities();
+    }
+    return () => {
+      // cleanup
+      setUserActivities([])
     }
   }, [account])
 

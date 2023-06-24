@@ -171,7 +171,7 @@ router.put("/updatecollection", upload, async (req: Request, res: Response) => {
 })
 
 // Delete Collection
-router.delete("/:collectionaddress", async (req: Request, res: Response) => {
+router.delete("/collection/:collectionaddress", async (req: Request, res: Response) => {
     const collectionAddress = req.params.collectionaddress;
     const collectionRef = db.collection("collections").doc(collectionAddress);
     const doc = await collectionRef.get();
@@ -196,7 +196,7 @@ router.delete("/:collectionaddress", async (req: Request, res: Response) => {
 })
 
 // Get a collection
-router.get("/:collectionaddress", async (req: Request, res: Response) => {
+router.get("/collection/:collectionaddress", async (req: Request, res: Response) => {
     const collectionAddress = req.params.collectionaddress;
     const collectionRef = db.collection("collections").doc(collectionAddress);
     const doc = await collectionRef.get();

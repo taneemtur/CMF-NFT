@@ -8,6 +8,7 @@ interface UserModel {
     bio?: string
     wesite?: string
     url?: string
+    isVerified?: boolean
 }
 
 export {UserModel}

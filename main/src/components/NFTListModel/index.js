@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { type } from 'os';
 import { approveCollection, listNFT } from '../../blockchain/mintContracts';
 import { useSelector } from 'react-redux';
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities';
 
 const LISTINGTYPE = {
     auction: 'auction',
@@ -15,7 +16,7 @@ const LISTINGTYPE = {
 
 const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) => {
     const navigate = useNavigate()
-    const {account} = useSelector(state => state.theme);
+    const { account } = useSelector(state => state.theme);
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
     const [price, setPrice] = React.useState(nft?.price)
@@ -23,10 +24,10 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
 
     const getNftData = async () => {
         await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
-          setNft(res.data.data)
+            setNft(res.data.data)
         })
-      }
-    
+    }
+
     const handleListNFT = async (paymentToken = 'Eth') => {
         const id = toast.loading('Listing NFT')
         try {
@@ -39,7 +40,24 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                 price,
                 fixedListingId,
                 paymentToken
-            }).then(res => {
+            }).then(async (res) => {
+                await axiosConfig.post("/activity/useractivity", {
+                    // userId, activityName, activityData
+                    userId: account,
+                    activityName: USER_ACTIVITIES.LIST_NFT,
+                    activityData: {
+                        ...res.data.data,
+                        listedAt: new Date()
+                    }
+                })
+                await axiosConfig.post("/activity/nftactivity", {
+                    nftId: res.data.data.nftAddress,
+                    activityData: {
+                      activity: NFT_ACTIVITIES.LIST_NFT,
+                      listedAt: new Date(),
+                      ...res.data.data
+                    }
+                  })
                 toast.update(id, {
                     render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
                 })
@@ -49,7 +67,7 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                     type: listingType,
                     endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
                 }))
-            getNftData()
+                getNftData()
             }).catch(error => {
                 toast.update(id, {
                     render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
@@ -62,9 +80,9 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         nft && setPrice(nft?.price)
-    },[nft])
+    }, [nft])
 
     return (
         <div
@@ -129,22 +147,22 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                 className="btn btn-pills btn-primary w-100"
                                 data-bs-dismiss="modal"
                                 id="close-modal"
-                                onClick={()=>handleListNFT('Eth')}
+                                onClick={() => handleListNFT('Eth')}
                                 ref={btnRef}
                             >
                                 List NFT with Native Token
                             </button>
                         </div>
                         <div className='mt-4'>
-                        <button
-                            className="btn btn-pills btn-primary w-100"
-                            data-bs-dismiss="modal"
-                            id="close-modal"
-                            onClick={()=>handleListNFT('USDT')}
-                            ref={btnRef}
-                        >
-                            List NFT with USDT
-                        </button>
+                            <button
+                                className="btn btn-pills btn-primary w-100"
+                                data-bs-dismiss="modal"
+                                id="close-modal"
+                                onClick={() => handleListNFT('USDT')}
+                                ref={btnRef}
+                            >
+                                List NFT with USDT
+                            </button>
                         </div>
                     </div>
                 </div>

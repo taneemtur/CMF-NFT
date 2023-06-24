@@ -243,7 +243,7 @@ router.put("/updatenftowner", async (req: Request, res: Response) => {
 })
 
 // Delete CreatedNFT
-router.delete("/:nftaddress", async (req: Request, res: Response) => {
+router.delete("/nft/:nftaddress", async (req: Request, res: Response) => {
     const nftAddress = req.params.nftaddress;
     const nftRef = db.collection("nfts").doc(nftAddress);
     try {
@@ -347,7 +347,7 @@ router.get("/getauctionednfts", async (req: Request, res: Response) => {
 })
 
 // Get a Single NFT
-router.get("/:nftAddress", async (req: Request, res: Response) => {
+router.get("/nft/:nftAddress", async (req: Request, res: Response) => {
     const nftAddress = req.params.nftAddress;
     try {
         const nftRef = db.collection("nfts").doc(nftAddress);
