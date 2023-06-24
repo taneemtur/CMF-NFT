@@ -22,7 +22,7 @@ const ItemDetailOne = () => {
   const [nftActivity, setNftActivity] = useState(null);
 
   const getNftData = async () => {
-    await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
+    await axiosconfig.get(`/nfts/nft/${nftAddress}`).then((res) => {
       setNft(res.data.data)
     })
   }
