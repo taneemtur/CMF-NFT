@@ -115,10 +115,10 @@ const Footer = () => {
                     <ul className="list-unstyled footer-list mt-4">
                       <li>
                         <a
-                          href="/explore-two"
+                          href="/explor"
                           onClick={e => {
                             e.preventDefault()
-                            navigate('/explore-one')
+                            navigate('/explore')
                           }}
                           className="text-foot"
                         >

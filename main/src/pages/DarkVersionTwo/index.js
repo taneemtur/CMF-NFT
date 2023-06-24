@@ -334,7 +334,7 @@ const DarkVersionTwo = () => {
                   href="/explore-one"
                   onClick={e => {
                     e.preventDefault()
-                    navigate('/explore-one')
+                    navigate('/explore')
                   }}
                   className="btn btn-link primary text-dark"
                 >
