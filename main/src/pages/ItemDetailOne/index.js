@@ -99,7 +99,7 @@ const ItemDetailOne = () => {
   async function getActivity() {
     await axiosconfig.get(`/activity/nftactivity/${nftAddress}`)
       .then((res) => {
-        console.log(res.data.data)
+        console.log('activity', res.data.data)
         setNftActivity(res.data.data)
       }).catch(err => {
         console.log(err)
@@ -325,10 +325,10 @@ const ItemDetailOne = () => {
                               {
                                 nft && (
                                   <a
-                                    href="/creators"
+                                    href={`/profile/${nft?.owner?.walletAddress}`}
                                     onClick={e => {
                                       e.preventDefault()
-                                      navigate('/creators')
+                                      navigate(`/profile/${nft?.owner?.walletAddress}`)
                                     }}
                                     className="text-dark name"
                                   >

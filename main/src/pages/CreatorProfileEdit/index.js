@@ -108,17 +108,15 @@ const CreatorProfileEdit = (props) => {
       })
 
       setUpdating(false)
-      // dispatch(setUser(prev => {
-      //   return {
-      //     ...prev,
-      //     name,
-      //     url,
-      //     twitterAccount: twitter,
-      //     website,
-      //     email,
-      //     bio,
-      //   }
-      // }))
+      dispatch(setUser({ ...user, 
+        name: data.name,
+        url: data.url,
+        twitterAccount: data.twitterAccount,
+        website: data.website,
+        email: data.email,
+        bio: data.bio,
+        walletAddress: data.walletAddress,
+      }));
       console.log(res)
     } catch (error) {
       toast.error(error)

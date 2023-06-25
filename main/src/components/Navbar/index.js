@@ -616,37 +616,6 @@ const Navbar = () => {
                   </li>
                   <li>
                     <a
-                      href="/activity"
-                      onClick={e => {
-                        e.preventDefault()
-                        setTimeout(() => {
-                          activateMenu()
-                        }, 1000)
-                        navigate('/activity')
-                      }}
-                      className="sub-menu-item"
-                    >
-                      Activity
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/wallet"
-                      onClick={e => {
-                        e.preventDefault()
-                        setTimeout(() => {
-                          activateMenu()
-                          toggleSwitcher(false)
-                        }, 1000)
-                        navigate('/wallet')
-                      }}
-                      className="sub-menu-item"
-                    >
-                      Wallet
-                    </a>
-                  </li>
-                  <li>
-                    <a
                       href="/creators"
                       onClick={e => {
                         e.preventDefault()

@@ -40,105 +40,6 @@ const ExploreTwo = () => {
   const [filtered, setFiltered] = useState(false)
   const [filterList, setFilterList] = useState([])
 
-  const AuctionData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      id: 'May 29, 2022 6:0:0',
-      type: 'GIFs',
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      id: '',
-      type: 'Arts',
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      id: '',
-      type: 'Games',
-    },
-    {
-      image: item2,
-      title: 'Colorful Abstract Painting',
-      id: 'June 03, 2022 5:3:1',
-      type: '',
-    },
-    {
-      image: item3,
-      title: 'Liquid Forest Princess',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif3,
-      title: 'Spider Eyes Modern Art',
-      id: 'June 10, 2022 1:0:1',
-      type: 'GIFs',
-    },
-    {
-      image: item4,
-      title: 'Synthwave Painting',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif4,
-      title: 'Contemporary Abstract',
-      id: '',
-      type: 'GIFs',
-    },
-    {
-      image: item5,
-      title: 'Valkyrie Abstract Art',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif5,
-      title: 'The girl with the firefly',
-      id: '',
-      type: '',
-    },
-    {
-      image: item6,
-      title: 'Dodo hide the seek',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif6,
-      title: 'Pinky Ocean',
-      id: 'June 10, 2022 1:0:1',
-      type: '',
-    },
-    {
-      image: item7,
-      title: 'Rainbow Style',
-      id: 'June 18, 2022 1:2:1',
-      type: 'Music',
-    },
-    {
-      image: item8,
-      title: 'Running Puppets',
-      id: '',
-      type: 'Gallery',
-    },
-    {
-      image: item9,
-      title: 'Loop Donut',
-      id: 'July 01, 2022 1:6:6',
-      type: 'Video',
-    },
-    {
-      image: item10,
-      title: 'This is Our Story',
-      id: 'July 15, 2022 2:5:5',
-      type: '',
-    },
-  ]
-
   const getAllNfts = async () => {
     await axiosConfig.get(`/nfts/${start}/${end}`).then((res) => {
       setNfts(res.data.data)
@@ -147,6 +48,12 @@ const ExploreTwo = () => {
     }).catch((err) => {
       console.log(err)
     })
+  }
+
+  function clearFilters(){
+    setStart(0)
+    setEnd(10)
+    getAllNfts()
   }
 
   useEffect(() => {
@@ -275,15 +182,16 @@ const ExploreTwo = () => {
                                 <select
                                 value={type}
                                 onChange={(e) => setType(e.target.value)}
-                                  className="form-select"
+                                  className="form-select filter-input-box bg-light border-0"
+                                  style={{ color: '#fff' }}
                                   data-trigger
                                   name="choices-criteria"
                                   id="choices-criteria"
                                   aria-label="Default select example"
                                   defaultValue="auction"
                                 >
-                                  <option value="auction">Auction Product</option>
-                                  <option value="fixedprice">On Sale</option>
+                                  <option style={{ color: '#fff' }} value="auction">Auction Product</option>
+                                  <option style={{ color: '#fff' }} value="fixedprice">On Sale</option>
                                 </select>
                               </div>
                             </div>
@@ -295,7 +203,8 @@ const ExploreTwo = () => {
                                 <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                  className="form-select "
+                                  className="form-select filter-input-box bg-light border-0"
+                                  style={{ color: '#fff' }}
                                   data-trigger
                                   name="choices-type"
                                   id="choices-type"
@@ -305,7 +214,7 @@ const ExploreTwo = () => {
                                   {
                                     categories?.map((category, index) => {
                                       return (
-                                        <option key={index} value={category.name}>{category.name}</option>
+                                        <option style={{ color: '#fff' }} key={index} value={category.name}>{category.name}</option>
                                       )
                                     })
                                   }
@@ -327,6 +236,18 @@ const ExploreTwo = () => {
                             {/*end col*/}
                           </div>
                           {/*end row*/}
+                          <div className='row g-lg-0 justify-content-end'>
+                            <div className="col-lg-3 col-md-3 mt-3 mt-lg-0">
+                              <input
+                                type="button"
+                                onClick={clearFilters}
+                                id="clear"
+                                style={{ height: 40 }}
+                                className="btn btn-primary rounded-md searchbtn submit-btn w-100 mt-2"
+                                value="Reset Filters"
+                              />
+                            </div>
+                          </div>
                         </div>
                         {/*end container*/}
                       </form>

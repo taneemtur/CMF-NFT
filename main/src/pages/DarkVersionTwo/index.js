@@ -2,24 +2,16 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import { tns } from 'tiny-slider/src/tiny-slider';
-
-import {
-  work1, work2, work3, work4, work5, work6, work7, work8, work9, work10, work11, work12,
-  client01, client02, client03, client04, client05, client06, client07, client08,
-  client09, client10, client11, client12, client13,
-  gif1, gif2, gif3, gif4, gif5, gif6, item1, item2, item3, item4, item5, item6,
-  c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12,
-} from '../../components/imageImport'
+import NftCardDark from '../../components/NftCardDark';
+import { gif1, gif2, gif3, gif4, gif5, gif6, item1, item2, item3, item4, item5, item6 } from '../../components/imageImport'
 import Main from '../../Layouts/Main';
 import axiosConfig from '../../axiosConfig'
-import { getChainByName } from '../../blockchain/supportedChains';
 import { useSelector } from 'react-redux';
 import { splitWalletAddress } from '../../utils';
 
 
 
 const DarkVersionTwo = () => {
-  const {chain} = useSelector(state => state.theme)
   const navigate = useNavigate()
 
   const AuctionData = [
@@ -109,7 +101,7 @@ const DarkVersionTwo = () => {
   const getHeroNFTs = async () => {
     await axiosConfig.get('/landingpage/herosection/').then((res)=>{
       setHero(res.data.data)
-      console.log(res.data);
+      console.log('hero', res.data);
     })
   }
 
@@ -234,76 +226,10 @@ const DarkVersionTwo = () => {
           <div className="row">
             <div className="col-12">
               <div className="tiny-five-item">                  
-                {hero && hero?.map(data => {
+                {hero && hero?.map((data,index) => {
                   return (
-                    <div className="tiny-slide" key={data?.name}>
-                      <div className="card bg-white nft-items nft-primary rounded-md shadow-md overflow-hidden mx-2 my-3">
-                        <div className="nft-image position-relative overflow-hidden">
-                          <a
-                            href={`/nft/${data?.nftAddress}`}
-                            onClick={e => {
-                              e.preventDefault()
-                              navigate(`/nft/${data?.nftAddress}`)
-                            }}
-                          >
-                            <img
-                              src={data?.image}
-                              className="img-fluid"
-                              alt=""
-                              style={{ width: '100%', height: '250px', objectFit: 'cover', }}
-                            />
-                          </a>
-                          <div className="position-absolute top-0 start-0 m-3">
-                            <a
-                              href=""
-                              onClick={e => e.preventDefault()}
-                              className="badge badge-link bg-primary"
-                            >
-                              {data?.type}
-                            </a>
-                          </div>
-                          <div className="position-absolute top-0 end-0 m-3">
-                            <span className="like-icon shadow-sm">
-                              <a
-                                href=""
-                                onClick={e => e.preventDefault()}
-                                className="text-muted icon"
-                              >
-                                <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                              </a>
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="card-body content position-relative">
-                          <a
-                            href={`/nft/${data?.nftAddress}`}
-                            onClick={e => {
-                              e.preventDefault()
-                              navigate(`/nft/${data?.nftAddress}`)
-                            }}
-                            className="title text-dark h6"
-                          >
-                            {data?.name}
-                          </a>
-
-                          <div className="d-flex align-items-center justify-content-between mt-3">
-                            <div className="">
-                              <small className="rate fw-bold"> {data?.price} {getChainByName(chain)} </small>
-                            </div>
-                            <a
-                              href="/item-detail-one"
-                              onClick={e => {
-                                e.preventDefault()
-                                navigate('/item-detail-one')
-                              }}
-                              className="btn btn-icon btn-pills btn-primary"
-                            >
-                              <i className="uil uil-shopping-bag"></i>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="tiny-slide" key={index}>
+                     <NftCardDark data={data} key={index} />
                     </div>
                   )
                 })}
@@ -331,7 +257,7 @@ const DarkVersionTwo = () => {
             <div className="col-md-4">
               <div className="text-end d-md-block d-none">
                 <a
-                  href="/explore-one"
+                  href="/explore"
                   onClick={e => {
                     e.preventDefault()
                     navigate('/explore')
@@ -364,49 +290,6 @@ const DarkVersionTwo = () => {
                       )
                     })
                   }
-                  {/* <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'all' ? 'active' : ''
-                      }`}
-                    onClick={() => setFilter('all')}
-                  >
-                    <i className="uil uil-browser"></i> All
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'games' ? 'active' : ''
-                      }`}
-                    onClick={() => setFilter('games')}
-                  >
-                    <i className="uil uil-volleyball"></i> Games
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'art' ? 'active' : ''
-                      }`}
-                    onClick={() => setFilter('art')}
-                  >
-                    <i className="uil uil-chart-pie-alt"></i> Art
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'music' ? 'active' : ''
-                      }`}
-                    onClick={() => setFilter('music')}
-                  >
-                    <i className="uil uil-music"></i> Music
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'video' ? 'active' : ''
-                      }`}
-                    onClick={() => setFilter('video')}
-                  >
-                    <i className="uil uil-camera-plus"></i> Video
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'meme' ? 'active' : ''
-                      }`}
-                    // data-group="memes"
-                    onClick={() => setFilter('meme')}
-                  >
-                    <i className="uil uil-rocket"></i> Memes
-                  </li> */}
                 </ul>
               </div>
             </div>
@@ -421,103 +304,7 @@ const DarkVersionTwo = () => {
             {allExploreitems && allExploreitems[type].map((data, index) => {
               return (
                 <div className="col picture-item" key={index}>
-                  <div className="card bg-white nft-items nft-primary rounded-md shadow overflow-hidden mb-1">
-                    <div className="nft-image position-relative overflow-hidden">
-                      <img src={data?.image} className="img-fluid" alt="" />
-                      <div className="position-absolute top-0 end-0 m-2">
-                        <span className="like-icon shadow-sm">
-                          <a
-                            href=""
-                            onClick={e => e.preventDefault()}
-                            className="text-muted icon"
-                          >
-                            <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                          </a>
-                        </span>
-                      </div>
-
-                      <div className="bid-btn">
-                        <a
-                          href="/item-detail-one"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/item-detail-one')
-                          }}
-                          className="btn btn-pills"
-                        >
-                          <i className="mdi mdi-gavel fs-5 align-middle me-1"></i>{' '}
-                          Bid
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="card-body content position-relative">
-                      <div className="img-group">
-                        {/* <a
-                          href="/creator-profile"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/creator-profile')
-                          }}
-                          className="user-avatar"
-                        >
-                          <img
-                            src={client08}
-                            alt="user"
-                            className="avatar avatar-sm-sm img-thumbnail border-0 shadow-md rounded-circle"
-                          />
-                        </a> */}
-                        <a
-                          href="/creator-profile"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/creator-profile')
-                          }}
-                          className="user-avatar ms-n3"
-                        >
-                          <img
-                            src={data?.owner?.profileImage}
-                            alt="user"
-                            className="avatar avatar-sm-sm img-thumbnail border-0 shadow-md rounded-circle"
-                          />
-                        </a>
-                        {/* <a
-                          href="/creator-profile"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/creator-profile')
-                          }}
-                          className="user-avatar ms-n3"
-                        >
-                          <img
-                            src={client06}
-                            alt="user"
-                            className="avatar avatar-sm-sm img-thumbnail border-0 shadow-md rounded-circle"
-                          />
-                        </a> */}
-                      </div>
-
-                      <div className="mt-2">
-                        <a
-                          href="/item-detail-one"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/item-detail-one')
-                          }}
-                          className="title text-dark h6"
-                        >
-                          {data?.title}
-                        </a>
-
-                        <div className="d-flex justify-content-between mt-2">
-                          <small className="rate fw-bold">20.5 ETH</small>
-                          <small className="text-dark fw-bold">
-                            1 out of 10
-                          </small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <NftCardDark data={data} key={index} />
                 </div>
               )
             })}
@@ -529,10 +316,10 @@ const DarkVersionTwo = () => {
             <div className="col">
               <div className="text-center d-block d-md-none mt-4">
                 <a
-                  href="/explore-one"
+                  href="/explore"
                   onClick={e => {
                     e.preventDefault()
-                    navigate('/explore-one')
+                    navigate('/explore')
                   }}
                   className="btn btn-link primary text-dark"
                 >
@@ -590,10 +377,10 @@ const DarkVersionTwo = () => {
                       <div className="ms-3">
                         <h6 className="mb-0">
                           <a
-                            href="/creators"
+                            href={`/profile/${data?.walletAddress}`}
                             onClick={e => {
                               e.preventDefault()
-                              navigate('/creators')
+                              navigate(`/profile/${data?.walletAddress}`)
                             }}
                             className="text-dark name"
                           >

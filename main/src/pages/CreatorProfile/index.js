@@ -1,9 +1,6 @@
 import { useState, useCallback, useEffect, useMemo, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiCamera } from 'react-icons/fi'
-import Countdown from 'react-countdown'
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
 import {
   client01, client02, client03, client04, client05, client06, client08,
   client10, client12, client13,
@@ -17,6 +14,7 @@ import { useSelector } from 'react-redux'
 import Main from '../../Layouts/Main'
 import { splitWalletAddress } from '../../utils'
 import NftCard from '../../components/NftCard'
+import NftCardAuction from '../../components/NftCardAuction'
 
 
 
@@ -25,8 +23,11 @@ const CreateProfile = () => {
   const { user, account } = useSelector(state => state.theme);
   const [loading, setLoading] = useState(false)
   const [collections, setCollections] = useState([]);
+  const [userOnSale, setUserOnSale] = useState([]);
+  const [userFollowers, setUserFollowers] = useState([]);
+  const [userLikedNFTs, setUserLikedNFTs] = useState([]);
   const [nfts, setNfts] = useState([]);
-  const [userActivities, setUserActivities] = useState([])
+  const [userActivities, setUserActivities] = useState([]);
 
   useEffect(() => {
     if (!account) {
@@ -34,65 +35,6 @@ const CreateProfile = () => {
     }
   }, [account, navigate])
 
-  const onSaleData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      type: 'GIFs',
-      id: 'May 29, 2022 6:0:0'
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      type: 'Arts',
-      id: ''
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      type: 'Games',
-      id: ''
-    },
-  ]
-
-  const followerData = [
-    {
-      name: 'CutieGirl',
-      location: 'Brookfield, WI',
-      image: client02,
-      subMenu: [item1, item2, item3, item4, item5, gif4],
-    },
-    {
-      name: 'FunnyGuy',
-      location: 'Brookfield, WI',
-      image: client13,
-      subMenu: [item3, gif1, item9, item6, item1, gif2],
-    },
-    {
-      name: 'NorseQueen',
-      location: 'Brookfield, WI',
-      image: client03,
-      subMenu: [gif5, item2, gif6, item4, item5],
-    },
-    {
-      name: 'BigBull',
-      location: 'Brookfield, WI',
-      image: client04,
-      subMenu: [item7, item8, item9, item10],
-    },
-    {
-      name: 'KristyHoney',
-      location: 'Brookfield, WI',
-      image: client10,
-      subMenu: [item1, item2, item3, item4, item5, item6],
-    },
-    {
-      name: 'Princess',
-      location: 'Brookfield, WI',
-      image: client12,
-      subMenu: [item5, item8, item4, item7, item5, item10],
-    },
-  ]
 
   const activityData = [
     {
@@ -214,6 +156,30 @@ const CreateProfile = () => {
     })
   }
 
+  const getUserOnSale = async () => {
+    await axiosConfig.get(`/nfts/getlistednfts/${account}`).then((res) => {
+      setUserOnSale(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const getUserFollwers = async () => {
+    await axiosConfig.get(`/profile/getfollowedusers/${account}`).then((res) => {
+      setUserFollowers(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const getUserLikedNFTs = async () => {
+    await axiosConfig.get(`/profile/getlikednfts/${account}`).then((res) => {
+      setUserLikedNFTs(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
   useEffect(() => {
     if (account) {
       getUserNFTs();
@@ -228,23 +194,21 @@ const CreateProfile = () => {
   useEffect(() => {
     if (account) {
       getUserActivities();
+      getUserCollection();
+      getUserOnSale();
+      getUserFollwers();
+      getUserLikedNFTs();
     }
     return () => {
       // cleanup
       setUserActivities([])
-    }
-  }, [account])
-
-
-  useEffect(() => {
-    if (account) {
-      getUserCollection();
-    }
-    return () => {
-      // cleanup
       setCollections([])
+      setUserOnSale([])
+      setUserFollowers([])
+      setUserLikedNFTs([])
     }
   }, [account])
+
 
   if (!account) {
     return <></>
@@ -316,7 +280,15 @@ const CreateProfile = () => {
                     {splitWalletAddress(account)}{' '}
                     <a
                       href=""
-                      onClick={e => e.preventDefault()}
+                      onClick={async (e) => {
+                        e.preventDefault()
+                        try {
+                          await navigator.clipboard.writeText(account);
+                          console.log('Content copied to clipboard');
+                        } catch (err) {
+                          console.error('Failed to copy: ', err);
+                        }
+                      }}
                       className="text-primary h5 ms-1"
                     >
                       <i className="uil uil-copy"></i>
@@ -490,20 +462,12 @@ const CreateProfile = () => {
                   role="tabpanel"
                   aria-labelledby="Liked-tab"
                 >
-                  <div className="row justify-content-center">
-                    <div className="col-lg-5 col-md-8 text-center">
-                      <img src={ofcDesk} className="img-fluid" alt="" />
-
-                      <div className="content">
-                        <h5 className="mb-4">No Items</h5>
-                        <p className="text-muted">
-                          Show your appreciation for other's work by liking the
-                          shots you love. We'll collect all of your likes here
-                          for you to revisit anytime.
-                        </p>
+                  <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
+                    {userLikedNFTs && userLikedNFTs?.map((data, index) => (
+                      <div className="col" key={index}>
+                        <NftCard nft={data} key={index} />
                       </div>
-                    </div>
-                    {/* end col */}
+                    ))}
                   </div>
                   {/* end row */}
                 </div>
@@ -515,94 +479,9 @@ const CreateProfile = () => {
                   aria-labelledby="Sale-tab"
                 >
                   <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-                    {onSaleData?.map((onSale, index) => (
+                    {userOnSale && userOnSale?.map((data, index) => (
                       <div className="col" key={index}>
-                        <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <img
-                                src={client01}
-                                alt="user"
-                                className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                              />
-                              <a
-                                href=""
-                                onClick={e => e.preventDefault()}
-                                className="text-dark small creator-name h6 mb-0 ms-2"
-                              >
-                                @StreetBoyyy
-                              </a>
-                            </div>
-                          </div>
-
-                          <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
-                            <a
-                              href="/item-detail-one"
-                              onClick={e => {
-                                e.preventDefault()
-                                navigate('/item-detail-one')
-                              }}
-                            >
-                              <img
-                                src={onSale?.image}
-                                className="img-fluid"
-                                alt=""
-                              />
-                            </a>
-                            <div className="position-absolute top-0 start-0 m-2">
-                              <a
-                                href=""
-                                onClick={e => e.preventDefault()}
-                                className="badge badge-link bg-primary"
-                              >
-                                {onSale?.type}
-                              </a>
-                            </div>
-                            <div className="position-absolute top-0 end-0 m-2">
-                              <span className="like-icon shadow-sm">
-                                <a
-                                  href=""
-                                  onClick={e => e.preventDefault()}
-                                  className="text-muted icon"
-                                >
-                                  <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                                </a>
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="card-body content position-relative p-0 mt-3">
-                            <a
-                              href="/item-detail-one"
-                              onClick={e => {
-                                e.preventDefault()
-                                navigate('/item-detail-one')
-                              }}
-                              className="title text-dark h6"
-                            >
-                              {onSale?.title}
-                            </a>
-
-                            <div className="d-flex align-items-center justify-content-between mt-3">
-                              <div className="">
-                                <small className="mb-0 d-block fw-semibold">
-                                  Current Bid:
-                                </small>
-                                <small className="rate fw-bold">20.5 ETH</small>
-                              </div>
-                              <a
-                                href="/item-detail-one"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/item-detail-one')
-                                }}
-                                className="btn btn-icon btn-pills btn-primary"
-                              >
-                                <i className="uil uil-shopping-bag"></i>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
+                        <NftCard nft={data} key={index} />
                       </div>
                     ))}
                   </div>
@@ -669,70 +548,38 @@ const CreateProfile = () => {
                   role="tabpanel"
                   aria-labelledby="Followers-tab"
                 >
-                  <h5 className="mb-4">{followerData?.length} Followers</h5>
+                  <h5 className="mb-4">{userFollowers?.length} Followers</h5>
                   <div className="row g-4">
-                    {followerData?.map(data => {
+                    {userFollowers && userFollowers?.map(data => {
                       return (
                         <div className="col-md-6" key={data?.name}>
                           <div className="p-4 rounded-md shadow users user-primary">
                             <div className="d-flex align-items-center">
                               <div className="position-relative">
                                 <img
-                                  src={data?.image}
+                                  src={data?.profileImage}
                                   className="avatar avatar-md-md rounded-pill shadow-sm img-thumbnail"
                                   alt=""
                                 />
-                                <div className="position-absolute bottom-0 end-0">
-                                  <a
-                                    href=""
-                                    onClick={e => e.preventDefault()}
-                                    className="btn btn-icon btn-pills btn-sm btn-primary"
-                                  >
-                                    <i className="uil uil-plus"></i>
-                                  </a>
-                                </div>
                               </div>
 
                               <div className="content ms-3">
                                 <h6 className="mb-0">
                                   <a
-                                    href="/creator-profile"
+                                    href={`/profile/${data?.walletAddress}`}
                                     onClick={e => {
                                       e.preventDefault()
-                                      navigate('/creator-profile')
+                                      navigate(`/profile/${data?.walletAddress}`)
                                     }}
                                     className="text-dark name"
                                   >
-                                    CutieGirl
+                                    {splitWalletAddress(data?.walletAddress)}
                                   </a>
                                 </h6>
                                 <small className="text-muted d-flex align-items-center">
-                                  <i className="uil uil-map-marker fs-5 me-1"></i>{' '}
-                                  {data?.location}
+                                  @{data?.name}
                                 </small>
                               </div>
-                            </div>
-
-                            <div className="border-top my-4"></div>
-                            <div className="row row-cols-xl-6 g-3">
-                              {data?.subMenu?.map((sub, index) => (
-                                <div className="col" key={index * 10}>
-                                  <a
-                                    href="/item-detail-one"
-                                    onClick={e => {
-                                      e.preventDefault()
-                                      navigate('/item-detail-one')
-                                    }}
-                                    className="user-item"
-                                  >
-                                    <img
-                                      src={sub}
-                                      className="img-fluid rounded-md shadow-sm"
-                                      alt=""
-                                    />
-                                  </a>
-                                </div>
-                              ))}
                             </div>
                             {/*end row */}
                           </div>
@@ -749,7 +596,7 @@ const CreateProfile = () => {
                   aria-labelledby="Activites-tab"
                 >
                   <div className="row g-4">
-                    {activityData?.map(data => {
+                    {activityData && activityData?.map(data => {
                       return (
                         <div className="col-12" key={data?.title}>
                           <div className="card activity activity-primary rounded-md shadow p-4">

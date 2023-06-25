@@ -5,88 +5,18 @@ import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import axiosConfig from "../../axiosConfig"
 
-import {
-  item1, item2, item3, item4, gif1, gif2, gif3, gif4,
-  cta, bg01,
-  client01, client02, client03, client04, client09, client11, client12, client13,
-} from '../../components/imageImport'
+import { cta, bg01 } from '../../components/imageImport'
+import NftCardAuction from '../../components/NftCardAuction'
 
 const Auction = () => {
   const navigate = useNavigate()
   const [nfts, setNfts] = React.useState([])
   const [end, setEnd] = React.useState(10)
 
-  const AuctionData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      type: 'GIFs',
-      client: client01,
-      author: 'StreetBoy',
-      id: 'May 29, 2022 6:0:0'
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      type: 'Arts',
-      client: client09,
-      author: 'PandaOne',
-      id: 'June 03, 2022 5:3:1'
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      type: 'GIFs',
-      client: client02,
-      author: 'CutieGirl',
-      id: 'June 10, 2022 1:0:1'
-    },
-    {
-      image: item2,
-      title: 'Colorful Abstract Painting',
-      type: 'Memes',
-      client: client03,
-      author: 'NorseQueen',
-      id: 'June 18, 2022 1:2:1'
-    },
-    {
-      image: item3,
-      title: 'Liquid Forest Princess',
-      author: 'Butterfly',
-      type: 'Illustration',
-      client: client11,
-      id: 'July 01, 2022 1:6:6'
-    },
-    {
-      image: gif3,
-      title: 'Spider Eyes Modern Art',
-      author: 'BigBull',
-      type: 'GIFs',
-      client: client04,
-      id: 'July 15, 2022 2:5:5'
-    },
-    {
-      image: item4,
-      title: 'Synthwave Painting',
-      author: 'Princess',
-      type: 'Games',
-      client: client12,
-      id: 'Aug 08, 2022 5:1:4'
-    },
-    {
-      image: gif4,
-      title: 'Contemporary Abstract',
-      author: 'KristyHoney',
-      type: 'GIFs',
-      client: client13,
-      id: 'Aug 20, 2022 1:6:3'
-    },
-  ]
-
-
+ 
   const getAuctionedNFTs = async () => {
     await axiosConfig.get("nfts/getauctionednfts").then(res => {
-      console.log(res.data)
+      console.log('nfts', res.data)
       setNfts(res.data.data)
     }).catch(err => {
       console.log(err)
@@ -174,100 +104,7 @@ const Auction = () => {
             {nfts.slice(0, end)?.map((data, index) => {
               return (
                 <div className="col" key={index}>
-                  <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={data?.client}
-                          alt="user"
-                          className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
-                        />
-                        <a
-                          href=""
-                          onClick={e => e.preventDefault()}
-                          className="text-dark small creator-name h6 mb-0 ms-2"
-                        >
-                          @{data?.author}
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
-                      <a
-                        href="/item-detail-one"
-                        onClick={e => {
-                          e.preventDefault()
-                          navigate('/item-detail-one')
-                        }}
-                      >
-                        <img src={data?.image} className="img-fluid" alt="" />
-                      </a>
-                      <div className="position-absolute top-0 start-0 m-2">
-                        <a
-                          href=""
-                          onClick={e => e.preventDefault()}
-                          className="badge badge-link bg-primary"
-                        >
-                          {data?.type}
-                        </a>
-                      </div>
-                      <div className="position-absolute top-0 end-0 m-2">
-                        <span className="like-icon shadow-sm">
-                          <a
-                            href=""
-                            onClick={e => e.preventDefault()}
-                            className="text-muted icon"
-                          >
-                            <i className="mdi mdi-18px mdi-heart mb-0"></i>
-                          </a>
-                        </span>
-                      </div>
-
-                      <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
-                        <i className="uil uil-clock"></i>{' '}
-                        <Countdown
-                          date={data?.id}
-                          renderer={({ days, hours, minutes, seconds }) => (
-                            <span>
-                              {days}:{hours}:{minutes}:{seconds}
-                            </span>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="card-body content position-relative p-0 mt-3">
-                      <a
-                        href="/item-detail-one"
-                        onClick={e => {
-                          e.preventDefault()
-                          navigate('/item-detail-one')
-                        }}
-                        className="title text-dark h6"
-                      >
-                        {data?.title}
-                      </a>
-
-                      <div className="d-flex align-items-center justify-content-between mt-3">
-                        <div className="">
-                          <small className="mb-0 d-block fw-semibold">
-                            Current Bid:
-                          </small>
-                          <small className="rate fw-bold">20.5 ETH</small>
-                        </div>
-                        <a
-                          href="/item-detail-one"
-                          onClick={e => {
-                            e.preventDefault()
-                            navigate('/item-detail-one')
-                          }}
-                          className="btn btn-icon btn-pills btn-primary"
-                        >
-                          <i className="uil uil-shopping-bag"></i>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                  <NftCardAuction data={data} key={index} />
                 </div>
               )
             })}
