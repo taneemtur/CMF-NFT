@@ -51,7 +51,7 @@ router.get("/getcategories", async (req: Request, res: Response) => {
 })
 
 // get specific category
-router.get("/:category", async (req: Request, res: Response) => {
+router.get("/single/:category", async (req: Request, res: Response) => {
     const category = req.params.category;
     try {
         // categories snapshot

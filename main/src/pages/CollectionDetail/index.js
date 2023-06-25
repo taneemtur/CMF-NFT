@@ -39,6 +39,8 @@ const CollectionDetail = () => {
   const { user, account } = useSelector(state => state.theme)
   const [collection, setCollection] = useState(null);
   const [nfts, setNfts] = useState(null);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(10);
   const { collectionAddress } = useParams();
 
 
@@ -142,7 +144,7 @@ const CollectionDetail = () => {
   ]
 
   const getCollectionData = async () => {
-    await axiosConfig.get(`/collections/${collectionAddress}`).then((res) => {
+    await axiosConfig.get(`/collections/collection/${collectionAddress}`).then((res) => {
       console.log(res.data)
       setCollection(res.data.data)
     })
@@ -284,203 +286,10 @@ const CollectionDetail = () => {
       <section className="section">
         <div className="container">
           <div className="row">
-            <div className="col-lg-3 col-md-6">
-              <div className="sticky-bar">
-                <h5 className="mb-0">NFT Filters</h5>
-                <div className="p-4 rounded-md shadow mt-4">
-                  <div>
-                    <h6>Orders By:</h6>
-                    <form>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="NewOrder"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="NewOrder"
-                        >
-                          Newest
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="TrendOrder"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="TrendOrder"
-                        >
-                          Trending
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="OldOrder"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="OldOrder"
-                        >
-                          Oldest
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div className="mt-4">
-                    <h6>Catagories By:</h6>
-                    <form>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="GamesCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="GamesCatagory"
-                        >
-                          Games
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="ArtCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="ArtCatagory"
-                        >
-                          Art
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="MusicCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="MusicCatagory"
-                        >
-                          Music
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="VideoCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="VideoCatagory"
-                        >
-                          Video
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="MemesCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="MemesCatagory"
-                        >
-                          Memes
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="IllustrationCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="IllustrationCatagory"
-                        >
-                          Illustration
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="GIFsCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="GIFsCatagory"
-                        >
-                          GIFs
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div className="mt-4">
-                    <h6>Creators By:</h6>
-                    <form>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="AllCreators"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="AllCreators"
-                        >
-                          All Creators
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="VerifyCreators"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="VerifyCreators"
-                        >
-                          Verified Creators
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/*end col*/}
 
             <div className="col-lg-9 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
               <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-1">
-                {nfts && nfts?.map((nft, index) => {
+                {nfts && nfts.slice(start, end)?.map((nft, index) => {
                   return (
                    <NftCard nft={nft} index={index} />
                   )
@@ -494,7 +303,10 @@ const CollectionDetail = () => {
                   <div className="text-center">
                     <a
                       href=""
-                      onClick={e => e.preventDefault()}
+                      onClick={e => {
+                        e.preventDefault()
+                        setEnd(prev => prev+10)
+                      }}
                       className="btn btn-primary rounded-md"
                     >
                       <i className="uil uil-process mdi-spin me-1"></i> Load

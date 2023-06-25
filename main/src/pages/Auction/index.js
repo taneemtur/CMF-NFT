@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Countdown from 'react-countdown'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
+import axiosConfig from "../../axiosConfig"
 
 import {
   item1, item2, item3, item4, gif1, gif2, gif3, gif4,
@@ -12,6 +13,8 @@ import {
 
 const Auction = () => {
   const navigate = useNavigate()
+  const [nfts, setNfts] = React.useState([])
+  const [end, setEnd] = React.useState(10)
 
   const AuctionData = [
     {
@@ -79,6 +82,21 @@ const Auction = () => {
       id: 'Aug 20, 2022 1:6:3'
     },
   ]
+
+
+  const getAuctionedNFTs = async () => {
+    await axiosConfig.get("nfts/getauctionednfts").then(res => {
+      console.log(res.data)
+      setNfts(res.data.data)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+  useEffect(() => {
+    getAuctionedNFTs()
+  }, [])
+
   return (
     <>
       {/* Navbar */}
@@ -153,7 +171,7 @@ const Auction = () => {
       <section className="section">
         <div className="container">
           <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-            {AuctionData?.map((data, index) => {
+            {nfts.slice(0, end)?.map((data, index) => {
               return (
                 <div className="col" key={index}>
                   <div className="card nft-items nft-primary nft-auction rounded-md shadow overflow-hidden mb-1 p-3">
@@ -259,15 +277,22 @@ const Auction = () => {
 
           <div className="row justify-content-center mt-4">
             <div className="col">
-              <div className="text-center">
-                <a
-                  href=""
-                  onClick={e => e.preventDefault()}
-                  className="btn btn-primary rounded-md"
-                >
-                  <i className="uil uil-process mdi-spin me-1"></i> Load More
-                </a>
-              </div>
+              {
+                end < nfts.length && (
+                  <div className="text-center">
+                    <a
+                      href=""
+                      onClick={e => {
+                        e.preventDefault()
+                        setEnd(end + 10)
+                      }}
+                      className="btn btn-primary rounded-md"
+                    >
+                      <i className="uil uil-process mdi-spin me-1"></i> Load More
+                    </a>
+                  </div>
+                )
+              }
             </div>
             {/*end col*/}
           </div>

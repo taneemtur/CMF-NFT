@@ -25,7 +25,7 @@ router.post("/createprofile", async (req: Request, res: Response) => {
         walletAddress: body.walletAddress,
         bio: body.bio || null,
         twitterAccount: body.twitterAccount || null,
-        wesite: body.wesite || null,
+        website: body.wesite || null,
         url: body.url || null,
         isVerified: false
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
@@ -7,6 +7,7 @@ import {
   gif1, gif2, gif3, gif4, gif5, gif6,
   cta, client05, client06, client08
 } from '../../components/imageImport'
+import axiosConfig from '../../axiosConfig'
 
 const ExploreOne = () => {
   const navigate = useNavigate()
@@ -94,13 +95,45 @@ const ExploreOne = () => {
   ]
 
   const [allData, setAllData] = useState(AuctionData)
-  const [type, setType] = useState('all')
+  const [type, setType] = useState('All')
+  const [categories, setCategories] = useState([{
+    name: "All"
+  }])
+  const [allNFTs, setAllNFTs] = useState([])
+  const [start, setStart] = useState(0)
+  const [end, setEnd] = useState(10)
   const location = useLocation()
   const setFilter = type => {
     setType(type)
-    const newOne = AuctionData?.filter(data => data?.filter?.includes(type))
-    setAllData(newOne)
+    // const newOne = AuctionData?.filter(data => data?.filter?.includes(type))
+    // setAllData(newOne)
   }
+
+  const getCatecories = async () => {
+    await axiosConfig.get("/categories/getcategories").then((res) => {
+      setCategories(prev => [...prev, ...res.data.data])
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const getAllNFTs = async () => {
+    await axiosConfig.get(`/nfts/paginated/${0}/${10}`).then((res) => {
+      console.log(res.data.data)
+      setAllNFTs(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  useEffect(() => {
+    getCatecories()
+  }, [])
+
+  useEffect(() => {
+    getAllNFTs()
+  }, [start, end])
+
   return (
     <>
       {/* Navbar */}
@@ -177,54 +210,19 @@ const ExploreOne = () => {
             <div className="col filters-group-wrap">
               <div className="filters-group">
                 <ul className="container-filter mb-0 categories-filter text-center list-unstyled">
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'all' ? 'active' : ''
-                      }`}
-                    // data-group="all"
-                    onClick={() => setFilter('all')}
-                  >
-                    <i className="uil uil-browser"></i> All
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'games' ? 'active' : ''
-                      }`}
-                    // data-group="games"
-                    onClick={() => setFilter('games')}
-                  >
-                    <i className="uil uil-volleyball"></i> Games
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'art' ? 'active' : ''
-                      }`}
-                    // data-group="art"
-                    onClick={() => setFilter('art')}
-                  >
-                    <i className="uil uil-chart-pie-alt"></i> Art
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'music' ? 'active' : ''
-                      }`}
-                    // data-group="music"
-                    onClick={() => setFilter('music')}
-                  >
-                    <i className="uil uil-music"></i> Music
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'video' ? 'active' : ''
-                      }`}
-                    // data-group="video"
-                    onClick={() => setFilter('video')}
-                  >
-                    <i className="uil uil-camera-plus"></i> Video
-                  </li>
-                  <li
-                    className={`list-inline-item categories position-relative text-dark ${type === 'meme' ? 'active' : ''
-                      }`}
-                    // data-group="memes"
-                    onClick={() => setFilter('meme')}
-                  >
-                    <i className="uil uil-rocket"></i> Memes
-                  </li>
+                  {
+                    categories && categories.map((category, index) => {
+                      return (
+                        <li key={index} className={`list-inline-item categories position-relative text-dark ${type === category?.name ? 'active' : ''
+                      }`} onClick={() => setFilter(category?.name)}>
+                        <i className="uil uil-browser"></i> {category?.name}
+                          
+                        </li>
+                        
+                      )
+                    })
+                  }
+                  
                 </ul>
               </div>
             </div>
@@ -236,7 +234,7 @@ const ExploreOne = () => {
             className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 g-4"
             id="grid"
           >
-            {allData?.map(data => {
+            {allNFTs?.map(data => {
               return (
                 <div className="col picture-item" key={data?.title}>
                   <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1">

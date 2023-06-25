@@ -34,6 +34,7 @@ const CreatorProfileEdit = (props) => {
 
   useEffect(() => {
     if (user) {
+      console.log(user)
       setName(user.name)
       setUrl(user.url)
       _twitter(user.twitterAccount)
@@ -323,7 +324,7 @@ const CreatorProfileEdit = (props) => {
                 </div>
               </div>
 
-              <div className="rounded-md shadow mt-4">
+              {/* <div className="rounded-md shadow mt-4">
                 <div className="p-4 border-bottom">
                   <h5 className="mb-0">Account Notifications:</h5>
                 </div>
@@ -465,9 +466,9 @@ const CreatorProfileEdit = (props) => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="rounded-md shadow mt-4">
+              {/* <div className="rounded-md shadow mt-4">
                 <div className="p-4 border-bottom">
                   <h5 className="mb-0 text-danger">Delete Account :</h5>
                 </div>
@@ -480,9 +481,8 @@ const CreatorProfileEdit = (props) => {
                   <div className="mt-4">
                     <button className="btn btn-danger">Delete Account</button>
                   </div>
-                  {/*end col*/}
                 </div>
-              </div>
+              </div> */}
             </div>
             {/*end col*/}
 

@@ -30,6 +30,15 @@ import NftCard from '../../components/NftCard'
 
 const ExploreTwo = () => {
   const [nfts, setNfts] = useState([]);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [keyword, setKeyword] = useState('')
+  const [type, setType] = useState('auction')
+  const [category, setCategory] = useState('')
+  const [categories, setCategories] = useState([])
+  const [filtered, setFiltered] = useState(false)
+  const [filterList, setFilterList] = useState([])
 
   const AuctionData = [
     {
@@ -131,30 +140,63 @@ const ExploreTwo = () => {
   ]
 
   const getAllNfts = async () => {
-    await axiosConfig.get(`/nfts`).then((res)=>{
+    await axiosConfig.get(`/nfts/${start}/${end}`).then((res) => {
       setNfts(res.data.data)
+      setTotal(res.data.total)
       console.log(res.data.data)
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err)
     })
   }
 
-  useEffect(()=>{
-    getAllNfts()
+  useEffect(() => {
+    if(!filtered) {
+      getAllNfts()
+    }
 
     return () => {
       setNfts([])
     }
-  },[])
+  }, [start, end])
+
+  const getCategories = async () => {
+    await axiosConfig.get("/categories/getcategories").then((res) => {
+      setCategories(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
 
   useEffect(() => {
-    new Choices('#choices-criteria')
-    var singleCategorie = document.getElementById('choices-type')
-    if (singleCategorie) {
-      new Choices('#choices-type')
-    }
+    getCategories()
   }, [])
 
+
+  // useEffect(() => {
+  //   new Choices('#choices-criteria')
+  //   var singleCategorie = document.getElementById('choices-type')
+  //   if (singleCategorie) {
+  //     new Choices('#choices-type')
+  //   }
+  // }, [])
+
+  useEffect(() => {
+    setCategory(categories[0]?.name)
+  }, [categories])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    // filter nfts based on keyword, type, category
+    await axiosConfig.get(`/nfts/filter/${keyword.length == 0 ? null : keyword}/${type}/${category}`,).then((res) => {
+      setFiltered(true)
+      setNfts(res.data.data)
+      setTotal(res.data.total)
+      setFilterList(res.data.data.slice(start, 10))
+      setEnd(1)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
 
   return (
     <Main>
@@ -208,13 +250,15 @@ const ExploreTwo = () => {
                 <div className="row justify-content-center" id="reserve-form">
                   <div className="col-xl-10 mt-lg-5">
                     <div className="card bg-white feature-top border-0 shadow rounded p-3">
-                      <form action="#">
+                      <form onSubmit={handleSubmit}>
                         <div className="registration-form text-dark text-start">
                           <div className="row g-lg-0">
                             <div className="col-lg-3 col-md-6">
                               <div className="filter-search-form position-relative filter-border">
                                 <i className="uil uil-search icons"></i>
                                 <input
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
                                   name="name"
                                   type="text"
                                   id="search-keyword"
@@ -229,16 +273,17 @@ const ExploreTwo = () => {
                               <div className="filter-search-form position-relative filter-border">
                                 <i className="uil uil-usd-circle icons"></i>
                                 <select
+                                value={type}
+                                onChange={(e) => setType(e.target.value)}
                                   className="form-select"
                                   data-trigger
                                   name="choices-criteria"
                                   id="choices-criteria"
                                   aria-label="Default select example"
-                                  defaultValue="Auction Product"
+                                  defaultValue="auction"
                                 >
-                                  <option value="1">Auction Product</option>
-                                  <option value="2">On Sale</option>
-                                  <option value="3">Offers</option>
+                                  <option value="auction">Auction Product</option>
+                                  <option value="fixedprice">On Sale</option>
                                 </select>
                               </div>
                             </div>
@@ -248,18 +293,22 @@ const ExploreTwo = () => {
                               <div className="filter-search-form position-relative filter-border">
                                 <i className="uil uil-window icons"></i>
                                 <select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
                                   className="form-select "
                                   data-trigger
                                   name="choices-type"
                                   id="choices-type"
                                   aria-label="Default select example"
-                                  defaultValue="Art"
+                                  defaultValue={categories[0]?.name}
                                 >
-                                  <option value="1">Art</option>
-                                  <option value="2">Games</option>
-                                  <option value="3">Music</option>
-                                  <option value="4">Videos</option>
-                                  <option value="5">Memes</option>
+                                  {
+                                    categories?.map((category, index) => {
+                                      return (
+                                        <option key={index} value={category.name}>{category.name}</option>
+                                      )
+                                    })
+                                  }
                                 </select>
                               </div>
                             </div>
@@ -296,29 +345,46 @@ const ExploreTwo = () => {
 
         <div className="container">
           <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1">
-            {nfts && nfts?.map((nft, index) => {
+            {nfts && filtered ? filterList.map((nft, index) => {
               return (
-               <NftCard nft={nft} index={index} />
+                <NftCard nft={nft} index={index} />
+              )
+            }) : nfts?.map((nft, index) => {
+              return (
+                <NftCard nft={nft} index={index} />
               )
             })}
             {/*end col*/}
           </div>
           {/*end row*/}
 
-          <div className="row justify-content-center mt-4">
-            <div className="col">
-              <div className="text-center">
-                <a
-                  href=""
-                  onClick={e => e.preventDefault()}
-                  className="btn btn-primary rounded-md"
-                >
-                  <i className="uil uil-process mdi-spin me-1"></i> Load More
-                </a>
+          {
+            end < total && (
+              <div className="row justify-content-center mt-4">
+                <div className="col">
+                  <div className="text-center">
+                    <a
+                      href=""
+                      onClick={e => {
+                        e.preventDefault()
+                        if(!filtered){
+                          setEnd(prev => prev+10)
+                        }else{
+                          const newEnd = end+10
+                          setEnd(newEnd)
+                          setFilterList(nfts.slice(start, newEnd))
+                        }
+                      }}
+                      className="btn btn-primary rounded-md"
+                    >
+                      <i className="uil uil-process mdi-spin me-1"></i> Load More
+                    </a>
+                  </div>
+                </div>
+                {/*end col*/}
               </div>
-            </div>
-            {/*end col*/}
-          </div>
+            )
+          }
           {/*end row*/}
         </div>
         {/*end container*/}

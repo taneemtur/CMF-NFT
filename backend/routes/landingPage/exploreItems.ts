@@ -74,6 +74,7 @@ router.delete("/:categoryName", async (req: Request, res: Response) => {
 
 // get all categires, all Nfts in each category
 router.get("/categoriessnfts", async (req: Request, res: Response) => {
+
     // fetch all categories
     const categoriesRef = db.collection("categories")
     const categoriesDoc = await categoriesRef.get();
