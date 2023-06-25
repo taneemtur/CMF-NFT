@@ -1,90 +1,38 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Footer from '../../components/Footer'
-import Navbar from '../../components/Navbar'
-import {
-  client01, client02, client03, client04, client05, client06, client07, client08,
-  client09, client10, client11, client12, bg01,
-  work1, work2, work3, work4, work5, work6, work7, work8, work9, work10, work11, work12,
-} from '../../components/imageImport'
+import axiosConfig from '../../axiosConfig'
+import { bg01 } from '../../components/imageImport'
 import Main from '../../Layouts/Main'
+import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import { splitWalletAddress } from '../../utils'
 
 const Creator = () => {
+  const { user, account } = useSelector(state => state.theme)
   const navigate = useNavigate()
-  const creatorData = [
-    {
-      image: client01,
-      backgroundImage: work1,
-      name: 'Steven Townsend',
-      author: 'StreetBoy',
-    },
-    {
-      image: client02,
-      backgroundImage: work2,
-      name: 'Tiffany Betancourt',
-      author: 'CutieGirl',
-    },
-    {
-      image: client03,
-      backgroundImage: work3,
-      name: 'Mari Harrington',
-      author: 'NorseQueen',
-    },
-    {
-      image: client04,
-      backgroundImage: work4,
-      name: 'Floyd Glasgow',
-      author: 'BigBull',
-    },
-    {
-      image: client05,
-      backgroundImage: work5,
-      name: 'Donna Schultz',
-      author: 'Angel',
-    },
-    {
-      image: client06,
-      backgroundImage: work6,
-      name: 'Joshua Morris',
-      author: 'CrazyAnyone',
-    },
-    {
-      image: client07,
-      backgroundImage: work7,
-      name: 'Carl Williams',
-      author: 'LooserBad',
-    },
-    {
-      image: client08,
-      backgroundImage: work8,
-      name: 'Eugene Green',
-      author: 'KristyHoney',
-    },
-    {
-      image: client09,
-      backgroundImage: work9,
-      name: 'Julius Canale',
-      author: 'PandaOne',
-    },
-    {
-      image: client10,
-      backgroundImage: work10,
-      name: 'Michael Williams',
-      author: 'FunnyGuy',
-    },
-    {
-      image: client11,
-      backgroundImage: work11,
-      name: 'Jacqueline Burns',
-      author: 'ButterFly',
-    },
-    {
-      image: client12,
-      backgroundImage: work12,
-      name: 'Rosaria Vargas',
-      author: 'Princess',
-    },
-  ]
+  const [creators, setCreators] = useState([]);
+
+  const getCreators = async () => {
+    await axiosConfig.get('/profile/getusers').then((res)=>{
+      console.log(res.data)
+      setCreators(res.data.data);
+    })
+  }
+
+  const followUser = async (followUser) => {
+    await axiosConfig.post('/profile/addfollowedusers', {walletAddress: account, user: followUser}).then((res)=>{
+      toast(res.data.message)
+    }) 
+  }
+
+  useEffect(()=>{
+    getCreators();
+
+    return () => {
+      setCreators(null);
+    }
+  },[])
+
   return (
    <Main>
      {/*- Start Home */}
@@ -156,38 +104,41 @@ const Creator = () => {
       <section className="section">
         <div className="container">
           <div className="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-4 justify-content-center">
-            {creatorData?.map((creator, index) => {
+            {creators && creators?.map((creator, index) => {
               return (
                 <div className="col" key={index}>
                   <div className="card creators creators-two creator-primary rounded-md shadow overflow-hidden">
                     <div
                       className="py-5"
-                      style={{ background: `url(${creator?.backgroundImage})` }}
+                      style={{ background: `url(${creator?.bannerImage})` }}
                     ></div>
                     <div className="position-relative mt-n5">
                       <img
-                        src={creator?.image}
+                        src={creator?.profileImage}
                         className="avatar avatar-md-md rounded-pill shadow-sm bg-light img-thumbnail mx-auto d-block"
                         alt=""
                       />
 
                       <div className="content text-center pt-2 p-4">
                         <a
-                          href="/creator-profile"
+                          href={`/profile/${creator?.walletAddress}`}
                           onClick={e => {
                             e.preventDefault()
-                            navigate('/creator-profile')
+                            navigate(`/profile/${creator?.walletAddress}`)
                           }}
                           className="text-dark h6 name d-block mb-0"
                         >
-                          {creator?.name}
+                          {splitWalletAddress(creator?.walletAddress)}
                         </a>
-                        <small className="text-muted">@{creator?.author}</small>
+                        <small className="text-muted">@{creator?.name}</small>
 
                         <div className="mt-3">
                           <a
                             href=""
-                            onClick={e => e.preventDefault()}
+                            onClick={e => {
+                              e.preventDefault()
+                              followUser(creator)
+                            }}
                             className="btn btn-pills btn-soft-primary"
                           >
                             Follow
@@ -199,44 +150,6 @@ const Creator = () => {
                 </div>
               )
             })}
-            {/*-end col*/}
-          </div>
-          {/*-end row*/}
-
-          <div className="row">
-            <div className="col-12 mt-4 pt-2">
-              <ul className="pagination justify-content-center mb-0">
-                <li className="page-item">
-                  <a className="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">
-                      <i className="uil uil-arrow-left fs-5"></i>
-                    </span>
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    1
-                  </a>
-                </li>
-                <li className="page-item active">
-                  <a className="page-link" href="#">
-                    2
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    3
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">
-                      <i className="uil uil-arrow-right fs-5"></i>
-                    </span>
-                  </a>
-                </li>
-              </ul>
-            </div>
             {/*-end col*/}
           </div>
           {/*-end row*/}

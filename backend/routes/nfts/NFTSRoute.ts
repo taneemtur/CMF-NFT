@@ -243,7 +243,7 @@ router.put("/updatenftowner", async (req: Request, res: Response) => {
 })
 
 // Delete CreatedNFT
-router.delete("/:nftaddress", async (req: Request, res: Response) => {
+router.delete("/nft/:nftaddress", async (req: Request, res: Response) => {
     const nftAddress = req.params.nftaddress;
     const nftRef = db.collection("nfts").doc(nftAddress);
     try {
@@ -347,7 +347,7 @@ router.get("/getauctionednfts", async (req: Request, res: Response) => {
 })
 
 // Get a Single NFT
-router.get("/:nftAddress", async (req: Request, res: Response) => {
+router.get("/nft/:nftAddress", async (req: Request, res: Response) => {
     const nftAddress = req.params.nftAddress;
     try {
         const nftRef = db.collection("nfts").doc(nftAddress);
@@ -386,7 +386,196 @@ router.get("/:nftAddress", async (req: Request, res: Response) => {
 })
 
 // Get all NFTS
-router.get("/", async (req: Request, res: Response) => {
+router.get("/:start/:end", async (req: Request, res: Response) => {
+    const start = parseInt(req.params.start);
+    const end = parseInt(req.params.end);
+    const nftsRef = db.collection("nfts");
+    const querySnapshot = await nftsRef.get();
+    const promises: Promise<NFTModel>[] = [];
+    const nfts: NFTModel[] = [];
+    if (querySnapshot.empty) {
+        return res.json({
+            message: "No NFTs",
+            data: [],
+        }).status(200)
+    }
+    try {
+        querySnapshot.forEach(async (doc) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await nft?.collection.get()).data();
+                if (collection) {
+
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const category = (await nft?.category.get()).data();
+                if (category) {
+                    collection.category = category;
+                }
+                const nftModel = {
+                    ...nft,
+                    category,
+                    collection,
+                    owner: (await nft?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                total: data.length,
+                data: data.slice(start, end)
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+            }).status(500)
+        })
+
+    } catch {
+        return res.json({
+            message: "Error Fetching NFTs",
+        }).status(500)
+    }
+})
+
+// get all nfts /nfts
+router.get("/nfts", async (req:Request, res:Response) => {
+    const nftsRef = db.collection("nfts");
+    const querySnapshot = await nftsRef.get();
+    const promises: Promise<NFTModel>[] = [];
+    const nfts: NFTModel[] = [];
+    if (querySnapshot.empty) {
+        return res.json({
+            message: "No NFTs",
+            data: [],
+        }).status(200)
+    }
+    try {
+        querySnapshot.forEach(async (doc) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await nft?.collection.get()).data();
+                if (collection) {
+
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const category = (await nft?.category.get()).data();
+                if (category) {
+                    collection.category = category;
+                }
+                const nftModel = {
+                    ...nft,
+                    category,
+                    collection,
+                    owner: (await nft?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                total: data.length,
+                data: data
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+            }).status(500)
+        })
+
+    } catch {
+        return res.json({
+            message: "Error Fetching NFTs",
+        }).status(500)
+    }
+})
+
+
+// filter nfts based on keyword, type, category
+router.get("/filter/:keyword/:type/:category", async (req: Request, res: Response) => {
+    const keyword = req.params.keyword;
+    const type = req.params.type;
+    const category = req.params.category;
+    const nftsRef = db.collection("nfts");
+    let query:any = nftsRef;
+    if (keyword !== "null") {
+        query = query.where("name", ">=", keyword).where("name", "<=", keyword + "\uf8ff");
+    }
+    if (type !== "null") {
+        query = query.where("type", "==", type);
+    }
+    if (category !== "null") {
+        let catRef:any = db.collection("categories").where("name", "==", category);
+        // convert catRef to docuemnt reference
+        const catSnapshot = await catRef.get();
+        catSnapshot.forEach((doc:any) => {
+            catRef = doc.ref;
+            query = query.where("category", "==", catRef);
+        })
+    }
+    const querySnapshot = await query.get();
+    const promises: Promise<NFTModel>[] = [];
+    const nfts: NFTModel[] = [];
+    if (querySnapshot.empty) {
+        return res.json({
+            message: "No NFTs",
+            data: [],
+        }).status(200)
+    }
+    try {
+        querySnapshot.forEach(async (doc:any) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await nft?.collection.get()).data();
+                if (collection) {
+                    const category = (await collection.category.get()).data();
+                    if (category) {
+                        collection.category = category;
+                    }
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const nftModel = {
+                    ...nft,
+                    collection,
+                    owner: (await nft?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                total: data.length,
+                data: data
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+            }).status(500)
+        })
+
+    } catch {
+        return res.json({
+            message: "Error Fetching NFTs",
+        }).status(500)
+    }
+})
+
+// get all nfts paginated
+router.get("/paginated/:start/:end", async (req:Request, res:Response) => {
+    const start = parseInt(req.params.start);
+    const end = parseInt(req.params.end);
     const nftsRef = db.collection("nfts");
     const querySnapshot = await nftsRef.get();
     const promises: Promise<NFTModel>[] = [];
@@ -419,7 +608,7 @@ router.get("/", async (req: Request, res: Response) => {
         Promise.all(promises).then((data) => {
             return res.json({
                 message: "NFTs",
-                data: data,
+                data: data.slice(start, end),
             }).status(200)
         }).catch((err) => {
             console.log(err);
@@ -428,6 +617,59 @@ router.get("/", async (req: Request, res: Response) => {
             }).status(500)
         })
 
+    } catch {
+        return res.json({
+            message: "Error Fetching NFTs",
+        }).status(500)
+    }
+})
+
+// get nfts of a category paginated
+router.get("/category/:category/:start/:end", async (req:Request, res:Response) => {
+    const start = parseInt(req.params.start);
+    const end = parseInt(req.params.end);
+    const category = req.params.category;
+    const catRef = db.collection("categories").where("name", "==", category);
+    // get nfts where category is catRef
+    const nftsRef = db.collection("nfts").where("category", "==", catRef);
+    const querySnapshot = await nftsRef.get();
+    const promises: Promise<NFTModel>[] = [];
+    const nfts: NFTModel[] = [];
+    if (querySnapshot.empty) {
+        return res.json({
+            message: "No NFTs",
+            data: [],
+        }).status(200)
+    }
+    try {
+        querySnapshot.forEach(async (doc) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await nft?.collection.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const nftModel = {
+                    ...nft,
+                    collection,
+                    owner: (await nft?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                data: data.slice(start, end),
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+            }).status(500)
+        })
     } catch {
         return res.json({
             message: "Error Fetching NFTs",
@@ -581,6 +823,106 @@ router.get("/getnfts/:userAddress", async (req: Request, res: Response) => {
             console.log(err);
             return res.json({
                 message: "Error Fetching NFTs",
+            }).status(500)
+        })
+    } catch {
+        return res.json({
+            message: "Error Fetching NFTs",
+        }).status(500)
+    }
+})
+
+// get listed nfts
+router.get("/getlistednfts/:walletAddress", async (req: Request, res: Response) => {
+    const walletAddress = req.params.walletAddress;
+    try {
+        const nftsRef = db.collection("nfts");
+        const userRef = db.collection("users").doc(walletAddress);
+        const query = nftsRef.where("listed", "==", true).where("owner", "==", userRef);
+        const querySnapshot = await query.get();
+        const promises: Promise<NFTModel>[] = [];
+        const nfts: NFTModel[] = [];
+        if (querySnapshot.empty) {
+            return res.json({
+                message: "NFTs",
+                data: [],
+            }).status(200)
+        }
+        querySnapshot.forEach(async (doc) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await doc.data()?.collection.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const nftModel = {
+                    ...nft,
+                    collection,
+                    owner: (await doc.data()?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                data: data,
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+
+            }).status(500)
+        })
+    } catch {
+        return res.json({
+            message: "Error Fetching NFTs",
+        }).status(500)
+    }
+})
+router.get("/getlistednfts", async (req: Request, res: Response) => {
+    try {
+        const nftsRef = db.collection("nfts");
+        const query = nftsRef.where("listed", "==", true)
+        const querySnapshot = await query.get();
+        const promises: Promise<NFTModel>[] = [];
+        const nfts: NFTModel[] = [];
+        if (querySnapshot.empty) {
+            return res.json({
+                message: "NFTs",
+                data: [],
+            }).status(200)
+        }
+        querySnapshot.forEach(async (doc) => {
+            promises.push(new Promise(async (resolve, reject) => {
+                const nft = doc.data();
+                const collection = (await doc.data()?.collection.get()).data();
+                if (collection) {
+                    collection.category = (await collection.category.get()).data();
+                    collection.owner = (await collection.owner.get()).data();
+                }
+                const nftModel = {
+                    ...nft,
+                    collection,
+                    owner: (await doc.data()?.owner.get()).data()
+                } as NFTModel;
+                nfts.push(nftModel);
+                resolve(nftModel);
+            }))
+        })
+        Promise.all(promises).then((data) => {
+            return res.json({
+                message: "NFTs",
+                data: data,
+            }).status(200)
+        }).catch((err) => {
+            console.log(err);
+            return res.json({
+                message: "Error Fetching NFTs",
+
             }).status(500)
         })
     } catch {

@@ -30,131 +30,80 @@ import NftCard from '../../components/NftCard'
 
 const ExploreTwo = () => {
   const [nfts, setNfts] = useState([]);
-
-  const AuctionData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      id: 'May 29, 2022 6:0:0',
-      type: 'GIFs',
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      id: '',
-      type: 'Arts',
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      id: '',
-      type: 'Games',
-    },
-    {
-      image: item2,
-      title: 'Colorful Abstract Painting',
-      id: 'June 03, 2022 5:3:1',
-      type: '',
-    },
-    {
-      image: item3,
-      title: 'Liquid Forest Princess',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif3,
-      title: 'Spider Eyes Modern Art',
-      id: 'June 10, 2022 1:0:1',
-      type: 'GIFs',
-    },
-    {
-      image: item4,
-      title: 'Synthwave Painting',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif4,
-      title: 'Contemporary Abstract',
-      id: '',
-      type: 'GIFs',
-    },
-    {
-      image: item5,
-      title: 'Valkyrie Abstract Art',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif5,
-      title: 'The girl with the firefly',
-      id: '',
-      type: '',
-    },
-    {
-      image: item6,
-      title: 'Dodo hide the seek',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif6,
-      title: 'Pinky Ocean',
-      id: 'June 10, 2022 1:0:1',
-      type: '',
-    },
-    {
-      image: item7,
-      title: 'Rainbow Style',
-      id: 'June 18, 2022 1:2:1',
-      type: 'Music',
-    },
-    {
-      image: item8,
-      title: 'Running Puppets',
-      id: '',
-      type: 'Gallery',
-    },
-    {
-      image: item9,
-      title: 'Loop Donut',
-      id: 'July 01, 2022 1:6:6',
-      type: 'Video',
-    },
-    {
-      image: item10,
-      title: 'This is Our Story',
-      id: 'July 15, 2022 2:5:5',
-      type: '',
-    },
-  ]
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [keyword, setKeyword] = useState('')
+  const [type, setType] = useState('auction')
+  const [category, setCategory] = useState('')
+  const [categories, setCategories] = useState([])
+  const [filtered, setFiltered] = useState(false)
+  const [filterList, setFilterList] = useState([])
 
   const getAllNfts = async () => {
-    await axiosConfig.get(`/nfts`).then((res)=>{
+    await axiosConfig.get(`/nfts/${start}/${end}`).then((res) => {
       setNfts(res.data.data)
+      setTotal(res.data.total)
       console.log(res.data.data)
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err)
     })
   }
 
-  useEffect(()=>{
+  function clearFilters(){
+    setStart(0)
+    setEnd(10)
     getAllNfts()
+  }
+
+  useEffect(() => {
+    if(!filtered) {
+      getAllNfts()
+    }
 
     return () => {
       setNfts([])
     }
-  },[])
+  }, [start, end])
+
+  const getCategories = async () => {
+    await axiosConfig.get("/categories/getcategories").then((res) => {
+      setCategories(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
 
   useEffect(() => {
-    new Choices('#choices-criteria')
-    var singleCategorie = document.getElementById('choices-type')
-    if (singleCategorie) {
-      new Choices('#choices-type')
-    }
+    getCategories()
   }, [])
 
+
+  // useEffect(() => {
+  //   new Choices('#choices-criteria')
+  //   var singleCategorie = document.getElementById('choices-type')
+  //   if (singleCategorie) {
+  //     new Choices('#choices-type')
+  //   }
+  // }, [])
+
+  useEffect(() => {
+    setCategory(categories[0]?.name)
+  }, [categories])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    // filter nfts based on keyword, type, category
+    await axiosConfig.get(`/nfts/filter/${keyword.length == 0 ? null : keyword}/${type}/${category}`,).then((res) => {
+      setFiltered(true)
+      setNfts(res.data.data)
+      setTotal(res.data.total)
+      setFilterList(res.data.data.slice(start, 10))
+      setEnd(1)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
 
   return (
     <Main>
@@ -208,13 +157,15 @@ const ExploreTwo = () => {
                 <div className="row justify-content-center" id="reserve-form">
                   <div className="col-xl-10 mt-lg-5">
                     <div className="card bg-white feature-top border-0 shadow rounded p-3">
-                      <form action="#">
+                      <form onSubmit={handleSubmit}>
                         <div className="registration-form text-dark text-start">
                           <div className="row g-lg-0">
                             <div className="col-lg-3 col-md-6">
                               <div className="filter-search-form position-relative filter-border">
                                 <i className="uil uil-search icons"></i>
                                 <input
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
                                   name="name"
                                   type="text"
                                   id="search-keyword"
@@ -229,16 +180,18 @@ const ExploreTwo = () => {
                               <div className="filter-search-form position-relative filter-border">
                                 <i className="uil uil-usd-circle icons"></i>
                                 <select
-                                  className="form-select"
+                                value={type}
+                                onChange={(e) => setType(e.target.value)}
+                                  className="form-select filter-input-box bg-light border-0"
+                                  style={{ color: '#fff' }}
                                   data-trigger
                                   name="choices-criteria"
                                   id="choices-criteria"
                                   aria-label="Default select example"
-                                  defaultValue="Auction Product"
+                                  defaultValue="auction"
                                 >
-                                  <option value="1">Auction Product</option>
-                                  <option value="2">On Sale</option>
-                                  <option value="3">Offers</option>
+                                  <option style={{ color: '#fff' }} value="auction">Auction Product</option>
+                                  <option style={{ color: '#fff' }} value="fixedprice">On Sale</option>
                                 </select>
                               </div>
                             </div>
@@ -248,18 +201,23 @@ const ExploreTwo = () => {
                               <div className="filter-search-form position-relative filter-border">
                                 <i className="uil uil-window icons"></i>
                                 <select
-                                  className="form-select "
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                  className="form-select filter-input-box bg-light border-0"
+                                  style={{ color: '#fff' }}
                                   data-trigger
                                   name="choices-type"
                                   id="choices-type"
                                   aria-label="Default select example"
-                                  defaultValue="Art"
+                                  defaultValue={categories[0]?.name}
                                 >
-                                  <option value="1">Art</option>
-                                  <option value="2">Games</option>
-                                  <option value="3">Music</option>
-                                  <option value="4">Videos</option>
-                                  <option value="5">Memes</option>
+                                  {
+                                    categories?.map((category, index) => {
+                                      return (
+                                        <option style={{ color: '#fff' }} key={index} value={category.name}>{category.name}</option>
+                                      )
+                                    })
+                                  }
                                 </select>
                               </div>
                             </div>
@@ -278,6 +236,18 @@ const ExploreTwo = () => {
                             {/*end col*/}
                           </div>
                           {/*end row*/}
+                          <div className='row g-lg-0 justify-content-end'>
+                            <div className="col-lg-3 col-md-3 mt-3 mt-lg-0">
+                              <input
+                                type="button"
+                                onClick={clearFilters}
+                                id="clear"
+                                style={{ height: 40 }}
+                                className="btn btn-primary rounded-md searchbtn submit-btn w-100 mt-2"
+                                value="Reset Filters"
+                              />
+                            </div>
+                          </div>
                         </div>
                         {/*end container*/}
                       </form>
@@ -296,29 +266,46 @@ const ExploreTwo = () => {
 
         <div className="container">
           <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1">
-            {nfts && nfts?.map((nft, index) => {
+            {nfts && filtered ? filterList.map((nft, index) => {
               return (
-               <NftCard nft={nft} index={index} />
+                <NftCard nft={nft} index={index} />
+              )
+            }) : nfts?.map((nft, index) => {
+              return (
+                <NftCard nft={nft} index={index} />
               )
             })}
             {/*end col*/}
           </div>
           {/*end row*/}
 
-          <div className="row justify-content-center mt-4">
-            <div className="col">
-              <div className="text-center">
-                <a
-                  href=""
-                  onClick={e => e.preventDefault()}
-                  className="btn btn-primary rounded-md"
-                >
-                  <i className="uil uil-process mdi-spin me-1"></i> Load More
-                </a>
+          {
+            end < total && (
+              <div className="row justify-content-center mt-4">
+                <div className="col">
+                  <div className="text-center">
+                    <a
+                      href=""
+                      onClick={e => {
+                        e.preventDefault()
+                        if(!filtered){
+                          setEnd(prev => prev+10)
+                        }else{
+                          const newEnd = end+10
+                          setEnd(newEnd)
+                          setFilterList(nfts.slice(start, newEnd))
+                        }
+                      }}
+                      className="btn btn-primary rounded-md"
+                    >
+                      <i className="uil uil-process mdi-spin me-1"></i> Load More
+                    </a>
+                  </div>
+                </div>
+                {/*end col*/}
               </div>
-            </div>
-            {/*end col*/}
-          </div>
+            )
+          }
           {/*end row*/}
         </div>
         {/*end container*/}

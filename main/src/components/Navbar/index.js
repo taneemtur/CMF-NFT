@@ -10,7 +10,7 @@ import AuthContext from '../../AuthContext'
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccount, setChain, setUser } from '../../Store/Slicers/theme';
 import { defaultChain, getChainById, isChainSupported } from '../../blockchain/supportedChains'
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 require('dotenv').config()
 
 const Navbar = () => {
@@ -151,9 +151,9 @@ const Navbar = () => {
     window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     account != null && window.ethereum?.on('chainChanged', (newChain) => checkChainId(newChain))
-  },[account])
+  }, [account])
 
   const getClosest = (elem, selector) => {
 
@@ -317,7 +317,9 @@ const Navbar = () => {
                   style={{ width: 300 }}
                 >
                   <div className="search-bar">
-                    <div id="itemSearch" className="menu-search mb-0">
+                    <div style={{
+                      border: "1px solid white"
+                    }} id="itemSearch" className="menu-search mb-0">
                       <form
                         role="search"
                         method="get"
@@ -352,40 +354,40 @@ const Navbar = () => {
                   <i className="uil uil-wallet fs-6"></i>
                 </a>
               ) : (
-              <>
-                {
-                !account && (
-                <p id="connectWallet" onClick={connectWallet}>
-                  <span className="btn-icon-dark">
-                    <span className="btn btn-icon btn-pills btn-primary">
-                      <i className="uil uil-wallet fs-6"></i>
-                    </span>
-                  </span>
-                  <span className="btn-icon-light">
-                    <span className="btn btn-icon btn-pills btn-light">
-                      <i className="uil uil-wallet fs-6"></i>
-                    </span>
-                  </span>
-                </p>
-                  )
-                }
-                {
-                account && (
-                  <p>
-                    <span className="btn-icon-dark" onClick={e=>{ e.preventDefault(); showChainModal() }} >
-                      <span className="btn btn-icon btn-pills btn-primary">
-                        <i className="uil uil-cog fs-6"></i>
-                      </span>
-                    </span>
-                    <span className="btn-icon-light" onClick={e=>{ e.preventDefault(); showChainModal() }} >
-                      <span className="btn btn-icon btn-pills btn-light">
-                        <i className="uil uil-cog fs-6"></i>
-                      </span>
-                    </span>
-                  </p>
-                  )
-                }
-              </>
+                <>
+                  {
+                    !account && (
+                      <p id="connectWallet" onClick={connectWallet}>
+                        <span className="btn-icon-dark">
+                          <span className="btn btn-icon btn-pills btn-primary">
+                            <i className="uil uil-wallet fs-6"></i>
+                          </span>
+                        </span>
+                        <span className="btn-icon-light">
+                          <span className="btn btn-icon btn-pills btn-light">
+                            <i className="uil uil-wallet fs-6"></i>
+                          </span>
+                        </span>
+                      </p>
+                    )
+                  }
+                  {
+                    account && (
+                      <p>
+                        <span className="btn-icon-dark" onClick={e => { e.preventDefault(); showChainModal() }} >
+                          <span className="btn btn-icon btn-pills btn-primary">
+                            <i className="uil uil-cog fs-6"></i>
+                          </span>
+                        </span>
+                        <span className="btn-icon-light" onClick={e => { e.preventDefault(); showChainModal() }} >
+                          <span className="btn btn-icon btn-pills btn-light">
+                            <i className="uil uil-cog fs-6"></i>
+                          </span>
+                        </span>
+                      </p>
+                    )
+                  }
+                </>
               )}
             </li>
 
@@ -412,7 +414,7 @@ const Navbar = () => {
                         aria-expanded="false"
                       >
                         <img
-                          src={ user?.profileImage || client01}
+                          src={user?.profileImage || client01}
                           className="rounded-pill avatar avatar-sm-sm"
                           alt={user?.name}
                         />
@@ -427,7 +429,7 @@ const Navbar = () => {
                         <div className="px-3">
                           <div className="d-flex align-items-end mt-n4">
                             <img
-                              src={ user?.profileImage || client01}
+                              src={user?.profileImage || client01}
                               className="rounded-pill avatar avatar-md-sm img-thumbnail shadow-md"
                               alt={user?.name}
                             />
@@ -443,7 +445,15 @@ const Navbar = () => {
                               <small id="myPublicAddress" className="text-muted">
                                 {account}
                               </small>
-                              <a href="" onClick={e => e.preventDefault()} className="text-primary">
+                              <a href="" onClick={async (e) => {
+                                e.preventDefault()
+                                try {
+                                  await navigator.clipboard.writeText(account);
+                                  console.log('Content copied to clipboard');
+                                } catch (err) {
+                                  console.error('Failed to copy: ', err);
+                                }
+                              }} className="text-primary">
                                 <span className="uil uil-copy"></span>
                               </a>
                             </div>
@@ -602,37 +612,6 @@ const Navbar = () => {
                       className="sub-menu-item"
                     >
                       Live Auction
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/activity"
-                      onClick={e => {
-                        e.preventDefault()
-                        setTimeout(() => {
-                          activateMenu()
-                        }, 1000)
-                        navigate('/activity')
-                      }}
-                      className="sub-menu-item"
-                    >
-                      Activity
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/wallet"
-                      onClick={e => {
-                        e.preventDefault()
-                        setTimeout(() => {
-                          activateMenu()
-                          toggleSwitcher(false)
-                        }, 1000)
-                        navigate('/wallet')
-                      }}
-                      className="sub-menu-item"
-                    >
-                      Wallet
                     </a>
                   </li>
                   <li>

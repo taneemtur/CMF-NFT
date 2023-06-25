@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { FiCamera } from 'react-icons/fi'
 import {
   client01, client02, client03, client04, client05, client06, client08,
@@ -18,81 +18,20 @@ import NftCardAuction from '../../components/NftCardAuction'
 
 
 
-const CreateProfile = () => {
+const UserProfile = () => {
   const navigate = useNavigate()
-  const { user, account } = useSelector(state => state.theme);
   const [loading, setLoading] = useState(false)
   const [collections, setCollections] = useState([]);
   const [userOnSale, setUserOnSale] = useState([]);
   const [userFollowers, setUserFollowers] = useState([]);
   const [userLikedNFTs, setUserLikedNFTs] = useState([]);
   const [nfts, setNfts] = useState([]);
+  const [user, setUser] = useState([]);
   const [userActivities, setUserActivities] = useState([]);
-
-  useEffect(() => {
-    if (!account) {
-      navigate('/')
-    }
-  }, [account, navigate])
+  const { walletAddress } = useParams();
 
 
   const activityData = [
-    {
-      title: 'Digital Art Collection',
-      author: 'Panda',
-      time: '1 hours ago',
-      favorite: 'Started Following',
-      image: item1,
-    },
-    {
-      title: 'Skrrt Cobain Official',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: gif1,
-    },
-    {
-      title: 'Wow! That Brain Is Floating',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: item2,
-    },
-    {
-      title: 'Our Journey Start',
-      author: 'CalvinCarlo',
-      time: '5 hours ago',
-      favorite: 'Listed by',
-      image: item3,
-    },
-    {
-      title: 'BitBears',
-      author: 'ButterFly',
-      time: '8 hours ago',
-      favorite: 'Liked by',
-      image: gif2,
-    },
-    {
-      title: 'Little Kokeshi #13',
-      author: 'ButterFly',
-      time: '10 hours ago',
-      favorite: 'Liked by',
-      image: item4,
-    },
-    {
-      title: 'EVOL Floater',
-      author: 'CutieGirl',
-      time: '13 hours ago',
-      favorite: 'Started Following',
-      image: gif3,
-    },
-    {
-      title: 'Smart Ape Club (SAC) - Limited Edition',
-      author: 'CalvinCarlo',
-      time: '18 hours ago',
-      favorite: 'Listed by',
-      image: gif4,
-    },
     {
       title: 'THE SECRET SOCIETY XX #775',
       author: 'CalvinCarlo',
@@ -109,28 +48,14 @@ const CreateProfile = () => {
     },
   ]
 
-
-  const loadFile = async function (event, banner = false) {
-    var image = document.getElementById(event.target.name)
-    image.src = URL.createObjectURL(event.target.files[0])
-    const data = new FormData();
-    data.append("file", event.target.files[0]);
-    const endpoint = banner ? "/profile/uploadbannerimage" : "/profile/uploadprofileimage"
-    await axiosConfig.post(`${endpoint}/${account}`, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  const getUserData = async function () {
+    await axiosConfig.get(`/profile/user/${walletAddress}`).then((res)=>{
+        setUser(res.data.data)
     })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   }
 
   const getUserCollection = async () => {
-    await axiosConfig.get(`/collections/user/${account}`).then((res) => {
+    await axiosConfig.get(`/collections/user/${walletAddress}`).then((res) => {
       setCollections(res.data.data)
       console.log(res.data.data)
     }).catch((err) => {
@@ -139,7 +64,7 @@ const CreateProfile = () => {
   }
 
   const getUserNFTs = async () => {
-    await axiosConfig.get(`/nfts/getnfts/${account}`).then((res) => {
+    await axiosConfig.get(`/nfts/getnfts/${walletAddress}`).then((res) => {
       setNfts(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -147,8 +72,7 @@ const CreateProfile = () => {
   }
 
   const getUserActivities = async () => {
-    console.log("account", account)
-    await axiosConfig.get(`/activity/useractivity/${account}`).then((res) => {
+    await axiosConfig.get(`/activity/useractivity/${walletAddress}`).then((res) => {
       console.log(res.data.data)
       setUserActivities(res.data.data)
     }).catch((err) => {
@@ -157,7 +81,7 @@ const CreateProfile = () => {
   }
 
   const getUserOnSale = async () => {
-    await axiosConfig.get(`/nfts/getlistednfts/${account}`).then((res) => {
+    await axiosConfig.get(`/nfts/getlistednfts/${walletAddress}`).then((res) => {
       setUserOnSale(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -165,7 +89,7 @@ const CreateProfile = () => {
   }
 
   const getUserFollwers = async () => {
-    await axiosConfig.get(`/profile/getfollowedusers/${account}`).then((res) => {
+    await axiosConfig.get(`/profile/getfollowedusers/${walletAddress}`).then((res) => {
       setUserFollowers(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -173,7 +97,7 @@ const CreateProfile = () => {
   }
 
   const getUserLikedNFTs = async () => {
-    await axiosConfig.get(`/profile/getlikednfts/${account}`).then((res) => {
+    await axiosConfig.get(`/profile/getlikednfts/${walletAddress}`).then((res) => {
       setUserLikedNFTs(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -181,18 +105,18 @@ const CreateProfile = () => {
   }
 
   useEffect(() => {
-    if (account) {
+    if (walletAddress) {
       getUserNFTs();
-      
     }
     return () => {
       // cleanup
       setNfts([])
     }
-  }, [account])
+  }, [walletAddress])
 
   useEffect(() => {
-    if (account) {
+    if (walletAddress) {
+      getUserData();
       getUserActivities();
       getUserCollection();
       getUserOnSale();
@@ -206,11 +130,12 @@ const CreateProfile = () => {
       setUserOnSale([])
       setUserFollowers([])
       setUserLikedNFTs([])
+      setUser([])
     }
-  }, [account])
+  }, [walletAddress])
 
 
-  if (!account) {
+  if (!walletAddress) {
     return <></>
   }
 
@@ -234,14 +159,6 @@ const CreateProfile = () => {
                 id="profile-banner"
                 alt=""
               />
-              <label
-                className="icons position-absolute bottom-0 end-0"
-                htmlFor="pro-banner"
-              >
-                <span className="btn btn-icon btn-sm btn-pills btn-primary">
-                  <FiCamera className="icons" />
-                </span>
-              </label>
             </div>
           </div>
 
@@ -263,27 +180,19 @@ const CreateProfile = () => {
                       id="profile-image"
                       alt=""
                     />
-                    <label
-                      className="icons position-absolute bottom-0 end-0"
-                      htmlFor="pro-img"
-                    >
-                      <span className="btn btn-icon btn-sm btn-pills btn-primary">
-                        <FiCamera className="icons" />
-                      </span>
-                    </label>
                   </div>
                 </div>
 
                 <div className="content mt-3">
                   <h5 className="mb-3">{user?.name}</h5>
                   <small className="text-muted px-2 py-1 rounded-lg shadow">
-                    {splitWalletAddress(account)}{' '}
+                    {splitWalletAddress(walletAddress)}{' '}
                     <a
                       href=""
                       onClick={async (e) => {
                         e.preventDefault()
                         try {
-                          await navigator.clipboard.writeText(account);
+                          await navigator.clipboard.writeText(walletAddress);
                           console.log('Content copied to clipboard');
                         } catch (err) {
                           console.error('Failed to copy: ', err);
@@ -299,28 +208,6 @@ const CreateProfile = () => {
                     {user?.bio}
                   </h6>
 
-                  <div className="mt-4">
-                    <a
-                      href="/creator-profile-edit"
-                      onClick={e => {
-                        e.preventDefault()
-                        navigate('/creator-profile-edit')
-                      }}
-                      className="btn btn-pills btn-outline-primary mx-1"
-                    >
-                      Edit Profile
-                    </a>
-                    <a
-                      href="/upload-work"
-                      onClick={e => {
-                        e.preventDefault()
-                        navigate('/upload-work')
-                      }}
-                      className="btn btn-pills btn-icon btn-outline-primary mx-1"
-                    >
-                      <i className="uil uil-folder-upload"></i>
-                    </a>
-                  </div>
                 </div>
               </div>
             </div>
@@ -715,4 +602,4 @@ const CreateProfile = () => {
   )
 }
 
-export default CreateProfile
+export default UserProfile

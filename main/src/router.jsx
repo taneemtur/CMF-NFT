@@ -34,6 +34,7 @@ import { useLocation } from 'react-router'
 import { useSelector } from 'react-redux'
 import CreateNFT from './pages/CreateNFT'
 import DarkVersionTwo from './pages/DarkVersionTwo'
+import UserProfile from './pages/UserProfile'
 
 
 
@@ -83,6 +84,7 @@ export default function Router() {
       <Route exact path="/collection/:collectionAddress/" element={<CollectionDetail />} />
       <Route exact path="/become-creator" element={<BecomeCreator />} />
       <Route exact path="/creator-profile" element={<CreateProfile />} />
+      <Route exact path="/profile/:walletAddress" element={<UserProfile />} />
       
       <Route
         exact

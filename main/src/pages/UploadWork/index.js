@@ -8,6 +8,7 @@ import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
 import { deployContract } from '../../blockchain/mintContracts'
 import { switchChain } from '../../utils'
+import { USER_ACTIVITIES } from '../../activities'
 
 
 const UploadWork = () => {
@@ -24,7 +25,7 @@ const UploadWork = () => {
 
   const location = useLocation();
   const { state } = location
-  
+
   useEffect(() => {
     if (state) {
       const collection = state.collection
@@ -115,7 +116,7 @@ const UploadWork = () => {
       const id = toast.loading('Creating Collection');
       try {
         const contractAddress = await deployContract(account, data.blockchain, data.name, '');
-        if(contractAddress){
+        if (contractAddress) {
           console.log(contractAddress);
           data.collectionAddress = contractAddress;
           formData.append('file', image)
@@ -126,22 +127,31 @@ const UploadWork = () => {
               'Content-Type': 'multipart/form-data'
             },
           })
-          .then(res => {   
-            res.data.code == 200 ? (         
-              toast.update(id, {
-                render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
-              })
-            ) : (
-              toast.update(id, {
-                render: `${res.data.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
-              })
-            )
-          })
-          .catch(err => {
-            toast.update(id, {
-              render: `${err.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+            .then(async (res) => {
+              if (res.data == 200) {
+                await axiosConfig.post("/activity/useractivity", {
+                  // userId, activityName, activityData
+                  userId: account,
+                  activityName: USER_ACTIVITIES.CREATE_COLLECTION,
+                  activityData: {
+                    ...res.data.data,
+                    createdAt: new Date()
+                  }
+                })
+                toast.update(id, {
+                  render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: () => navigate(`/collection/${res.data.data.collectionAddress}`)
+                })
+              } else {
+                toast.update(id, {
+                  render: `${res.data.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, onClick: () => navigate(`/collection/${res.data.data.collectionAddress}`)
+                })
+              }
             })
-          })
+            .catch(err => {
+              toast.update(id, {
+                render: `${err.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
+              })
+            })
         }
       } catch (error) {
         toast.update(id, {
@@ -158,9 +168,18 @@ const UploadWork = () => {
           'Content-Type': 'multipart/form-data'
         },
       })
-        .then(res => {
+        .then(async (res) => {
+          await axiosConfig.post("/activity/useractivity", {
+            // userId, activityName, activityData
+            userId: state ? state.collection.owner.walletAddress : account,
+            activityName: USER_ACTIVITIES.EDIT_COLLECTION,
+            activityData: {
+              ...res.data.data,
+              updatedAt: new Date()
+            }
+          })
           toast.update(id, {
-            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/collection/${res.data.data.collectionAddress}`)
+            render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: () => navigate(`/collection/${res.data.data.collectionAddress}`)
           })
         })
         .catch(err => {
@@ -380,7 +399,7 @@ const UploadWork = () => {
                               Description :{' '}
                             </label>
                             <textarea
-                            required
+                              required
                               onChange={e => setDescription(e.target.value)}
                               value={description}
                               name="escription"
@@ -393,23 +412,23 @@ const UploadWork = () => {
                           {/*end col*/}
 
                           {!state ? (
-                          <>
-                          <div className="col-md-12 mb-4">
-                            <label className="form-label fw-bold">Blockchain:</label>
-                            <select
-                            required
-                            value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
-                              <option value=''> Select Chain </option>
-                              {supportedChains.map((item) => {
-                                return (
-                                  <>
-                                    <option value={item.chainId}> {item.chainName} </option>
-                                  </>
-                                )
-                              })}
-                            </select>
-                          </div>
-                          </>
+                            <>
+                              <div className="col-md-12 mb-4">
+                                <label className="form-label fw-bold">Blockchain:</label>
+                                <select
+                                  required
+                                  value={blockchain} className='form-control' onChange={e => setBlockchain(e.target.value)} >
+                                  <option value=''> Select Chain </option>
+                                  {supportedChains.map((item) => {
+                                    return (
+                                      <>
+                                        <option value={item.chainId}> {item.chainName} </option>
+                                      </>
+                                    )
+                                  })}
+                                </select>
+                              </div>
+                            </>
                           ) : ''}
 
                           <div className="col-12 mb-4">
@@ -417,7 +436,7 @@ const UploadWork = () => {
                             {
                               categories && (
                                 <select
-                                required
+                                  required
                                   onChange={e => {
                                     setCategory(categories.find(category => category.name === e.target.value))
                                   }}
@@ -451,8 +470,8 @@ const UploadWork = () => {
                               className="btn btn-primary rounded-md"
                             >
                               {
-                                state ? creating ? "Updating..." : "Update Collection" 
-                                : creating ? "Creating..." : "Create Collection"
+                                state ? creating ? "Updating..." : "Update Collection"
+                                  : creating ? "Creating..." : "Create Collection"
                               }
                             </button>
                           </div>

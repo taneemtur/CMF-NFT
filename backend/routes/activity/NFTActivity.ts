@@ -11,18 +11,31 @@ const router = express.Router();
 router.post("/", async (req: Request, res: Response) => {
     const { nftId, activityData } = req.body;
     try {
-        const activityRef = db.collection("activity").doc("nft_activity").collection(nftId);
-        const snapshot = await activityRef.get();
-        if (snapshot.empty) {
-            // activities[{...activity_data}]
-            await activityRef.add({
-                activity_data: [activityData]
-            });
-        } else {
-            // activities[{...activity_data}, {...activity_data}]
-            await activityRef.doc(snapshot.docs[0].id).update({
-                activity_data: [...snapshot.docs[0].data().activity_data, activityData]
-            });
+        // activity -> nft_id -> activity_data: [{}]
+        const activityRef = db.collection("activity").doc(nftId)
+        const activityDoc = await activityRef.get()
+        if (activityDoc.exists) {
+            const activityDataFir = activityDoc.data()
+            if (activityDataFir) {
+                const activity = activityDataFir["activity_data"]
+                if (activity) {
+                    await activityRef.update({
+                        "activity_data": [...activity, activityData]
+                    })
+                } else {
+                    await activityRef.update({
+                        "activity_data": [activityData]
+                    })
+                }
+            } else {
+                await activityRef.update({
+                    "activity_data": [activityData]
+                })
+            }
+        }else {
+            await activityRef.set({
+                "activity_data": [activityData]
+            })
         }
         res.status(200).send("Activity added");
     }catch {
@@ -31,15 +44,30 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // get
-router.get("/", async (req: Request, res: Response) => {
-    const { nftId } = req.body;
+router.get("/:nftId", async (req: Request, res: Response) => {
+    const nftId = req.params.nftId;
     try {
-        const activityRef = db.collection("activity").doc("nft_activity").collection(nftId);
-        const snapshot = await activityRef.get();
-        if (snapshot.empty) {
-            res.status(200).send([]);
-        } else {
-            res.status(200).send(snapshot.docs[0].data().activity_data);
+        const activityRef = db.collection("activity").doc(nftId)
+        const activityDoc = await activityRef.get()
+        if (activityDoc.exists) {
+            const activityDataFir = activityDoc.data()
+            if (activityDataFir) {
+                res.status(200).send({
+                    "data": activityDataFir["activity_data"],
+                    "message": "List of activities"
+                })
+            }
+            else {
+                res.status(200).send({
+                    "data": {},
+                    "message": "List of activities"
+                })
+            }
+        }else{
+            res.status(200).send({
+                "data": {},
+                "message": "List of activities"
+            })
         }
     } catch {
         res.status(500).send("Error getting activity");

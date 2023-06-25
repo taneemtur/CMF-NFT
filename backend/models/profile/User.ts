@@ -6,8 +6,9 @@ interface UserModel {
     profileImage?: string
     twitterAccount?: string
     bio?: string
-    wesite?: string
+    website?: string
     url?: string
+    isVerified?: boolean
 }
 
 export {UserModel}

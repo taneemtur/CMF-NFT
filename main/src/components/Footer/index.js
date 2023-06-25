@@ -115,10 +115,10 @@ const Footer = () => {
                     <ul className="list-unstyled footer-list mt-4">
                       <li>
                         <a
-                          href="/explore-two"
+                          href="/explor"
                           onClick={e => {
                             e.preventDefault()
-                            navigate('/explore-two')
+                            navigate('/explore')
                           }}
                           className="text-foot"
                         >
@@ -406,7 +406,10 @@ const Footer = () => {
               </button>
             </div>
 
-            <div className="modal-body p-4 text-center">
+            <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+          borderRadius: "10px"
+        }} className="modal-body p-4 text-center">
               <img
                 src={MetaMask_Fox}
                 className="avatar avatar-md-md rounded-circle shadow-sm "
@@ -442,9 +445,11 @@ const Footer = () => {
         tabIndex="-1"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-dialog-centered modal-sm">
-          <div className="modal-content justify-content-center border-0 shadow-md rounded-md position-relative">
-            <div className="position-absolute top-0 start-100 translate-middle z-index-1">
+        <div  className="modal-dialog modal-dialog-centered modal-sm">
+          <div style={{
+          backgroundColor: 'rgba(0, 0, 0, 1)',
+        }} className="modal-content justify-content-center border-0 shadow-md rounded-md position-relative">
+            <div  className="position-absolute top-0 start-100 translate-middle z-index-1">
               <button
                 type="button"
                 onClick={closeChainModal}
@@ -456,7 +461,10 @@ const Footer = () => {
               </button>
             </div>
 
-            <div className="modal-body p-4 text-center">
+            <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+          borderRadius: "10px"
+        }} className="modal-body p-4 text-center bg-opacity-3">
               <img
                 src={MetaMask_Fox}
                 className="avatar avatar-md-md rounded-circle shadow-sm "

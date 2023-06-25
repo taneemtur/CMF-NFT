@@ -31,6 +31,7 @@ import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
 import NftCard from '../../components/NftCard'
 import { getChainName } from '../../blockchain/supportedChains'
+import { USER_ACTIVITIES } from '../../activities'
 
 
 const CollectionDetail = () => {
@@ -38,110 +39,12 @@ const CollectionDetail = () => {
   const { user, account } = useSelector(state => state.theme)
   const [collection, setCollection] = useState(null);
   const [nfts, setNfts] = useState(null);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(10);
   const { collectionAddress } = useParams();
 
-
-  const AuctionData = [
-    {
-      image: gif1,
-      title: 'Deep Sea Phantasy',
-      id: 'May 29, 2022 6:0:0',
-      type: 'GIFs',
-    },
-    {
-      image: item1,
-      title: 'CyberPrimal 042 LAN',
-      id: '',
-      type: 'Arts',
-    },
-    {
-      image: gif2,
-      title: 'Crypto Egg Stamp #5',
-      id: '',
-      type: 'Games',
-    },
-    {
-      image: item2,
-      title: 'Colorful Abstract Painting',
-      id: 'June 03, 2022 5:3:1',
-      type: '',
-    },
-    {
-      image: item3,
-      title: 'Liquid Forest Princess',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif3,
-      title: 'Spider Eyes Modern Art',
-      id: 'June 10, 2022 1:0:1',
-      type: 'GIFs',
-    },
-    {
-      image: item4,
-      title: 'Synthwave Painting',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif4,
-      title: 'Contemporary Abstract',
-      id: '',
-      type: 'GIFs',
-    },
-    {
-      image: item5,
-      title: 'Valkyrie Abstract Art',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif5,
-      title: 'The girl with the firefly',
-      id: '',
-      type: '',
-    },
-    {
-      image: item6,
-      title: 'Dodo hide the seek',
-      id: '',
-      type: '',
-    },
-    {
-      image: gif6,
-      title: 'Pinky Ocean',
-      id: 'June 10, 2022 1:0:1',
-      type: '',
-    },
-    {
-      image: item7,
-      title: 'Rainbow Style',
-      id: 'June 18, 2022 1:2:1',
-      type: 'Music',
-    },
-    {
-      image: item8,
-      title: 'Running Puppets',
-      id: '',
-      type: 'Gallery',
-    },
-    {
-      image: item9,
-      title: 'Loop Donut',
-      id: 'July 01, 2022 1:6:6',
-      type: 'Video',
-    },
-    {
-      image: item10,
-      title: 'This is Our Story',
-      id: 'July 15, 2022 2:5:5',
-      type: '',
-    },
-  ]
-
   const getCollectionData = async () => {
-    await axiosConfig.get(`/collections/${collectionAddress}`).then((res) => {
+    await axiosConfig.get(`/collections/collection/${collectionAddress}`).then((res) => {
       console.log(res.data)
       setCollection(res.data.data)
     })
@@ -242,7 +145,16 @@ const CollectionDetail = () => {
                             const id = toast.loading('Collection Deleteing');
                             // navigate('/upload-work')
                             await axiosConfig.delete(`/collections/${collection.collectionAddress}`)
-                            .then(res => {
+                            .then(async (res) => {
+                              await axiosConfig.post("/activity/useractivity", {
+                                // userId, activityName, activityData
+                                userId: account,
+                                activityName: USER_ACTIVITIES.DELETE_COLLECTION,
+                                activityData: {
+                                  ...res.data.data,
+                                  deleteAt: new Date()
+                                }
+                              })
                               toast.update(id, {
                                 render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/creator-profile`)
                               })
@@ -273,230 +185,12 @@ const CollectionDetail = () => {
       {/* collection nfts section */}
       <section className="section">
         <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-6">
-              <div className="sticky-bar">
-                <h5 className="mb-0">NFT Filters</h5>
-                <div className="p-4 rounded-md shadow mt-4">
-                  <div>
-                    <h6>Orders By:</h6>
-                    <form>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="NewOrder"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="NewOrder"
-                        >
-                          Newest
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="TrendOrder"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="TrendOrder"
-                        >
-                          Trending
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="OldOrder"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="OldOrder"
-                        >
-                          Oldest
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div className="mt-4">
-                    <h6>Catagories By:</h6>
-                    <form>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="GamesCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="GamesCatagory"
-                        >
-                          Games
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="ArtCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="ArtCatagory"
-                        >
-                          Art
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="MusicCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="MusicCatagory"
-                        >
-                          Music
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="VideoCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="VideoCatagory"
-                        >
-                          Video
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="MemesCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="MemesCatagory"
-                        >
-                          Memes
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="IllustrationCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="IllustrationCatagory"
-                        >
-                          Illustration
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="GIFsCatagory"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="GIFsCatagory"
-                        >
-                          GIFs
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div className="mt-4">
-                    <h6>Creators By:</h6>
-                    <form>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="AllCreators"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="AllCreators"
-                        >
-                          All Creators
-                        </label>
-                      </div>
-                      <div className="form-check align-items-center d-flex mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="VerifyCreators"
-                        />
-                        <label
-                          className="form-check-label fw-bold ms-2"
-                          htmlFor="VerifyCreators"
-                        >
-                          Verified Creators
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/*end col*/}
-
-            <div className="col-lg-9 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
-              <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-1">
-                {nfts && nfts?.map((nft, index) => {
-                  return (
-                   <NftCard nft={nft} index={index} />
-                  )
-                })}
-                {/*end col*/}
-              </div>
-              {/*end row*/}
-
-              <div className="row justify-content-center mt-4">
-                <div className="col">
-                  <div className="text-center">
-                    <a
-                      href=""
-                      onClick={e => e.preventDefault()}
-                      className="btn btn-primary rounded-md"
-                    >
-                      <i className="uil uil-process mdi-spin me-1"></i> Load
-                      More
-                    </a>
-                  </div>
-                </div>
-                {/*end col*/}
-              </div>
-              {/*end row*/}
-            </div>
-            {/*end col*/}
+          <div className="row row-cols-xl-4 row-cols-lg-4 row-cols-1">
+            {nfts && nfts.slice(start, end)?.map((nft, index) => {
+              return (
+                <NftCard nft={nft} index={index} />
+              )
+            })}
           </div>
           {/*end row*/}
         </div>

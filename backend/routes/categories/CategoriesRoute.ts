@@ -51,7 +51,7 @@ router.get("/getcategories", async (req: Request, res: Response) => {
 })
 
 // get specific category
-router.get("/:category", async (req: Request, res: Response) => {
+router.get("/single/:category", async (req: Request, res: Response) => {
     const category = req.params.category;
     try {
         // categories snapshot
@@ -109,7 +109,7 @@ router.put("/:category", async (req: Request, res: Response) => {
 // delete category
 router.delete("/:category", async (req: Request, res: Response) => {
     const category = req.params.category;
-    const categoryRef = db.collection("categories").where("name", "==", category);
+    const categoryRef = db.collection("categories").where("id", "==", category);
     // get this category and delete it
     const snapshot = await categoryRef.get();
     if (snapshot) {

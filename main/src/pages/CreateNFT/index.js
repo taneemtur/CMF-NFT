@@ -9,6 +9,7 @@ import Main from '../../Layouts/Main'
 import { toast } from 'react-toastify'
 import { mint } from '../../blockchain/mintContracts'
 import { getChainById } from '../../blockchain/supportedChains'
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities'
 
 
 const CreateNFT = () => {
@@ -154,6 +155,23 @@ const CreateNFT = () => {
         }else{
           console.log(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), parseInt(data.supply))
           await mint(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), parseInt(data.supply) );
+          await axiosConfig.post("/activity/useractivity", {
+            // userId, activityName, activityData
+            userId: account,
+            activityName: USER_ACTIVITIES.CREATE_NFT,
+            activityData: {
+              ...res.data.data,
+              createdAt: new Date()
+            }
+          })
+          await axiosConfig.post("/activity/nftactivity", {
+            nftId: res.data.data.nftAddress,
+            activityData: {
+              activity: NFT_ACTIVITIES.CREATE_NFT,
+              createdAt: new Date(),
+              ...res.data.data
+            }
+          })
           toast.update(id, {
             render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${nftAddress}`)
           }) 
@@ -170,6 +188,23 @@ const CreateNFT = () => {
       try {
         formData.append('data', JSON.stringify(data))
         const res = await axiosConfig.put("/nfts/updatenft", formData, { body: data, headers: { 'Content-Type': 'multipart/form-data' } })
+        await axiosConfig.post("/activity/useractivity", {
+          // userId, activityName, activityData
+          userId: account,
+          activityName: USER_ACTIVITIES.EDIT_NFT,
+          activityData: {
+            ...res.data.data,
+            updatedAt: new Date()
+          }
+        })
+        await axiosConfig.post("/activity/nftactivity", {
+          nftId: res.data.data.nftAddress,
+          activityData: {
+            activity: NFT_ACTIVITIES.UPDATE_NFT,
+            updatedAt: new Date(),
+            ...res.data.data
+          }
+        })
         toast.update(id, {
           render: `${res.data.message}. Click to View`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: ()=>navigate(`/nft/${res.data.data.nftAddress}`)
         })

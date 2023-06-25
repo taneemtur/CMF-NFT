@@ -2,19 +2,32 @@ import React from 'react'
 import { client08 } from '../imageImport'
 import { getChainByName } from '../../blockchain/supportedChains'
 import { useNavigate } from 'react-router-dom'
+import Countdown from 'react-countdown';
+import axiosConfig from "../../axiosConfig"
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+
 
 const NftCard = ({nft, index}) => {
     const navigate = useNavigate();
+    const { account } = useSelector(state => state.theme);
+
+    async function likedNFT(nft){
+      await axiosConfig.post('/profile/addlikednfts',{walletAddress: account, nft: nft}).then((res)=>{
+        toast(res.data.message)
+      })
+    }
+
   return (
     <div key={index} className='mt-5'>
     <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
       <div className="d-flex justify-content-between">
         <div className="img-group">
           <a
-            href="/creator-profile"
+            href={`/profile/${nft?.owner?.walletAddress}`}
             onClick={e => {
               e.preventDefault()
-              navigate('/creator-profile')
+              navigate(`/profile/${nft?.owner?.walletAddress}`)
             }}
             className="user-avatar"
           >
@@ -29,7 +42,10 @@ const NftCard = ({nft, index}) => {
         <span className="like-icon shadow-sm">
           <a
             href=""
-            onClick={e => e.preventDefault()}
+            onClick={e => {
+              e.preventDefault()
+              likedNFT(nft)
+            }}
             className="text-muted icon"
           >
             <i className="mdi mdi-18px mdi-heart mb-0"></i>
@@ -69,6 +85,23 @@ const NftCard = ({nft, index}) => {
         >
           <i className="uil uil-clock"></i>{' '}
         </div>
+
+        {
+          nft?.type == 'auction' && (
+            <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
+              <i className="uil uil-clock"></i>{' '}
+              <Countdown
+                date={nft?.auctionTimeEnd}
+                renderer={({ days, hours, minutes, seconds }) => (
+                  <span>
+                    {days}:{hours}:{minutes}:{seconds}
+                  </span>
+                )}
+              />
+            </div>
+          )
+        }
+
       </div>
 
       <div className="card-body content position-relative p-0 mt-3">

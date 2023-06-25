@@ -10,6 +10,7 @@ import NFTListModel from '../../components/NFTListModel'
 import { splitWalletAddress } from '../../utils'
 import { getChainByName } from '../../blockchain/supportedChains'
 import { approveUSDT, buyNFT, listingCancel } from '../../blockchain/mintContracts'
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities'
 
 
 const ItemDetailOne = () => {
@@ -18,9 +19,10 @@ const ItemDetailOne = () => {
   const { nftAddress } = useParams();
   const [nft, setNft] = useState(null);
   const [showListModal, setShowListModal] = useState(false);
+  const [nftActivity, setNftActivity] = useState(null);
 
   const getNftData = async () => {
-    await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
+    await axiosconfig.get(`/nfts/nft/${nftAddress}`).then((res) => {
       setNft(res.data.data)
     })
   }
@@ -29,10 +31,27 @@ const ItemDetailOne = () => {
     const id = toast.loading('Cancel Listing...');
     try {
       await listingCancel(parseInt(nft?.fixedListingId), nft?.blockchain, account);
-      const res = await axiosconfig.put(`/nfts/unlistnft`, {nftAddress})
-      toast.update(id, {render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 })
+      const res = await axiosconfig.put(`/nfts/unlistnft`, { nftAddress })
+      await axiosconfig.post("/activity/useractivity", {
+        // userId, activityName, activityData
+        userId: account,
+        activityName: USER_ACTIVITIES.CANCEL_LISTING,
+        activityData: {
+          ...res.data.data,
+          unlistedAt: new Date()
+        }
+      })
+      await axiosconfig.post("/activity/nftactivity", {
+        nftId: res.data.data.nftAddress,
+        activityData: {
+          activity: NFT_ACTIVITIES.CANCEL_LISTING,
+          canceledAt: new Date(),
+          ...res.data.data
+        }
+      })
+      toast.update(id, { render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 })
     } catch (error) {
-      toast.update(id, {render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 }) 
+      toast.update(id, { render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 })
     }
     getNftData()
   }
@@ -42,18 +61,55 @@ const ItemDetailOne = () => {
     try {
       nft?.paymentToken == 'USDT' ? await approveUSDT(account, nft?.blockchain, nft?.price) : '';
       await buyNFT(nft?.fixedListingId, nft?.price, nft?.blockchain, account)
-      const res = await axiosconfig.put(`/nfts/updatenftowner`, {nftAddress, owner: account});
-      await axiosconfig.put(`/nfts/unlistnft`, {nftAddress});
-      toast.update(id, {render: `NFT Bought`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 }) 
+      const res = await axiosconfig.put(`/nfts/updatenftowner`, { nftAddress, owner: account });
+      await axiosconfig.post("/activity/useractivity", {
+        // userId, activityName, activityData
+        userId: account,
+        activityName: USER_ACTIVITIES.BUY_NFT,
+        activityData: {
+          ...res.data.data,
+          buyAt: new Date()
+        }
+      })
+      await axiosconfig.post("/activity/nftactivity", {
+        nftId: res.data.data.nftAddress,
+        activityData: {
+          activity: NFT_ACTIVITIES.SELL_NFT,
+          soldAt: new Date(),
+          ...res.data.data
+        }
+      })
+      await axiosconfig.post("/activity/useractivity", {
+        // userId, activityName, activityData
+        userId: nft?.owner.walletAddress,
+        activityName: USER_ACTIVITIES.SELL_NFT,
+        activityData: {
+          ...res.data.data,
+          sellAt: new Date()
+        }
+      })
+      await axiosconfig.put(`/nfts/unlistnft`, { nftAddress });
+      toast.update(id, { render: `NFT Bought`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, autoClose: 5000 })
     } catch (error) {
-      toast.update(id, {render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 }) 
+      toast.update(id, { render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true, autoClose: 5000 })
     }
     getNftData()
+  }
+
+  async function getActivity() {
+    await axiosconfig.get(`/activity/nftactivity/${nftAddress}`)
+      .then((res) => {
+        console.log('activity', res.data.data)
+        setNftActivity(res.data.data)
+      }).catch(err => {
+        console.log(err)
+      })
   }
 
   useEffect(() => {
     if (nftAddress) {
       getNftData()
+      getActivity()
     }
     return () => {
       setNft(null)
@@ -132,7 +188,16 @@ const ItemDetailOne = () => {
                       const id = toast.loading('NFT Deleteing');
                       // navigate('/upload-work')
                       await axiosconfig.delete(`/nfts/${nft.nftAddress}`)
-                        .then(res => {
+                        .then(async (res) => {
+                          await axiosconfig.post("/activity/useractivity", {
+                            // userId, activityName, activityData
+                            userId: account,
+                            activityName: USER_ACTIVITIES.DELETE_NFT,
+                            activityData: {
+                              ...res.data.data,
+                              deleteAt: new Date()
+                            }
+                          })
                           toast.update(id, {
                             render: `${res.data.message}`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true, onClick: () => navigate(`/creator-profile`)
                           })
@@ -161,7 +226,7 @@ const ItemDetailOne = () => {
             <div className="col-md-6 mt-4 pt-2 mt-sm-0 pt-sm-0">
               <div className="ms-lg-5">
                 <Link to={`/collection/${nft
-                ?.collection?.collectionAddress}`}>
+                  ?.collection?.collectionAddress}`}>
                   <p>{nft?.collection.name}</p>
                 </Link>
                 <div className="title-heading">
@@ -173,25 +238,25 @@ const ItemDetailOne = () => {
                 <div className="row">
                   <div className="col-md-6 mt-4 pt-2">
                     <h6>Price</h6>
-                    <h4 className="mb-0"> {nft?.price} { nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain) } </h4>
+                    <h4 className="mb-0"> {nft?.price} {nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain)} </h4>
                   </div>
 
-                 {
-                  nft?.listed && nft?.owner?.walletAddress != account && (
-                  <div className="col-12 mt-4 pt-2">
-                    <a
-                      href=""
-                      className="btn btn-l btn-pills btn-primary"
-                      onClick={(e)=>{
-                        e.preventDefault(); 
-                        buy();
-                      }}
-                    >
-                      <i className="mdi mdi-cart fs-5 me-2"></i> Buy Now
-                    </a>
-                  </div>
-                  )
-                 }
+                  {
+                    nft?.listed && nft?.owner?.walletAddress != account && (
+                      <div className="col-12 mt-4 pt-2">
+                        <a
+                          href=""
+                          className="btn btn-l btn-pills btn-primary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            buy();
+                          }}
+                        >
+                          <i className="mdi mdi-cart fs-5 me-2"></i> Buy Now
+                        </a>
+                      </div>
+                    )
+                  }
                 </div>
                 <div className="row mt-4 pt-2">
                   <div className="col-12">
@@ -260,15 +325,15 @@ const ItemDetailOne = () => {
                               {
                                 nft && (
                                   <a
-                                href="/creators"
-                                onClick={e => {
-                                  e.preventDefault()
-                                  navigate('/creators')
-                                }}
-                                className="text-dark name"
-                              >
-                                {splitWalletAddress(nft?.owner?.walletAddress)} - {nft?.owner?.name && nft?.owner?.name}
-                              </a>
+                                    href={`/profile/${nft?.owner?.walletAddress}`}
+                                    onClick={e => {
+                                      e.preventDefault()
+                                      navigate(`/profile/${nft?.owner?.walletAddress}`)
+                                    }}
+                                    className="text-dark name"
+                                  >
+                                    {splitWalletAddress(nft?.owner?.walletAddress)} - {nft?.owner?.name && nft?.owner?.name}
+                                  </a>
                                 )
                               }
                             </h6>

@@ -13,14 +13,35 @@ router.post("/", async (req: Request, res: Response) => {
     const body = req.body;
     const walletAddress = body.walletAddress;
     const bestCreatorsSellers = db.collection("landing_page").doc("best_creators_sellers");
+    const userRef = db.collection("users").doc(walletAddress);
     const snapshot = await bestCreatorsSellers.get();
     if (snapshot.exists) {
         const data = snapshot.data();
         if (data) {
             let bestCreatorsSellersArray = data.best_creators_sellers || [];
             if (bestCreatorsSellersArray.includes(walletAddress)) {
+                // remove the wallet address
+                bestCreatorsSellersArray = bestCreatorsSellersArray.filter((address:string) => address !== walletAddress);
+                try {
+                    const response = await bestCreatorsSellers.update({
+                        best_creators_sellers: bestCreatorsSellersArray
+                    });
+                    if (response) {
+                        const userSnapshot = await userRef.get();
+                        if (userSnapshot.exists) {
+                            // remove bestCreator = true from user
+                            const user = userSnapshot.data();
+                            if (user) {
+                                user.bestCreator = false;
+                                await userRef.update(user);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
                 return res.json({
-                    message: "Wallet Address already exists",
+                    message: "removed wallet address",
                 }).status(400)
             } else {
                 bestCreatorsSellersArray.push(walletAddress);
@@ -29,6 +50,15 @@ router.post("/", async (req: Request, res: Response) => {
                         best_creators_sellers: bestCreatorsSellersArray
                     });
                     if (response) {
+                        const userSnapshot = await userRef.get();
+                        if (userSnapshot.exists) {
+                            // add bestCreator = true to user
+                            const user = userSnapshot.data();
+                            if (user) {
+                                user.bestCreator = true;
+                                await userRef.update(user);
+                            }
+                        }
                         return res.json({
                             message: "Wallet Address added",
                         }).status(200)
