@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { FiCamera } from 'react-icons/fi'
 import {
   client01, client02, client03, client04, client05, client06, client08,
@@ -20,111 +20,18 @@ import NftCardAuction from '../../components/NftCardAuction'
 
 const UserProfile = () => {
   const navigate = useNavigate()
-  const { user, account } = useSelector(state => state.theme);
   const [loading, setLoading] = useState(false)
   const [collections, setCollections] = useState([]);
   const [userOnSale, setUserOnSale] = useState([]);
-  const [userOnAuction, setUserOnAuction] = useState([]);
+  const [userFollowers, setUserFollowers] = useState([]);
+  const [userLikedNFTs, setUserLikedNFTs] = useState([]);
   const [nfts, setNfts] = useState([]);
-  const [userActivities, setUserActivities] = useState([])
-  
+  const [user, setUser] = useState([]);
+  const [userActivities, setUserActivities] = useState([]);
+  const { walletAddress } = useParams();
 
-  const followerData = [
-    {
-      name: 'CutieGirl',
-      location: 'Brookfield, WI',
-      image: client02,
-      subMenu: [item1, item2, item3, item4, item5, gif4],
-    },
-    {
-      name: 'FunnyGuy',
-      location: 'Brookfield, WI',
-      image: client13,
-      subMenu: [item3, gif1, item9, item6, item1, gif2],
-    },
-    {
-      name: 'NorseQueen',
-      location: 'Brookfield, WI',
-      image: client03,
-      subMenu: [gif5, item2, gif6, item4, item5],
-    },
-    {
-      name: 'BigBull',
-      location: 'Brookfield, WI',
-      image: client04,
-      subMenu: [item7, item8, item9, item10],
-    },
-    {
-      name: 'KristyHoney',
-      location: 'Brookfield, WI',
-      image: client10,
-      subMenu: [item1, item2, item3, item4, item5, item6],
-    },
-    {
-      name: 'Princess',
-      location: 'Brookfield, WI',
-      image: client12,
-      subMenu: [item5, item8, item4, item7, item5, item10],
-    },
-  ]
 
   const activityData = [
-    {
-      title: 'Digital Art Collection',
-      author: 'Panda',
-      time: '1 hours ago',
-      favorite: 'Started Following',
-      image: item1,
-    },
-    {
-      title: 'Skrrt Cobain Official',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: gif1,
-    },
-    {
-      title: 'Wow! That Brain Is Floating',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: item2,
-    },
-    {
-      title: 'Our Journey Start',
-      author: 'CalvinCarlo',
-      time: '5 hours ago',
-      favorite: 'Listed by',
-      image: item3,
-    },
-    {
-      title: 'BitBears',
-      author: 'ButterFly',
-      time: '8 hours ago',
-      favorite: 'Liked by',
-      image: gif2,
-    },
-    {
-      title: 'Little Kokeshi #13',
-      author: 'ButterFly',
-      time: '10 hours ago',
-      favorite: 'Liked by',
-      image: item4,
-    },
-    {
-      title: 'EVOL Floater',
-      author: 'CutieGirl',
-      time: '13 hours ago',
-      favorite: 'Started Following',
-      image: gif3,
-    },
-    {
-      title: 'Smart Ape Club (SAC) - Limited Edition',
-      author: 'CalvinCarlo',
-      time: '18 hours ago',
-      favorite: 'Listed by',
-      image: gif4,
-    },
     {
       title: 'THE SECRET SOCIETY XX #775',
       author: 'CalvinCarlo',
@@ -141,28 +48,14 @@ const UserProfile = () => {
     },
   ]
 
-
-  const loadFile = async function (event, banner = false) {
-    var image = document.getElementById(event.target.name)
-    image.src = URL.createObjectURL(event.target.files[0])
-    const data = new FormData();
-    data.append("file", event.target.files[0]);
-    const endpoint = banner ? "/profile/uploadbannerimage" : "/profile/uploadprofileimage"
-    await axiosConfig.post(`${endpoint}/${account}`, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  const getUserData = async function () {
+    await axiosConfig.get(`/profile/user/${walletAddress}`).then((res)=>{
+        setUser(res.data.data)
     })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   }
 
   const getUserCollection = async () => {
-    await axiosConfig.get(`/collections/user/${account}`).then((res) => {
+    await axiosConfig.get(`/collections/user/${walletAddress}`).then((res) => {
       setCollections(res.data.data)
       console.log(res.data.data)
     }).catch((err) => {
@@ -171,7 +64,7 @@ const UserProfile = () => {
   }
 
   const getUserNFTs = async () => {
-    await axiosConfig.get(`/nfts/getnfts/${account}`).then((res) => {
+    await axiosConfig.get(`/nfts/getnfts/${walletAddress}`).then((res) => {
       setNfts(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -179,8 +72,7 @@ const UserProfile = () => {
   }
 
   const getUserActivities = async () => {
-    console.log("account", account)
-    await axiosConfig.get(`/activity/useractivity/${account}`).then((res) => {
+    await axiosConfig.get(`/activity/useractivity/${walletAddress}`).then((res) => {
       console.log(res.data.data)
       setUserActivities(res.data.data)
     }).catch((err) => {
@@ -189,75 +81,61 @@ const UserProfile = () => {
   }
 
   const getUserOnSale = async () => {
-    await axiosConfig.get(`/nfts/getfixedpricenfts/${account}`).then((res) => {
+    await axiosConfig.get(`/nfts/getlistednfts/${walletAddress}`).then((res) => {
       setUserOnSale(res.data.data)
     }).catch((err) => {
       console.log(err)
     })
   }
 
-  const getUserOnAuction = async () => {
-    await axiosConfig.get(`/nfts/getauctionednfts/${account}`).then((res) => {
-      setUserOnAuction(res.data.data)
+  const getUserFollwers = async () => {
+    await axiosConfig.get(`/profile/getfollowedusers/${walletAddress}`).then((res) => {
+      setUserFollowers(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const getUserLikedNFTs = async () => {
+    await axiosConfig.get(`/profile/getlikednfts/${walletAddress}`).then((res) => {
+      setUserLikedNFTs(res.data.data)
     }).catch((err) => {
       console.log(err)
     })
   }
 
   useEffect(() => {
-    if (account) {
+    if (walletAddress) {
       getUserNFTs();
-      
     }
     return () => {
       // cleanup
       setNfts([])
     }
-  }, [account])
+  }, [walletAddress])
 
   useEffect(() => {
-    if (account) {
+    if (walletAddress) {
+      getUserData();
       getUserActivities();
+      getUserCollection();
+      getUserOnSale();
+      getUserFollwers();
+      getUserLikedNFTs();
     }
     return () => {
       // cleanup
       setUserActivities([])
-    }
-  }, [account])
-
-
-  useEffect(() => {
-    if (account) {
-      getUserCollection();
-    }
-    return () => {
-      // cleanup
       setCollections([])
-    }
-  }, [account])
-
-  useEffect(() => {
-    if (account) {
-      getUserOnSale();
-    }
-    return () => {
-      // cleanup
       setUserOnSale([])
+      setUserFollowers([])
+      setUserLikedNFTs([])
+      setUser([])
     }
-  }, [account])
-
-  useEffect(() => {
-    if (account) {
-      getUserOnAuction();
-    }
-    return () => {
-      // cleanup
-      setUserOnAuction([])
-    }
-  }, [account])
+  }, [walletAddress])
 
 
-  if (!account) {
+  if (!walletAddress) {
     return <></>
   }
 
@@ -308,13 +186,13 @@ const UserProfile = () => {
                 <div className="content mt-3">
                   <h5 className="mb-3">{user?.name}</h5>
                   <small className="text-muted px-2 py-1 rounded-lg shadow">
-                    {splitWalletAddress(account)}{' '}
+                    {splitWalletAddress(walletAddress)}{' '}
                     <a
                       href=""
                       onClick={async (e) => {
                         e.preventDefault()
                         try {
-                          await navigator.clipboard.writeText(account);
+                          await navigator.clipboard.writeText(walletAddress);
                           console.log('Content copied to clipboard');
                         } catch (err) {
                           console.error('Failed to copy: ', err);
@@ -329,6 +207,7 @@ const UserProfile = () => {
                   <h6 className="mt-3 mb-0">
                     {user?.bio}
                   </h6>
+
                 </div>
               </div>
             </div>
@@ -385,21 +264,6 @@ const UserProfile = () => {
                     aria-selected="false"
                   >
                     On Sale
-                  </button>
-                </li>
-
-                <li className="nav-item" role="presentation">
-                  <button
-                    className="nav-link"
-                    id="Auction-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#Auction"
-                    type="button"
-                    role="tab"
-                    aria-controls="Auction"
-                    aria-selected="false"
-                  >
-                    On Auction
                   </button>
                 </li>
 
@@ -485,20 +349,12 @@ const UserProfile = () => {
                   role="tabpanel"
                   aria-labelledby="Liked-tab"
                 >
-                  <div className="row justify-content-center">
-                    <div className="col-lg-5 col-md-8 text-center">
-                      <img src={ofcDesk} className="img-fluid" alt="" />
-
-                      <div className="content">
-                        <h5 className="mb-4">No Items</h5>
-                        <p className="text-muted">
-                          Show your appreciation for other's work by liking the
-                          shots you love. We'll collect all of your likes here
-                          for you to revisit anytime.
-                        </p>
+                  <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
+                    {userLikedNFTs && userLikedNFTs?.map((data, index) => (
+                      <div className="col" key={index}>
+                        <NftCard nft={data} key={index} />
                       </div>
-                    </div>
-                    {/* end col */}
+                    ))}
                   </div>
                   {/* end row */}
                 </div>
@@ -518,23 +374,6 @@ const UserProfile = () => {
                   </div>
                   {/*end row*/}
                 </div>
-                {/* if value select on auction */}
-                <div
-                  className="tab-pane fade"
-                  id="Auction"
-                  role="tabpanel"
-                  aria-labelledby="Auction-tab"
-                >
-                  <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-                    {userOnAuction && userOnAuction?.map((data, index) => (
-                      <div className="col" key={index}>
-                        <NftCardAuction data={data} key={index} />
-                      </div>
-                    ))}
-                  </div>
-                  {/*end row*/}
-                </div>
-                {/* if value select on auction */}
                 {/* if value select collection */}
                 <div
                   className="tab-pane fade "
@@ -596,70 +435,38 @@ const UserProfile = () => {
                   role="tabpanel"
                   aria-labelledby="Followers-tab"
                 >
-                  <h5 className="mb-4">{followerData?.length} Followers</h5>
+                  <h5 className="mb-4">{userFollowers?.length} Followers</h5>
                   <div className="row g-4">
-                    {followerData?.map(data => {
+                    {userFollowers && userFollowers?.map(data => {
                       return (
                         <div className="col-md-6" key={data?.name}>
                           <div className="p-4 rounded-md shadow users user-primary">
                             <div className="d-flex align-items-center">
                               <div className="position-relative">
                                 <img
-                                  src={data?.image}
+                                  src={data?.profileImage}
                                   className="avatar avatar-md-md rounded-pill shadow-sm img-thumbnail"
                                   alt=""
                                 />
-                                <div className="position-absolute bottom-0 end-0">
-                                  <a
-                                    href=""
-                                    onClick={e => e.preventDefault()}
-                                    className="btn btn-icon btn-pills btn-sm btn-primary"
-                                  >
-                                    <i className="uil uil-plus"></i>
-                                  </a>
-                                </div>
                               </div>
 
                               <div className="content ms-3">
                                 <h6 className="mb-0">
                                   <a
-                                    href="/creator-profile"
+                                    href={`/profile/${data?.walletAddress}`}
                                     onClick={e => {
                                       e.preventDefault()
-                                      navigate('/creator-profile')
+                                      navigate(`/profile/${data?.walletAddress}`)
                                     }}
                                     className="text-dark name"
                                   >
-                                    CutieGirl
+                                    {splitWalletAddress(data?.walletAddress)}
                                   </a>
                                 </h6>
                                 <small className="text-muted d-flex align-items-center">
-                                  <i className="uil uil-map-marker fs-5 me-1"></i>{' '}
-                                  {data?.location}
+                                  @{data?.name}
                                 </small>
                               </div>
-                            </div>
-
-                            <div className="border-top my-4"></div>
-                            <div className="row row-cols-xl-6 g-3">
-                              {data?.subMenu?.map((sub, index) => (
-                                <div className="col" key={index * 10}>
-                                  <a
-                                    href="/item-detail-one"
-                                    onClick={e => {
-                                      e.preventDefault()
-                                      navigate('/item-detail-one')
-                                    }}
-                                    className="user-item"
-                                  >
-                                    <img
-                                      src={sub}
-                                      className="img-fluid rounded-md shadow-sm"
-                                      alt=""
-                                    />
-                                  </a>
-                                </div>
-                              ))}
                             </div>
                             {/*end row */}
                           </div>
