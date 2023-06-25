@@ -18,8 +18,18 @@ router.post("/", async (req: Request, res: Response) => {
         if (data) {
             let heroSectionArray = data.hero_section || [];
             if (heroSectionArray.includes(nftAddress)) {
+                // remove NFT Address
+                const nftRef = db.collection("nfts").doc(nftAddress)
+                const nftSnapshot = await nftRef.get();
+                if (nftSnapshot.exists) {
+                    const nft = nftSnapshot.data();
+                    if (nft) {
+                        nft.heroSection = false;
+                        await nftRef.update(nft);
+                    }
+                }
                 return res.json({
-                    message: "NFT Address already exists",
+                    message: "NFT removed",
                 }).status(400)
             } else {
                 heroSectionArray.push(nftAddress);
@@ -27,6 +37,15 @@ router.post("/", async (req: Request, res: Response) => {
                     const response = await heroSection.update({
                         hero_section: heroSectionArray
                     });
+                    const nftRef = db.collection("nfts").doc(nftAddress)
+                    const nftSnapshot = await nftRef.get();
+                    if (nftSnapshot.exists) {
+                        const nft = nftSnapshot.data();
+                        if (nft) {
+                            nft.heroSection = true;
+                            await nftRef.update(nft);
+                        }
+                    }
                     if (response) {
                         return res.json({
                             message: "NFT Address added",

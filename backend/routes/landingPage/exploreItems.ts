@@ -11,21 +11,64 @@ const router = express.Router();
 router.post("/", async (req: Request, res: Response) => {
     const body = req.body;
     const category = body.category;
-    const NFTs = body.NFTs; // array of NFTs (object)
+    const NFT = body.NFT; // array of NFTs (object)
 
 
     const exploreItemsRef = db.collection("landing_page").doc("explore_items").collection(category).doc("NFTs");
-    const doc = await exploreItemsRef.get();
+    const doc = await exploreItemsRef.get() as any;
     if (!doc.exists) {
+        const nftRef = db.collection("nfts").doc(NFT.nftAddress);
+        const nftDoc = await nftRef.get() as any;
+        if (nftDoc.exists) {
+            const nft = nftDoc.data();
+            if (nft) {
+                nft.exploreItem = true;
+                await nftRef.update(nft);
+            }
+        }
         await exploreItemsRef.set({
             categoryName: category,
-            NFTs: NFTs
+            NFTs: [NFT]
         });
     }
+
     else {
-        await exploreItemsRef.update({
-            NFTs: [...doc.data()?.NFTs, NFTs]
-        });
+        const NFTs = doc.data()?.NFTs || [];
+        // check if NFT already exists
+        const NFTAddress = NFT.nftAddress;
+        const NFTExists = NFTs.find((NFT: any) => NFT.nftAddress === NFTAddress);
+        if (NFTExists) {
+            // remove nft
+            const newNFTs = NFTs.filter((NFT: any) => NFT.nftAddress !== NFTAddress);
+            await exploreItemsRef.update({
+                NFTs: newNFTs
+            });
+            const nftRef = db.collection("nfts").doc(NFT.nftAddress);
+            const nftDoc = await nftRef.get() as any;
+            if (nftDoc.exists) {
+                const nft = nftDoc.data();
+                if (nft) {
+                    nft.exploreItem = false;
+                    await nftRef.update(nft);
+                }
+            }
+            return res.status(200).send({
+                message: "Successfully removed explore item",
+            });
+        }else{
+            const nftRef = db.collection("nfts").doc(NFT.nftAddress);
+            const nftDoc = await nftRef.get() as any;
+            if (nftDoc.exists) {
+                const nft = nftDoc.data();
+                if (nft) {
+                    nft.exploreItem = true;
+                    await nftRef.update(nft);
+                }
+            }
+            await exploreItemsRef.update({
+                NFTs: [...NFTs, NFT]
+            });
+        }
     }
 
     res.status(200).send({
