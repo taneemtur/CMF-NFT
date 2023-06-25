@@ -209,8 +209,9 @@ router.post("/addlikednfts", async (req: Request, res: Response) => {
     const doc = await userRef.get();
     if (doc.exists) {
         // update user
+        const likedNFTs = doc.data()?.likedNFTs || [];
         const response = await userRef.update({
-            likedNFTs: [...doc.data()?.likedNFTs, nft]
+            likedNFTs: [...likedNFTs, nft]
         });
         if (response) {
             return res.json({
@@ -283,8 +284,9 @@ router.post("/addfollowedusers", async (req: Request, res: Response) => {
     const doc = await userRef.get();
     if (doc.exists) {
         // update user
+        const follwedUsers = doc.data()?.followedUsers || [];
         const response = await userRef.update({
-            followedUsers: [...doc.data()?.followedUsers, user]
+            followedUsers: [...follwedUsers, user]
         });
         if (response) {
             return res.json({

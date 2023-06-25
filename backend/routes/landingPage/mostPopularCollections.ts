@@ -18,8 +18,18 @@ router.post("/", async (req: Request, res: Response) => {
         if (data) {
             let mostPopularCollectionsArray = data.most_popular_collections || [];
             if (mostPopularCollectionsArray.includes(collectionAddress)) {
+                // remove collection address
+                const collectionRef = db.collection("collections").doc(collectionAddress)
+                const collectionSnapshot = await collectionRef.get();
+                if (collectionSnapshot.exists) {
+                    const collection = collectionSnapshot.data();
+                    if (collection) {
+                        collection.mostPopular = false;
+                        await collectionRef.update(collection);
+                    }
+                }
                 return res.json({
-                    message: "Collection Address already exists",
+                    message: "Collection Address removed",
                 }).status(400)
             } else {
                 mostPopularCollectionsArray.push(collectionAddress);
@@ -27,6 +37,15 @@ router.post("/", async (req: Request, res: Response) => {
                     const response = await mostPopularCollections.update({
                         most_popular_collections: mostPopularCollectionsArray
                     });
+                    const collectionRef = db.collection("collections").doc(collectionAddress)
+                    const collectionSnapshot = await collectionRef.get();
+                    if (collectionSnapshot.exists) {
+                        const collection = collectionSnapshot.data();
+                        if (collection) {
+                            collection.mostPopular = true;
+                            await collectionRef.update(collection);
+                        }
+                    }
                     if (response) {
                         return res.json({
                             message: "Collection Address added",
