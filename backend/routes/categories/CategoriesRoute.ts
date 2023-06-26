@@ -29,6 +29,53 @@ router.post("/createcategory", async (req: Request, res: Response) => {
     }
 })
 
+router.put("/addtohome", async (req: Request, res: Response) => {
+    const body = req.body;
+    const {id} = body;
+    const categoryRef = db.collection("categories").where("id", "==", id);
+    const doc = await categoryRef.get();
+    if (doc) {
+        const cat = doc.docs[0].data();
+        // check if isHome is true
+        if (cat.isHome) {
+            // set to false
+            try {
+                doc.forEach((doc) => {
+                    doc.ref.update({isHome: false});
+                });
+                return res.json({
+                    message: "Category Removed From Home",
+                    data: body,
+                }).status(200)
+            } catch (error) {
+                console.log(error);
+                return res.json({
+                    message: "error removing category from home",
+                }).status(500)
+            }
+        } else {
+            // set to true
+            try {
+                doc.forEach((doc) => {
+                    doc.ref.update({isHome: true});
+                });
+                return res.json({
+                    message: "Category Added To Home",
+                    data: body,
+
+                }).status(200)
+            } catch (error) {
+                console.log(error);
+                return res.json({
+                    message: "error adding category to home",
+                }).status(500)
+            }
+        }
+    }
+    return res.json({
+        message: "Category Not Found",
+    }).status(404)
+})
 
 // get all categories
 router.get("/getcategories", async (req: Request, res: Response) => {

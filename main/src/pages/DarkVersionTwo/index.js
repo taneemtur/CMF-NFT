@@ -99,28 +99,28 @@ const DarkVersionTwo = () => {
   const location = useLocation()
 
   const getHeroNFTs = async () => {
-    await axiosConfig.get('/landingpage/herosection/').then((res)=>{
+    await axiosConfig.get('/landingpage/herosection/').then((res) => {
       setHero(res.data.data)
       console.log('hero', res.data);
     })
   }
 
   const getPopularCollections = async () => {
-    await axiosConfig.get('/landingpage/mostpopularcollection/').then((res)=>{
+    await axiosConfig.get('/landingpage/mostpopularcollection/').then((res) => {
       setCollections(res.data.data)
       console.log(res.data);
     })
   }
 
   const getBestCreatorsSellers = async () => {
-    await axiosConfig.get('/landingpage/bestcreatorssellers/').then((res)=>{
+    await axiosConfig.get('/landingpage/bestcreatorssellers/').then((res) => {
       setCreators(res.data.data)
       console.log(res.data);
     })
   }
 
   const getAllExploreItems = async () => {
-    await axiosConfig.get('/landingpage/exploreitems/categoriessnfts').then((res)=>{
+    await axiosConfig.get('/landingpage/exploreitems/categoriessnfts').then((res) => {
       const data = res.data.data
       const cats = data["categories"]
       const nfts = data["categoriesNFTs"]
@@ -135,7 +135,7 @@ const DarkVersionTwo = () => {
     // setAllData(newOne)
   }
 
-  useEffect( async ()=>{
+  useEffect(async () => {
     await getHeroNFTs();
     if (document.getElementsByClassName('tiny-five-item').length > 0) {
       tns({
@@ -211,7 +211,7 @@ const DarkVersionTwo = () => {
       setCreators(null)
       setAllExploreitems(null)
     }
-  },[])
+  }, [])
 
   return (
     <Main>
@@ -225,11 +225,11 @@ const DarkVersionTwo = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-12">
-              <div className="tiny-five-item">                  
-                {hero && hero?.map((data,index) => {
+              <div className="tiny-five-item">
+                {hero && hero?.map((data, index) => {
                   return (
                     <div className="tiny-slide" key={index}>
-                     <NftCardDark data={data} key={index} />
+                      <NftCardDark data={data} key={index} />
                     </div>
                   )
                 })}
@@ -278,6 +278,7 @@ const DarkVersionTwo = () => {
                 <ul className="container-filter mb-0 categories-filter list-unstyled filter-options">
                   {
                     categories && categories?.map((data, index) => {
+
                       return (
                         <li
                           className={`list-inline-item categories position-relative text-dark ${type === data ? 'active' : ''
