@@ -54,6 +54,7 @@ const ExploreTwo = () => {
     setStart(0)
     setEnd(10)
     getAllNfts()
+    setFiltered(false)
   }
 
   useEffect(() => {
