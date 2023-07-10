@@ -7,6 +7,7 @@ import Main from '../../Layouts/Main'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import NFTListModel from '../../components/NFTListModel'
+import NftBidModal from '../../components/NftBidModal'
 import { splitWalletAddress } from '../../utils'
 import { getChainByName } from '../../blockchain/supportedChains'
 import { approveUSDT, buyNFT, listingCancel } from '../../blockchain/mintContracts'
@@ -30,7 +31,11 @@ const ItemDetailOne = () => {
   async function cancel() {
     const id = toast.loading('Cancel Listing...');
     try {
-      await listingCancel(parseInt(nft?.fixedListingId), nft?.blockchain, account);
+      if(nft?.type == 'auction'){
+        await listingCancel(parseInt(nft?.auctionListingId), nft?.blockchain, account);
+      }else{
+        await listingCancel(parseInt(nft?.fixedListingId), nft?.blockchain, account);
+      }
       const res = await axiosconfig.put(`/nfts/unlistnft`, { nftAddress })
       await axiosconfig.post("/activity/useractivity", {
         // userId, activityName, activityData
@@ -235,14 +240,31 @@ const ItemDetailOne = () => {
                   </h4>
                 </div>
 
+                {
+                  nft?.type == 'auction' && (
+                    <div className="col-4 mt-4 pt-2">
+                      <div className="start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
+                        <i className="uil uil-clock"></i>{' '}
+                        <Countdown
+                          date={nft?.auctionTimeEnd}
+                          renderer={({ days, hours, minutes, seconds }) => (
+                            <span>
+                              {days}:{hours}:{minutes}:{seconds}
+                            </span>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )
+                }
+
                 <div className="row">
                   <div className="col-md-6 mt-4 pt-2">
-                    <h6>Price</h6>
+                    <h6> {nft?.type == 'auction' ? 'Current Bid' : 'Price'} </h6>
                     <h4 className="mb-0"> {nft?.price} {nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain)} </h4>
                   </div>
-
                   {
-                    nft?.listed && nft?.owner?.walletAddress != account && (
+                    nft?.listed && nft?.owner?.walletAddress != account && nft?.type == 'fixedprice' && (
                       <div className="col-12 mt-4 pt-2">
                         <a
                           href=""
@@ -253,6 +275,23 @@ const ItemDetailOne = () => {
                           }}
                         >
                           <i className="mdi mdi-cart fs-5 me-2"></i> Buy Now
+                        </a>
+                      </div>
+                    )
+                  }
+                  {
+                    nft?.listed && nft?.owner?.walletAddress != account && nft?.type == 'auction' && (
+                      <div className="col-12 mt-4 pt-2">
+                        <a
+                          href=""
+                          className="btn btn-l btn-pills btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#NftBid"
+                          onClick={(e) => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <i className="mdi mdi-cart fs-5 me-2"></i> Place Bid
                         </a>
                       </div>
                     )
@@ -348,9 +387,9 @@ const ItemDetailOne = () => {
                         aria-labelledby="activity-tab"
                       >
                         <div className="row g-4">
-                          {activityData?.map(data => {
+                          {nftActivity && nftActivity?.map(data => {
                             return (
-                              <div className="col-12" key={data?.title}>
+                              <div className="col-12" key={data?.activity}>
                                 <div className="card activity activity-primary rounded-md shadow p-4">
                                   <div className="d-flex align-items-center">
                                     <div className="position-relative">
@@ -377,22 +416,22 @@ const ItemDetailOne = () => {
                                         onClick={e => e.preventDefault()}
                                         className="text-dark title mb-0 h6 d-block"
                                       >
-                                        {data?.time}
+                                        {data?.activity}
                                       </a>
-                                      <small className="text-muted d-block mt-1">
-                                        {data?.favorite}{' '}
+                                      {/* <small className="text-muted d-block mt-1">
+                                        {data?.activity}{' '}
                                         <a
                                           href=""
                                           onClick={e => e.preventDefault()}
                                           className="link fw-bold"
                                         >
-                                          @{data?.author}
+                                          @{data?.owner}
                                         </a>
-                                      </small>
+                                      </small> */}
 
-                                      <small className="text-muted d-block mt-1">
-                                        {data?.time}
-                                      </small>
+                                      {/* <small className="text-muted d-block mt-1">
+                                        {data?.activity}
+                                      </small> */}
                                     </span>
                                   </div>
                                 </div>
@@ -422,312 +461,8 @@ const ItemDetailOne = () => {
 
       <NFTListModel prevPrice={nft?.price} nft={nft} id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
 
+      <NftBidModal nft={nft} nftAddress={nftAddress} getNftData={getNftData} />
 
-      {/* Place Bid Modal */}
-      <div
-        className="modal fade"
-        id="NftBid"
-        aria-hidden="true"
-        aria-labelledby="bidtitle"
-        tabIndex="-1"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-sm">
-          <div className="modal-content border-0 shadow-md rounded-md">
-            <div className="modal-header">
-              <h5 className="modal-title" id="bidtitle">
-                Place a Bid
-              </h5>
-              <button
-                type="button"
-                className="btn btn-close"
-                data-bs-dismiss="modal"
-                id="close-modal"
-              >
-                <i className="uil uil-times fs-4"></i>
-              </button>
-            </div>
-            <div className="modal-body p-4">
-              <form>
-                <div className="row">
-                  <div className="col-12">
-                    <div className="mb-4">
-                      <label className="form-label fw-bold">
-                        Your Bid Price <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        name="name"
-                        id="name"
-                        type="text"
-                        className="form-control"
-                        placeholder="00.00 ETH"
-                      />
-                      <small className="text-muted">
-                        <span className="text-dark">Note:</span> Bid price at
-                        least 1 ETH
-                      </small>
-                    </div>
-                  </div>
-                  {/*end col*/}
-                  <div className="col-12">
-                    <div className="mb-4">
-                      <label className="form-label fw-bold">
-                        Enter Your QTY <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        name="email"
-                        id="email"
-                        type="email"
-                        className="form-control"
-                        placeholder="0"
-                      />
-                      <small className="text-muted">
-                        <span className="text-dark">Note:</span> Max. Qty 5
-                      </small>
-                    </div>
-                  </div>
-                  {/*end col*/}
-                </div>
-              </form>
-
-              <div className="pt-3 border-top">
-                <div className="d-flex justify-content-between">
-                  <p className="fw-bold small"> You must bid at least:</p>
-                  <p className="text-primary"> 1.22 ETH </p>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <p className="fw-bold small"> Service free:</p>
-                  <p className="text-primary"> 0.05 ETH </p>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <p className="fw-bold small"> Total bid amount:</p>
-                  <p className="text-primary mb-0"> 1.27 ETH </p>
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                className="btn btn-pills btn-primary"
-                data-bs-target="#placebid"
-                data-bs-toggle="modal"
-              >
-                <i className="mdi mdi-gavel fs-5 me-2"></i> Place a Bid
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className="modal fade"
-        id="placebid"
-        aria-hidden="true"
-        aria-labelledby="bidsuccess"
-        tabIndex="-1"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-sm">
-          <div className="modal-content border-0 shadow-md rounded-md">
-            <div className="modal-header">
-              <h5 className="modal-title" id="bidsuccess">
-                Bidding Successful
-              </h5>
-              <button
-                type="button"
-                className="btn btn-close"
-                data-bs-dismiss="modal"
-                id="close-modal"
-              >
-                <i className="uil uil-times fs-4"></i>
-              </button>
-            </div>
-            <div className="modal-body p-4">
-              your bid (1.27ETH) has been listing to our database
-            </div>
-            <div className="modal-footer">
-              <a
-                href="/activity"
-                onClick={e => {
-                  e.preventDefault()
-                  navigate('/activity')
-                }}
-                data-bs-toggle="modal"
-                className="btn btn-pills btn-primary"
-              >
-                <i className="mdi mdi-basket-plus fs-5 me-2"></i> View Your Bid
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Place Bid Modal */}
-
-      {/* Buy Now NFt Modal */}
-      <div
-        className="modal fade"
-        id="NftBuynow"
-        aria-hidden="true"
-        aria-labelledby="buyNft"
-        tabIndex="-1"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-sm">
-          <div className="modal-content border-0 shadow-md rounded-md">
-            <div className="modal-header">
-              <h5 className="modal-title" id="buyNft">
-                Checkout
-              </h5>
-              <button
-                type="button"
-                className="btn btn-close"
-                data-bs-dismiss="modal"
-                id="close-modal"
-              >
-                <i className="uil uil-times fs-4"></i>
-              </button>
-            </div>
-            <div className="modal-body p-4">
-              <form>
-                <div className="row">
-                  <div className="col-12">
-                    <div className="mb-4">
-                      <label className="form-label fw-bold">
-                        Your Price <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        name="name"
-                        id="name"
-                        type="text"
-                        className="form-control"
-                        defaultValue="1.5ETH"
-                      />
-                    </div>
-                  </div>
-                  {/*end col*/}
-                </div>
-              </form>
-
-              <div className="py-3 border-top">
-                <div className="d-flex justify-content-between">
-                  <p className="fw-bold small"> You must bid at least:</p>
-                  <p className="text-primary"> 1.22 ETH </p>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <p className="fw-bold small"> Service free:</p>
-                  <p className="text-primary"> 0.05 ETH </p>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <p className="fw-bold small"> Total bid amount:</p>
-                  <p className="text-primary mb-0"> 1.27 ETH </p>
-                </div>
-              </div>
-
-              <div className="bg-soft-danger p-3 rounded shadow">
-                <div className="d-flex align-items-center">
-                  <i className="uil uil-exclamation-circle h2 mb-0 me-2"></i>
-                  <div className="flex-1">
-                    <h6 className="mb-0">This creator is not verified</h6>
-                    <small className="mb-0">
-                      Purchase this item at your own risk
-                    </small>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <button
-                  className="btn btn-pills btn-primary w-100"
-                  data-bs-target="#buyNftSuccess"
-                  data-bs-toggle="modal"
-                >
-                  <i className="mdi mdi-cart fs-5 me-2"></i> Continue
-                </button>
-                <form>
-                  <div className="form-check align-items-center d-flex mt-2">
-                    <input
-                      className="form-check-input mt-0"
-                      type="checkbox"
-                      id="AcceptT&C"
-                    />
-                    <label
-                      className="form-check-label text-muted ms-2"
-                      htmlFor="AcceptT&C"
-                    >
-                      I Accept{' '}
-                      <a
-                        href=""
-                        onClick={e => e.preventDefault()}
-                        className="text-primary"
-                      >
-                        Terms And Condition
-                      </a>
-                    </label>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className="modal fade"
-        id="buyNftSuccess"
-        aria-hidden="true"
-        aria-labelledby="exampleModalToggleLabel2"
-        tabIndex="-1"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-sm">
-          <div className="modal-content border-0 shadow-md rounded-md">
-            <div className="position-absolute top-0 start-100 translate-middle z-index-1">
-              <button
-                type="button"
-                className="btn btn-icon btn-pills btn-sm btn-light btn-close opacity-10"
-                data-bs-dismiss="modal"
-                id="close-modal"
-              >
-                <i className="uil uil-times fs-4"></i>
-              </button>
-            </div>
-            <div className="modal-body text-center p-4">
-              <h3>Yahhhoooo! 🎉</h3>
-              <h6 className="text-muted mb-0">
-                You successfully purchased{' '}
-                <a href="" className="text-reset">
-                  <u>XYZ nft</u>
-                </a>{' '}
-                from Chain Master Finance
-              </h6>
-
-              <ul className="rounded-md shadow p-4 border list-unstyled mt-4">
-                <li className="d-flex justify-content-between">
-                  <span className="fw-bold me-5">Status:</span>
-                  <span className="text-warning">Processing</span>
-                </li>
-
-                <li className="d-flex justify-content-between mt-2">
-                  <span className="fw-bold me-5">Transaction ID:</span>
-                  <span className="text-muted">qhut0...hfteh45</span>
-                </li>
-              </ul>
-
-              <ul className="list-unstyled social-icon mb-0 mt-4">
-                {[
-                  'uil uil-facebook-f',
-                  'uil uil-instagram',
-                  'uil uil-linkedin',
-                  'uil uil-dribbble',
-                  'uil uil-twitter',
-                ]?.map((data, index) => {
-                  return (
-                    <li className="list-inline-item lh-1 mr-1" key={index}>
-                      <a href="" className="rounded">
-                        <i className={data}></i>
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Buy Now NFt Modal */}
     </Main>
   )
 }
