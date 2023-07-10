@@ -55,7 +55,7 @@ router.post("/", async (req: Request, res: Response) => {
             return res.status(200).send({
                 message: "Successfully removed explore item",
             });
-        }else{
+        } else {
             const nftRef = db.collection("nfts").doc(NFT.nftAddress);
             const nftDoc = await nftRef.get() as any;
             if (nftDoc.exists) {
@@ -125,7 +125,9 @@ router.get("/categoriessnfts", async (req: Request, res: Response) => {
     for (const doc of categoriesDoc.docs) {
         const category = doc.data()
         const categoryName = category.name;
-        categories.push(categoryName);
+        if (category?.isHome) {
+            categories.push(categoryName);
+        }
     }
 
 
