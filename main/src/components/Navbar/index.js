@@ -89,10 +89,12 @@ const Navbar = () => {
   };
 
   const checkAccountChanges = (accounts) => {
-    if (accounts.length === 0) {
-      dispatch(setAccount(null));
-    } else {
-      fetchProfile(accounts[0])
+    if (window.ethereum !== undefined) {
+      if (accounts.length === 0) {
+        dispatch(setAccount(null));
+      } else {
+        fetchProfile(accounts[0])
+      }
     }
   }
 
@@ -148,7 +150,9 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
+    if (window.ethereum !== undefined) {
+      window.ethereum.on('accountsChanged', (accounts) => checkAccountChanges(accounts));
+    }
   }, []);
 
   useEffect(() => {

@@ -25,6 +25,7 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
         supply: body.supply,
         image: null,
         auctionTimeEnd: null,
+        auctionTimeStart: null,
         type: null,
         listed: false,
     }
@@ -82,15 +83,17 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
-    const { nftAddress, listingType, endDate, price, fixedListingId, paymentToken } = body
+    const { nftAddress, listingType, startDate, endDate, price, fixedListingId, auctionListingId, paymentToken } = body
     const nftRef = db.collection("nfts").doc(nftAddress);
     const doc = await nftRef.get();
     const nft: NFTModel = doc.data() as NFTModel;
     nft.listed = true;
     nft.type = listingType;
+    nft.auctionTimeStart = startDate;
     nft.auctionTimeEnd = endDate;
     nft.price = price;
-    nft.fixedListingId = fixedListingId;
+    nft.fixedListingId = fixedListingId != undefined ? fixedListingId : null;
+    nft.auctionListingId = auctionListingId != undefined ? auctionListingId : null;
     nft.paymentToken = paymentToken;
 
 
@@ -120,6 +123,7 @@ router.put("/unlistnft", async (req: Request, res: Response) => {
     nft.listed = false;
     nft.type = null;
     nft.auctionTimeEnd = null;
+    nft.auctionTimeStart = null;
 
     try {
         const response = await nftRef.set(nft);

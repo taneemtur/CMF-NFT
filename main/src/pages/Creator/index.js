@@ -11,6 +11,7 @@ const Creator = () => {
   const { user, account } = useSelector(state => state.theme)
   const navigate = useNavigate()
   const [creators, setCreators] = useState([]);
+  const [end, setEnd] = useState(10);
 
   const getCreators = async () => {
     await axiosConfig.get('/profile/getusers').then((res)=>{
@@ -104,7 +105,7 @@ const Creator = () => {
       <section className="section">
         <div className="container">
           <div className="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-4 justify-content-center">
-            {creators && creators?.map((creator, index) => {
+            {creators && creators.slice(0,end)?.map((creator, index) => {
               return (
                 <div className="col" key={index}>
                   <div className="card creators creators-two creator-primary rounded-md shadow overflow-hidden">
@@ -152,6 +153,27 @@ const Creator = () => {
             })}
             {/*-end col*/}
           </div>
+          {
+            end < creators.length && (
+              <div className="row justify-content-center mt-4">
+                <div className="col">
+                  <div className="text-center">
+                    <a
+                      href=""
+                      onClick={e => {
+                        e.preventDefault()
+                        setEnd(prev => prev + 10)
+                      }}
+                      className="btn btn-primary rounded-md"
+                    >
+                      <i className="uil uil-process mdi-spin me-1"></i> Load More
+                    </a>
+                  </div>
+                </div>
+                {/*end col*/}
+              </div>
+            )
+          }
           {/*-end row*/}
         </div>
         {/*-end container*/}

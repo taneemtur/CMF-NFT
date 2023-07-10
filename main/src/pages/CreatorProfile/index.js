@@ -596,9 +596,9 @@ const CreateProfile = () => {
                   aria-labelledby="Activites-tab"
                 >
                   <div className="row g-4">
-                    {activityData && activityData?.map(data => {
+                    {userActivities && userActivities?.map(data => {
                       return (
-                        <div className="col-12" key={data?.title}>
+                        <div className="col-12" key={data?.activity}>
                           <div className="card activity activity-primary rounded-md shadow p-4">
                             <div className="d-flex align-items-center">
                               <div className="position-relative">
@@ -627,7 +627,7 @@ const CreateProfile = () => {
                                   onClick={e => e.preventDefault()}
                                   className="text-dark title mb-0 h6 d-block"
                                 >
-                                  {data?.title}
+                                  {data?.name}
                                 </a>
                                 <small className="text-muted d-block mt-1">
                                   {data?.favorite}

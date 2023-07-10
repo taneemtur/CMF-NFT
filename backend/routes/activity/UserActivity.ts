@@ -75,13 +75,13 @@ router.get("/:userId", async (req: Request, res: Response) => {
             }
             else {
                 res.status(200).send({
-                    "data": {},
+                    "data": [],
                     "message": "List of activities"
                 })
             }
         }else{
             res.status(200).send({
-                "data": {},
+                "data": [],
                 "message": "List of activities"
             })
         }

@@ -19,6 +19,7 @@ interface NFTModel  {
     price: string;
     owner: DocumentData | UserModel;
     auctionTimeEnd: string | null;
+    auctionTimeStart: string | null;
     supply: string;
     listed?: boolean;
     category?: string;

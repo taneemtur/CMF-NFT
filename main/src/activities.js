@@ -11,6 +11,7 @@ export const USER_ACTIVITIES = {
     DELETE_COLLECTION: 'Delete Collection',
     EDIT_NFT: 'Edit NFT',
     EDIT_COLLECTION: 'Edit Collection',
+    BID_NFT: 'Bid NFT'
 }
 
 export const NFT_ACTIVITIES = {
@@ -18,5 +19,5 @@ export const NFT_ACTIVITIES = {
     UPDATE_NFT: 'Update NFT',
     LIST_NFT: 'List NFT',
     SELL_NFT: 'Sell NFT',
-
+    BID_NFT: 'Bid NFT'
 }

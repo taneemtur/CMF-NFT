@@ -186,6 +186,17 @@ export const listNFT = async (paymentToken, tokenId, amount, price, nftCollectio
     return list.events.OfferSale.returnValues._fixeditemid;
 }
 
+export const listAuctionNFT = async (price, startAuctionTime, endAuctionTime, tokenId, amount, nftCollectionAddress, paymentToken, chainId, account) => {
+    await switchChain(chainId);
+    const usdt = await getUSDTContract(chainId)
+    paymentToken == 'Eth' ? paymentToken = zeroAddress : paymentToken = usdt.address;
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const list = await contract.methods.listItemForAuction(convertToWei(price), startAuctionTime, endAuctionTime , tokenId, amount, nftCollectionAddress, paymentToken).send({from: account})
+    console.log(list.events.AuctionStart.returnValues._auctionid)
+    return list.events.AuctionStart.returnValues._auctionid;
+}
+
 export const listingCancel = async (listingId, chainId, account) => {
     await switchChain(chainId);
     const selectedContract = await getMarketplaceContract(chainId);
@@ -201,5 +212,13 @@ export const buyNFT = async (listingId, price, chainId, account) => {
     console.log(listingId, price);
     const buy = await contract.methods.BuyFixedPriceItem(listingId).send({from: account, value: convertToWei(price)})
     return buy;
+}
+
+export const bid = async (tokenId, price, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const bid = await contract.methods.bid(tokenId, convertToWei(price)).send({from: account, value: convertToWei(price)})
+    return bid;
 }
 

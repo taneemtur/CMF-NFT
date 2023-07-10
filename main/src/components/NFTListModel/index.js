@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { type } from 'os';
-import { approveCollection, listNFT } from '../../blockchain/mintContracts';
+import { approveCollection, listNFT, listAuctionNFT } from '../../blockchain/mintContracts';
 import { useSelector } from 'react-redux';
 import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities';
 
@@ -19,12 +19,14 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
     const { account } = useSelector(state => state.theme);
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
     const [startDate, setStartDate] = React.useState(new Date());
+    const [endDate, setEndDate] = React.useState(new Date());
     const [price, setPrice] = React.useState(nft?.price)
     const btnRef = React.useRef(null)
 
     const getNftData = async () => {
         await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
             setNft(res.data.data)
+            console.log(nftAddress)
         })
     }
 
@@ -80,6 +82,60 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
         }
     }
 
+    const handleAuctionListing = async (paymentToken = 'Eth') => {
+        const id = toast.loading('Listing NFT')
+        try {
+            await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress)
+            const auctionListingId = await listAuctionNFT(nft?.price, startDate.getTime(), endDate.getTime(), parseInt(nft?.nftAddress), 1, nft?.collection?.collectionAddress, paymentToken, nft?.blockchain, account);
+            await axiosConfig.put("/nfts/listnft", {
+                listingType,
+                startDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
+                endDate: listingType == LISTINGTYPE.fixedprice ? null : endDate,
+                nftAddress,
+                price,
+                auctionListingId,
+                paymentToken
+            }).then(async (res) => {
+                await axiosConfig.post("/activity/useractivity", {
+                    // userId, activityName, activityData
+                    userId: account,
+                    activityName: USER_ACTIVITIES.LIST_NFT,
+                    activityData: {
+                        ...res.data.data,
+                        listedAt: new Date()
+                    }
+                })
+                await axiosConfig.post("/activity/nftactivity", {
+                    nftId: res.data.data.nftAddress,
+                    activityData: {
+                      activity: NFT_ACTIVITIES.LIST_NFT,
+                      listedAt: new Date(),
+                      ...res.data.data
+                    }
+                  })
+                toast.update(id, {
+                    render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
+                })
+                setNFT(prev => ({
+                    ...prev,
+                    listed: true,
+                    type: listingType,
+                    endDate: listingType == LISTINGTYPE.fixedprice ? null : res.data.data.auctionTimeEnd
+                }))
+                getNftData()
+            }).catch(error => {
+                toast.update(id, {
+                    render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+                })
+            })
+        } catch (error) {
+            toast.update(id, {
+                render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true
+            })
+        }
+    }
+
+
     useEffect(() => {
         nft && setPrice(nft?.price)
     }, [nft])
@@ -120,8 +176,9 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                 </div>
                                 {
                                     listingType === LISTINGTYPE.auction && (
+                                    <>
                                         <div className="col-12 mb-4">
-                                            <label className="form-label fw-bold">Auction End Time:</label>
+                                            <label className="form-label fw-bold">Auction Start Time:</label>
                                             <DatePicker
                                                 selected={startDate}
                                                 onChange={(date) => {
@@ -133,6 +190,20 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                                 dateFormat="Pp"
                                             />
                                         </div>
+                                        <div className="col-12 mb-4">
+                                            <label className="form-label fw-bold">Auction End Time:</label>
+                                            <DatePicker
+                                                selected={endDate}
+                                                onChange={(date) => {
+                                                    console.log(date)
+                                                    setEndDate(date)
+                                                }}
+                                                className='form-control'
+                                                showTimeSelect
+                                                dateFormat="Pp"
+                                            />
+                                        </div>
+                                    </>
                                     )
                                 }
                                 <div className="col-12 mb-4">
@@ -147,7 +218,9 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                 className="btn btn-pills btn-primary w-100"
                                 data-bs-dismiss="modal"
                                 id="close-modal"
-                                onClick={() => handleListNFT('Eth')}
+                                onClick={() => {
+                                    listingType == 'fixedprice' ? handleListNFT('Eth') : handleAuctionListing('Eth')
+                                }}
                                 ref={btnRef}
                             >
                                 List NFT with Native Token
@@ -158,7 +231,9 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                                 className="btn btn-pills btn-primary w-100"
                                 data-bs-dismiss="modal"
                                 id="close-modal"
-                                onClick={() => handleListNFT('USDT')}
+                                onClick={() => {
+                                    listingType == 'fixedprice' ? handleListNFT('USDT') : handleAuctionListing('USDT')
+                                }}
                                 ref={btnRef}
                             >
                                 List NFT with USDT
