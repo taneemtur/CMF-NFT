@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiMail } from 'react-icons/fi'
 import BackToTop from '../BackToTop'
 import { MetaMask_Fox, playStore, app, iconLogo } from '../imageImport'
 import { defaultChain, getChainById, supportedChains } from '../../blockchain/supportedChains'
 import { useSelector } from 'react-redux'
+import axiosConfig from '../../axiosConfig'
+import { toast } from 'react-toastify'
 
 const Footer = () => {
-  const {chain} = useSelector(state => state.theme)
+  const {account, chain} = useSelector(state => state.theme)
   const navigate = useNavigate()
+  const [email, setEmail] = useState('');
   const closeModal = () => {
     //   metamask modal
     const modal = document.getElementById('modal-metamask')
@@ -20,6 +23,15 @@ const Footer = () => {
     const modal = document.getElementById('modal-chain')
     modal.classList.remove('show')
     modal.style.display = 'none'
+  }
+
+  const newsletter = async (email) => {
+    const res = await axiosConfig.post(`/profile/newsletter`, {email, walletAddress: account})
+    if(res.data.code == 200){
+      toast.success(res.data.message)
+    }else{
+      toast.error(res.data.message)
+    }
   }
 
   const switchChain = async (chainId) => {
@@ -111,7 +123,7 @@ const Footer = () => {
                   {/*end col*/}
 
                   <div className="col-lg-2 col-md-4 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                    <h5 className="footer-head">Chain Master Finance</h5>
+                    <h5 className="footer-head">CMF</h5>
                     <ul className="list-unstyled footer-list mt-4">
                       <li>
                         <a
@@ -269,6 +281,11 @@ const Footer = () => {
                                 className="form-control ps-5 rounded"
                                 placeholder="Your email : "
                                 required
+                                value={email}
+                                onChange={(e)=>{
+                                  e.preventDefault()
+                                  setEmail(e.target.value)
+                                }}
                                 style={{ height: 46 }}
                               />
                             </div>
@@ -277,11 +294,12 @@ const Footer = () => {
                         <div className="col-lg-12">
                           <div className="d-grid">
                             <input
-                              type="submit"
+                              type="button"
                               id="submitsubscribe"
                               name="send"
                               className="btn btn-soft-primary"
                               value="Subscribe"
+                              onClick={()=>newsletter(email)}
                             />
                           </div>
                         </div>

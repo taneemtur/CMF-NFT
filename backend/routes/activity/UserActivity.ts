@@ -12,7 +12,7 @@ const router = express.Router();
 // List NFT
 // Buy NFT
 // Sell NFT
-// Like user
+// Like user 
 // Follow user
 // Delete NFT
 // Delete Collection
@@ -63,27 +63,32 @@ router.post("/", async (req: Request, res: Response) => {
 router.get("/:userId", async (req: Request, res: Response) => {
     const userId = req.params.userId;
     try {
-        const activityRef = db.collection("activity").doc(userId)
-        const activityDoc = await activityRef.get()
+        const activityRef = db.collection("activity").doc(userId);
+        const activityDoc = await activityRef.get();
+
         if (activityDoc.exists) {
-            const activityDataFir = activityDoc.data()
-            if (activityDataFir) {
+            const activityData = activityDoc.data();
+            if(activityData){
+                const valuesArray = Object.values(activityData);
+                const activityArray: any[] = [];
+                
+                valuesArray.forEach(item => {
+                    if(Array.isArray(item)){
+                        item.forEach(child => {
+                            activityArray.push(child);
+                        });
+                    }
+                });
                 res.status(200).send({
-                    "data": activityDataFir,
-                    "message": "List of activities"
-                })
+                    "data": activityArray, // Wrap the data in an array since we have only one document
+                    "message": "Activity found for the specified wallet address" 
+                });
             }
-            else {
-                res.status(200).send({
-                    "data": [],
-                    "message": "List of activities"
-                })
-            }
-        }else{
+        } else {
             res.status(200).send({
                 "data": [],
-                "message": "List of activities"
-            })
+                "message": "No activity found for the specified wallet address"
+            });
         }
 
     } catch{

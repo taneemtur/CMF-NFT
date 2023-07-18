@@ -25,7 +25,22 @@ const ItemDetailOne = () => {
   const getNftData = async () => {
     await axiosconfig.get(`/nfts/nft/${nftAddress}`).then((res) => {
       setNft(res.data.data)
+      
+      var auction_start = res.data.data?.auctionTimeStart;
+      var auction_end = res.data.data?.auctionTimeEnd;
+      console.log('now', getCurrentTimeStamp())
+      console.log('auction start', auction_start )
+      console.log('auction end', auction_end )
+      console.log('result', getCurrentTimeStamp() >= auction_start && getCurrentTimeStamp() <= auction_end)
     })
+  }
+
+  function getTimeStamp(date){
+    return new Date(date).getTime() / 1000;
+  }
+
+  function getCurrentTimeStamp(){
+    return Math.floor((new Date().getTime()) / 1000);
   }
 
   async function cancel() {
@@ -121,30 +136,6 @@ const ItemDetailOne = () => {
     }
   }, [nftAddress])
 
-  const activityData = [
-    {
-      title: 'Digital Art Collection',
-      author: 'Panda',
-      time: '1 hours ago',
-      favorite: 'Started Following',
-      image: item1,
-    },
-    {
-      title: 'Skrrt Cobain Official',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: gif1,
-    },
-    {
-      title: 'Wow! That Brain Is Floating',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: item2,
-    },
-  ]
-
   return (
     <Main>
       {/* Start */}
@@ -178,7 +169,7 @@ const ItemDetailOne = () => {
                     )
                   }
                   {
-                    nft?.listed == true && (
+                    nft?.listed == true && nft?.type == 'fixedprice' && (
                       <a
                         onClick={cancel}
                         className="btn btn-pills btn-outline-primary mx-1"
@@ -241,12 +232,12 @@ const ItemDetailOne = () => {
                 </div>
 
                 {
-                  nft?.type == 'auction' && (
-                    <div className="col-4 mt-4 pt-2">
+                  getCurrentTimeStamp() >= nft?.auctionTimeStart && getCurrentTimeStamp() <= nft?.auctionTimeEnd && nft?.type == 'auction' && (
+                    <div className="col-5 mt-4 pt-2">
                       <div className="start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
                         <i className="uil uil-clock"></i>{' '}
                         <Countdown
-                          date={nft?.auctionTimeEnd}
+                          date={new Date(nft?.auctionTimeEnd * 1000)}
                           renderer={({ days, hours, minutes, seconds }) => (
                             <span>
                               {days}:{hours}:{minutes}:{seconds}
@@ -264,7 +255,7 @@ const ItemDetailOne = () => {
                     <h4 className="mb-0"> {nft?.price} {nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain)} </h4>
                   </div>
                   {
-                    nft?.listed && nft?.owner?.walletAddress != account && nft?.type == 'fixedprice' && (
+                    account && nft?.listed && nft?.owner?.walletAddress != account && nft?.type == 'fixedprice' && (
                       <div className="col-12 mt-4 pt-2">
                         <a
                           href=""
@@ -280,7 +271,7 @@ const ItemDetailOne = () => {
                     )
                   }
                   {
-                    nft?.listed && nft?.owner?.walletAddress != account && nft?.type == 'auction' && (
+                    getCurrentTimeStamp() >= nft?.auctionTimeStart && getCurrentTimeStamp() <= nft?.auctionTimeEnd && account && nft?.listed && nft?.owner?.walletAddress != account && nft?.type == 'auction' && (
                       <div className="col-12 mt-4 pt-2">
                         <a
                           href=""
@@ -288,6 +279,7 @@ const ItemDetailOne = () => {
                           data-bs-toggle="modal"
                           data-bs-target="#NftBid"
                           onClick={(e) => {
+                            console.log()
                             e.preventDefault();
                           }}
                         >
@@ -350,13 +342,17 @@ const ItemDetailOne = () => {
                         <div className="creators creator-primary d-flex align-items-center">
                           <div className="position-relative">
                             <img
-                              src={nft?.owner?.profileImage || client09}
+                              src={nft?.owner?.profileImage || client01}
                               className="avatar avatar-md-sm shadow-md rounded-pill"
                               alt={nft?.owner?.name}
                             />
-                            <span className="verified text-primary">
-                              <i className="mdi mdi-check-decagram"></i>
-                            </span>
+                            {
+                              nft?.owner?.isVerified && (
+                              <span className="verified text-primary">
+                                <i className="mdi mdi-check-decagram"></i>
+                              </span>
+                              )
+                            }
                           </div>
 
                           <div className="ms-3">
@@ -371,7 +367,7 @@ const ItemDetailOne = () => {
                                     }}
                                     className="text-dark name"
                                   >
-                                    {splitWalletAddress(nft?.owner?.walletAddress)} - {nft?.owner?.name && nft?.owner?.name}
+                                    {splitWalletAddress(nft?.owner?.walletAddress)} {nft?.owner?.name ? `- ${nft?.owner?.name}` : ''}
                                   </a>
                                 )
                               }
@@ -459,9 +455,9 @@ const ItemDetailOne = () => {
       {/*end section*/}
       {/* End */}
 
-      <NFTListModel prevPrice={nft?.price} nft={nft} id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNFT={setNft} />
+      <NFTListModel prevPrice={nft?.price} nft={nft} id="ListNFT" labelledby="NFTList" nftAddress={nftAddress} setNft={setNft} />
 
-      <NftBidModal nft={nft} nftAddress={nftAddress} getNftData={getNftData} />
+      <NftBidModal nft={nft} nftAddress={nftAddress} getNftData={getNftData} getActivity={getActivity} />
 
     </Main>
   )

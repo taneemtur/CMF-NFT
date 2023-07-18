@@ -21,7 +21,6 @@ const Navbar = () => {
   const url = useMemo(() => location?.pathname === '/blog-detail', [])
   const templatePage = [
     '/become-creator',
-    '/creator-profile',
     '/item-detail-one',
     '/index-two',
     '/index-four',
@@ -299,56 +298,6 @@ const Navbar = () => {
           {/*Login button Start*/}
           <ul className="buy-button list-inline mb-0">
             <li className="list-inline-item mb-0 me-1">
-              <div className="dropdown">
-                <button
-                  type="button"
-                  className="btn dropdown-toggle p-0"
-                  data-bs-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  {becomeUrl ? (
-                    <i className="uil uil-search text-dark fs-5 align-middle"></i>
-                  ) : (
-                    <>
-                      <i className="uil uil-search text-white title-dark btn-icon-light fs-5 align-middle"></i>
-                      <i className="uil uil-search text-dark btn-icon-dark fs-5 align-middle"></i>
-                    </>
-                  )}
-                </button>
-                <div
-                  className="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 p-0"
-                  style={{ width: 300 }}
-                >
-                  <div className="search-bar">
-                    <div style={{
-                      border: "1px solid white"
-                    }} id="itemSearch" className="menu-search mb-0">
-                      <form
-                        role="search"
-                        method="get"
-                        id="searchItemform"
-                        className="searchform"
-                      >
-                        <input
-                          type="text"
-                          className="form-control border rounded"
-                          name="s"
-                          id="searchItem"
-                          placeholder="Search..."
-                        />
-                        <input
-                          type="submit"
-                          id="searchItemsubmit"
-                          value="Search"
-                        />
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li className="list-inline-item mb-0 me-1">
               {becomeUrl ? (
                 <a
                   onClick={connectWallet}
@@ -417,11 +366,20 @@ const Navbar = () => {
                         aria-haspopup="true"
                         aria-expanded="false"
                       >
-                        <img
-                          src={user?.profileImage || client01}
-                          className="rounded-pill avatar avatar-sm-sm"
-                          alt={user?.name}
-                        />
+                        <div className="position-relative d-inline-flex" >
+                          <img
+                            src={user?.profileImage || client01}
+                            className="rounded-pill avatar avatar-sm-sm"
+                            alt={user?.name}
+                          />
+                          {
+                            user?.isVerified && (
+                            <span className="verified text-primary">
+                              <i className="mdi mdi-check-decagram"></i>
+                            </span>
+                            )
+                          }
+                        </div>
                       </button>
                     }
                     <div
@@ -625,7 +583,6 @@ const Navbar = () => {
                         e.preventDefault()
                         setTimeout(() => {
                           activateMenu()
-                          toggleSwitcher(false)
                         }, 1000)
                         navigate('/creators')
                       }}

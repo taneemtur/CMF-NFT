@@ -112,7 +112,7 @@ const CreateNFT = () => {
     }
 
     const nftAddress = uuid()
-
+    
     const data = {
       name: title,
       description,
@@ -153,8 +153,10 @@ const CreateNFT = () => {
           })
           return;
         }else{
-          console.log(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), parseInt(data.supply))
-          await mint(data.blockchain, data.collectionAddress, account, parseInt(nftAddress), parseInt(data.supply) );
+          console.log(res.data.data);
+          let tokenid = res.data.data.tokenId;
+          console.log(data.blockchain, data.collectionAddress, account, parseInt(res.data.data.tokenId), parseInt(data.supply) )
+          await mint(data.blockchain, data.collectionAddress, account, parseInt(tokenid), parseInt(data.supply) );
           await axiosConfig.post("/activity/useractivity", {
             // userId, activityName, activityData
             userId: account,
@@ -178,7 +180,11 @@ const CreateNFT = () => {
         }
       } catch (error) {
         console.log(error.message)
-        await axiosConfig.delete(`/nfts/${nftAddress}`)
+        try {
+          await axiosConfig.delete(`/nfts/${nftAddress}`)
+        } catch (error) {
+          console.log(error.message)
+        }
         toast.update(id, {
           render: `${error.message}`, closeOnClick: true, isLoading: false, type: 'error', autoClose: 5000, closeButton: true
         })

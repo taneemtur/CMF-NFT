@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import { tns } from 'tiny-slider/src/tiny-slider';
 import NftCardDark from '../../components/NftCardDark';
-import { gif1, gif2, gif3, gif4, gif5, gif6, item1, item2, item3, item4, item5, item6 } from '../../components/imageImport'
+import { client01, gif1, gif2, gif3, gif4, gif5, gif6, item1, item2, item3, item4, item5, item6 } from '../../components/imageImport'
 import Main from '../../Layouts/Main';
 import axiosConfig from '../../axiosConfig'
 import { useSelector } from 'react-redux';
@@ -437,13 +437,10 @@ const DarkVersionTwo = () => {
                       <div className="content text-center p-4 mt-n5">
                         <div className="position-relative d-inline-flex">
                           <img
-                            src={data?.owner?.profileImage}
+                            src={data?.owner?.profileImage || client01}
                             className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
                             alt=""
                           />
-                          <span className="verified text-primary">
-                            <i className="mdi mdi-check-decagram"></i>
-                          </span>
                         </div>
 
                         <div className="mt-2">

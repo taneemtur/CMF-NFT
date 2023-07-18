@@ -93,41 +93,47 @@ router.post("/", async (req: Request, res: Response) => {
 
 // get
 router.get("/", async (req: Request, res: Response) => {
-    const bestCreatorsSellers = db.collection("landing_page").doc("best_creators_sellers");
-    const snapshot = await bestCreatorsSellers.get();
-    if (snapshot.exists) {
-        const data = snapshot.data();
-        if (data) {
-            const promises = []
-            let bestCreatorsSellersArray = data.best_creators_sellers || [];
-            if (bestCreatorsSellersArray.length === 0) {
+    try {
+        const bestCreatorsSellers = db.collection("landing_page").doc("best_creators_sellers");
+        const snapshot = await bestCreatorsSellers.get();
+        if (snapshot.exists) {
+            const data = snapshot.data();
+            if (data) {
+                const promises = []
+                let bestCreatorsSellersArray = data.best_creators_sellers || [];
+                if (bestCreatorsSellersArray.length === 0) {
+                    return res.json({
+                        message: "No Best Creators Sellers",
+                        data: [],
+                    }).status(200)
+                }
+                bestCreatorsSellersArray = bestCreatorsSellersArray.slice(0, 10);
+                for (let i = 0; i < bestCreatorsSellersArray.length; i++) {
+                    const walletAddress = bestCreatorsSellersArray[i];
+                    const promise = db.collection("users").doc(walletAddress).get();
+                    promises.push(promise);
+                }
+                const snapshots = await Promise.all(promises);
+                const users:DocumentData[] = [];
+                snapshots.forEach((snapshot) => {
+                    if (snapshot.exists) {
+                        const user = snapshot.data();
+                        if (user) {
+                            users.push(user);
+                        }
+                    }
+                })
                 return res.json({
-                    message: "No Best Creators Sellers",
-                    data: [],
+                    message: "Best Creators Sellers Fetched",
+                    data: users,
                 }).status(200)
             }
-            bestCreatorsSellersArray = bestCreatorsSellersArray.slice(0, 10);
-            for (let i = 0; i < bestCreatorsSellersArray.length; i++) {
-                const walletAddress = bestCreatorsSellersArray[i];
-                const promise = db.collection("users").doc(walletAddress).get();
-                promises.push(promise);
-            }
-            const snapshots = await Promise.all(promises);
-            const users:DocumentData[] = [];
-            snapshots.forEach((snapshot) => {
-                if (snapshot.exists) {
-                    const user = snapshot.data();
-                    if (user) {
-                        users.push(user);
-                    }
-                }
-            })
+        } else {
             return res.json({
-                message: "Best Creators Sellers Fetched",
-                data: users,
-            }).status(200)
+                message: "Best Creators Sellers does not exist",
+            }).status(400)
         }
-    } else {
+    } catch (error) {
         return res.json({
             message: "Best Creators Sellers does not exist",
         }).status(400)

@@ -23,19 +23,19 @@ const zeroAddress = '0x0000000000000000000000000000000000000000';
 
 export const marketplaceContracts = {
     'Sepolia': {
-        'address': '0x5Ce69143F7bECFe2a229E89a0e2bd943929164a8',
+        'address': '0x1dee9011a41Ab1251Ca10A3398f50c9a7434a9ef',
         'abi': marketEth
     },
     'Binance Smart Chain Testnet': {
-        'address': '0xb6503f4dB938A6e66e00385116e6cE397f756Bba',
+        'address': '0x1F1588C94a9D14a56C9f7b45a21edD16405c2Ad9',
         'abi': marketBsc
     },
     'Arbitrum Goerli': {
-        'address': '0x5Ce69143F7bECFe2a229E89a0e2bd943929164a8',
+        'address': '0x3e3f0c65Aa7Ad8b6dADb74fd1C88600e16573086',
         'abi': marketArb
     },
     'Avalanche Fuji Testnet': {
-        'address': '0xb6503f4dB938A6e66e00385116e6cE397f756Bba',
+        'address': '0x269B96dC744772a7638f205057828641565D5602',
         'abi': marketAvax
     }
 };
@@ -150,6 +150,7 @@ export const deployContract = async (account, chain, contractName, URI) => {
 }
 
 export const mint = async (chainId, collectionAddress, account, tokenId, supply) => {
+    console.log(chainId, collectionAddress, account, tokenId, supply)
     await switchChain(chainId);
     const selectedContract = { 'address': collectionAddress, 'abi': collectioABI }
     const contract = await initContract(selectedContract);
@@ -176,6 +177,7 @@ export const approveUSDT = async (account, chainId, price) => {
 }
 
 export const listNFT = async (paymentToken, tokenId, amount, price, nftCollectionAddress, chainId, account) => {
+    console.log(paymentToken, tokenId, amount, price, nftCollectionAddress, chainId, account)
     await switchChain(chainId);
     const usdt = await getUSDTContract(chainId)
     paymentToken == 'Eth' ? paymentToken = zeroAddress : paymentToken = usdt.address;
@@ -209,7 +211,7 @@ export const buyNFT = async (listingId, price, chainId, account) => {
     await switchChain(chainId);
     const selectedContract = await getMarketplaceContract(chainId);
     const contract = await initContract(selectedContract);
-    console.log(listingId, price);
+    console.log(listingId, convertToWei(price));
     const buy = await contract.methods.BuyFixedPriceItem(listingId).send({from: account, value: convertToWei(price)})
     return buy;
 }
@@ -220,5 +222,21 @@ export const bid = async (tokenId, price, chainId, account) => {
     const contract = await initContract(selectedContract);
     const bid = await contract.methods.bid(tokenId, convertToWei(price)).send({from: account, value: convertToWei(price)})
     return bid;
+}
+
+export const claimNFT = async (tokenId, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const claimNft = await contract.methods.claimNft(tokenId).send({from: account})
+    return claimNft;
+}
+
+export const claimReward = async (tokenId, chainId, account) => {
+    await switchChain(chainId);
+    const selectedContract = await getMarketplaceContract(chainId);
+    const contract = await initContract(selectedContract);
+    const claimReward = await contract.methods.auctionEndAndClaimReward(tokenId).send({from: account})
+    return claimReward;
 }
 

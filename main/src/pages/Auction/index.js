@@ -101,11 +101,13 @@ const Auction = () => {
       <section className="section">
         <div className="container">
           <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-            {nfts.slice(0, end)?.map((data, index) => {
+            {nfts.slice(0, end)?.map((auction, index) => {
               return (
-                <div className="col" key={index}>
-                  <NftCardAuction data={data} key={index} />
-                </div>
+                new Date().getTime() / 1000 < auction?.auctionTimeEnd && new Date().getTime() / 1000 > auction?.auctionTimeStart && (
+                  <div className="col" key={index}>
+                    <NftCardAuction data={auction} key={index} />
+                  </div>
+                )
               )
             })}
             {/*end col*/}

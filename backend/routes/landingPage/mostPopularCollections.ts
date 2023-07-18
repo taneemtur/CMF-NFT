@@ -81,59 +81,77 @@ router.post("/", async (req: Request, res: Response) => {
 
 // get
 router.get("/", async (req: Request, res: Response) => {
-    const mostPopularCollections = db.collection("landing_page").doc("most_popular_collections");
-    const snapshot = await mostPopularCollections.get();
-    if (snapshot.exists) {
-        const data = snapshot.data();
-        if (data) {
-            const promises: DocumentData[] = []
-            let mostPopularCollectionsArray = data.most_popular_collections || [];
-            if (mostPopularCollectionsArray.length === 0) {
-                return res.json({
-                    message: "No Most Popular Collections",
-                    data: [],
-                }).status(200)
-            } else {
-                mostPopularCollectionsArray = mostPopularCollectionsArray.slice(0, 10);
-                mostPopularCollectionsArray.forEach((collectionAddress: string) => {
-                    promises.push(db.collection("collections").doc(collectionAddress).get())
-                })
-                // fetch owner and category from each collection
-                const collections = await Promise.all(promises);
-                const collectionsDatapromises: DocumentData[] = []
-                collections.forEach(async (collection: DocumentData) => {
-                    collectionsDatapromises.push(new Promise(async (res, rej) => {
-                        const categoryRef = collection.data()?.category;
-                        const category = await categoryRef.get();
-                        const ownerRef = collection.data()?.owner;
-                        const owner = await ownerRef.get();
+    try {
+        const mostPopularCollections = db.collection("landing_page").doc("most_popular_collections");
+        const snapshot = await mostPopularCollections.get();
+        
+        if (snapshot.exists) {
+            const data = snapshot.data();
+            if (data) {
+                let mostPopularCollectionsArray: string[] = data.most_popular_collections || [];
+                if (mostPopularCollectionsArray.length === 0) {
+                    return res.json({
+                        message: "No Most Popular Collections",
+                        data: [],
+                    }).status(200);
+                } else {
+                    mostPopularCollectionsArray = mostPopularCollectionsArray.slice(0, 10);
+                    const promises: Promise<any>[] = [];
+                    
+                    mostPopularCollectionsArray.forEach((collectionAddress: string) => {
+                        const collectionRef = db.collection("collections").doc(collectionAddress);
+                        promises.push(collectionRef.get());
+                    });
 
-                        res({
-                            ...collection.data(),
-                            category: category.data(),
-                            owner: owner.data(),
-                        })
-                    }))
-                })
-                Promise.all(collectionsDatapromises).then((collectionsData) => {
+                    const collections = await Promise.all(promises);
+
+                    const collectionsDataPromises: Promise<any>[] = collections.map(async (collectionSnapshot) => {
+                        const collectionData = collectionSnapshot.data();
+                        if (!collectionData) return null;
+
+                        const categoryRef = collectionData.category;
+                        const ownerRef = collectionData.owner;
+
+                        const [categorySnapshot, ownerSnapshot] = await Promise.all([
+                            categoryRef.get(),
+                            ownerRef.get()
+                        ]);
+
+                        const categoryData = categorySnapshot.data();
+                        const ownerData = ownerSnapshot.data();
+
+                        if (categoryData && ownerData) {
+                            return {
+                                ...collectionData,
+                                category: categoryData,
+                                owner: ownerData,
+                            };
+                        }
+
+                        return null;
+                    });
+
+                    const collectionsDataArray = await Promise.all(collectionsDataPromises);
+                    const validCollectionsData = collectionsDataArray.filter((collectionData) => collectionData !== null);
+
                     return res.json({
                         message: "Most Popular Collections",
-                        data: collectionsData,
-                    }).status(200)
-                }).catch((error) => {
-                    console.log(error);
-                    return res.json({
-                        message: "error fetching collection data",
-                    }).status(500)
-                })
+                        data: validCollectionsData,
+                    }).status(200);
+                }
             }
+        } else {
+            return res.json({
+                message: "Most Popular Collections does not exist",
+            }).status(400);
         }
-    } else {
+    } catch (error) {
+        console.log(error);
         return res.json({
-            message: "Most Popular Collections does not exist",
-        }).status(400)
+            message: "Error fetching Most Popular Collections",
+        }).status(500);
     }
-})
+});
 
 // delete
 router.delete("/", async (req: Request, res: Response) => {

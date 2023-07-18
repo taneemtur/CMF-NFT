@@ -46,7 +46,7 @@ const NftCardDark = ({data, index}) => {
             <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
               <i className="uil uil-clock"></i>{' '}
               <Countdown
-                date={data?.auctionTimeEnd}
+                date={new Date(data?.auctionTimeEnd * 1000)}
                 renderer={({ days, hours, minutes, seconds }) => (
                   <span>
                     {days}:{hours}:{minutes}:{seconds}

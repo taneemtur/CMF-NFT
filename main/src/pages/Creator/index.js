@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosConfig from '../../axiosConfig'
-import { bg01 } from '../../components/imageImport'
+import { bg01, client01 } from '../../components/imageImport'
 import Main from '../../Layouts/Main'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
@@ -50,7 +50,7 @@ const Creator = () => {
                   Creators
                 </h5>
                 <p className="text-white-50 para-desc mx-auto mb-0">
-                  All Featured Creators
+                  All CMF Creators
                 </p>
               </div>
             </div>
@@ -111,11 +111,11 @@ const Creator = () => {
                   <div className="card creators creators-two creator-primary rounded-md shadow overflow-hidden">
                     <div
                       className="py-5"
-                      style={{ background: `url(${creator?.bannerImage})` }}
+                      style={{ background: `url(${creator?.bannerImage || bg01})` }}
                     ></div>
                     <div className="position-relative mt-n5">
                       <img
-                        src={creator?.profileImage}
+                        src={creator?.profileImage || client01}
                         className="avatar avatar-md-md rounded-pill shadow-sm bg-light img-thumbnail mx-auto d-block"
                         alt=""
                       />
@@ -131,7 +131,7 @@ const Creator = () => {
                         >
                           {splitWalletAddress(creator?.walletAddress)}
                         </a>
-                        <small className="text-muted">@{creator?.name}</small>
+                        <small className="text-muted">{creator?.name ? `@ ${creator?.name}` : ''}</small>
 
                         <div className="mt-3">
                           <a
