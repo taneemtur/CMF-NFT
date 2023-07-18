@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Countdown from 'react-countdown';
 import axiosConfig from "../../axiosConfig"
 import { useSelector } from 'react-redux';
+import { client01 } from '../imageImport';
 
 const NftCardAuction = ({data, index}) => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const NftCardAuction = ({data, index}) => {
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex align-items-center">
           <img
-            src={data?.owner?.profileImage}
+            src={data?.owner?.profileImage || client01}
             alt="user"
             className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
           />
@@ -30,7 +31,7 @@ const NftCardAuction = ({data, index}) => {
             onClick={e => e.preventDefault()}
             className="text-dark small creator-name h6 mb-0 ms-2"
           >
-            @{data?.owner?.name}
+            {data?.owner?.name ? `@ ${data?.owner?.name}` : ''}
           </a>
         </div>
       </div>
@@ -72,7 +73,7 @@ const NftCardAuction = ({data, index}) => {
         <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
           <i className="uil uil-clock"></i>{' '}
           <Countdown
-            date={data?.auctionTimeEnd}
+            date={new Date(data?.auctionTimeEnd * 1000)}
             renderer={({ days, hours, minutes, seconds }) => (
               <span>
                 {days}:{hours}:{minutes}:{seconds}

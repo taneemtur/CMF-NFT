@@ -41,7 +41,7 @@ const ExploreTwo = () => {
   const [filterList, setFilterList] = useState([])
 
   const getAllNfts = async () => {
-    await axiosConfig.get(`/nfts/${start}/${end}`).then((res) => {
+    await axiosConfig.get(`/nfts/explore/${start}/${end}`).then((res) => {
       setNfts(res.data.data)
       setTotal(res.data.total)
       console.log(res.data.data)

@@ -14,7 +14,7 @@ const LISTINGTYPE = {
     fixedprice: 'fixedprice'
 }
 
-const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) => {
+const NFTListModel = ({ id, labelledby, nftAddress, setNft, prevPrice, nft }) => {
     const navigate = useNavigate()
     const { account } = useSelector(state => state.theme);
     const [listingType, setListingType] = React.useState(LISTINGTYPE.fixedprice)
@@ -24,7 +24,7 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
     const btnRef = React.useRef(null)
 
     const getNftData = async () => {
-        await axiosconfig.get(`/nfts/${nftAddress}`).then((res) => {
+        await axiosConfig.get(`/nfts/nft/${nftAddress}`).then((res) => {
             setNft(res.data.data)
             console.log(nftAddress)
         })
@@ -34,10 +34,11 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
         const id = toast.loading('Listing NFT')
         try {
             await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress)
-            const fixedListingId = await listNFT(paymentToken, parseInt(nft?.nftAddress), 1, nft?.price, nft?.collection?.collectionAddress, nft?.blockchain, account);
+            const fixedListingId = await listNFT(paymentToken, parseInt(nft?.tokenId), 1, nft?.price, nft?.collection?.collectionAddress, nft?.blockchain, account);
             await axiosConfig.put("/nfts/listnft", {
                 listingType,
-                endDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
+                endDate: listingType == LISTINGTYPE.fixedprice ? null : endDate,
+                startDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
                 nftAddress,
                 price,
                 fixedListingId,
@@ -63,7 +64,7 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                 toast.update(id, {
                     render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
                 })
-                setNFT(prev => ({
+                setNft(prev => ({
                     ...prev,
                     listed: true,
                     type: listingType,
@@ -86,16 +87,28 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
         const id = toast.loading('Listing NFT')
         try {
             await approveCollection(account, nft.blockchain, nft?.collection?.collectionAddress)
-            const auctionListingId = await listAuctionNFT(nft?.price, startDate.getTime(), endDate.getTime(), parseInt(nft?.nftAddress), 1, nft?.collection?.collectionAddress, paymentToken, nft?.blockchain, account);
+            const auctionListingId = await listAuctionNFT(nft?.price, Math.floor((startDate.getTime() / 1000)), Math.floor((endDate.getTime() / 1000)), parseInt(nft?.tokenId), 1, nft?.collection?.collectionAddress, paymentToken, nft?.blockchain, account);
             await axiosConfig.put("/nfts/listnft", {
                 listingType,
-                startDate: listingType == LISTINGTYPE.fixedprice ? null : startDate,
-                endDate: listingType == LISTINGTYPE.fixedprice ? null : endDate,
+                startDate: listingType == LISTINGTYPE.fixedprice ? null : Math.floor((startDate.getTime() / 1000)),
+                endDate: listingType == LISTINGTYPE.fixedprice ? null : Math.floor((endDate.getTime() / 1000)),
                 nftAddress,
                 price,
                 auctionListingId,
                 paymentToken
             }).then(async (res) => {
+                await axiosConfig.post("/nfts/bidnft", {
+                    nftAddress,
+                    blockchain: nft?.blockchain,
+                    price,
+                    user: account,
+                    owner: account,
+                    auctionTimeStart: Math.floor((startDate.getTime() / 1000)),
+                    auctionTimeEnd: Math.floor((endDate.getTime() / 1000)),
+                    userBidTime: new Date(),
+                    auctionListingId,
+                    paymentToken
+                  })
                 await axiosConfig.post("/activity/useractivity", {
                     // userId, activityName, activityData
                     userId: account,
@@ -116,7 +129,7 @@ const NFTListModel = ({ id, labelledby, nftAddress, setNFT, prevPrice, nft }) =>
                 toast.update(id, {
                     render: `${res.data.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
                 })
-                setNFT(prev => ({
+                setNft(prev => ({
                     ...prev,
                     listed: true,
                     type: listingType,

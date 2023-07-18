@@ -78,6 +78,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 // get by category
 router.get("/categoryname/:categoryName", async (req: Request, res: Response) => {
+   try {
     const categoryName = req.params.categoryName;
     const exploreItemsRef = db.collection("landing_page").doc("explore_items").collection(categoryName).doc("NFTs");
     const doc = await exploreItemsRef.get();
@@ -95,6 +96,12 @@ router.get("/categoryname/:categoryName", async (req: Request, res: Response) =>
             data: newNFTs,
         });
     }
+   } catch (error) {
+        res.status(200).send({
+        message: "Cannot find explore items",
+        data: [],
+    });
+   }
 });
 
 // delete by category
@@ -117,55 +124,59 @@ router.delete("/:categoryName", async (req: Request, res: Response) => {
 
 // get all categires, all Nfts in each category
 router.get("/categoriessnfts", async (req: Request, res: Response) => {
-
-    // fetch all categories
-    const categoriesRef = db.collection("categories")
-    const categoriesDoc = await categoriesRef.get();
-    const categories: any[] = [];
-    for (const doc of categoriesDoc.docs) {
-        const category = doc.data()
-        const categoryName = category.name;
-        if (category?.isHome) {
-            categories.push(categoryName);
-        }
-    }
-
-
-    const landingpageRef = db.collection("landing_page").doc("explore_items");
-    const categoriesNFTs: any = {};
-    for (const category of categories) {
-        try {
-            const exploreItemsRef = landingpageRef.collection(category).doc("NFTs");
-            const doc = await exploreItemsRef.get();
-            if (!doc.exists) {
-                categoriesNFTs[category] = [];
+    try {
+        // fetch all categories
+        const categoriesRef = db.collection("categories")
+        const categoriesDoc = await categoriesRef.get();
+        const categories: any[] = [];
+        for (const doc of categoriesDoc.docs) {
+            const category = doc.data()
+            const categoryName = category.name;
+            if (category?.isHome) {
+                categories.push(categoryName);
             }
-            else {
-                const NFTs = doc.data()?.NFTs;
-                const newNFTs = NFTs.slice(0, 10);
-                categoriesNFTs[category] = newNFTs;
-            }
-        } catch (err) {
-            console.log(err);
         }
+
+
+        const landingpageRef = db.collection("landing_page").doc("explore_items");
+        const categoriesNFTs: any = {};
+        for (const category of categories) {
+            try {
+                const exploreItemsRef = landingpageRef.collection(category).doc("NFTs");
+                const doc = await exploreItemsRef.get();
+                if (!doc.exists) {
+                    categoriesNFTs[category] = [];
+                }
+                else {
+                    const NFTs = doc.data()?.NFTs;
+                    const newNFTs = NFTs.slice(0, 10);
+                    categoriesNFTs[category] = newNFTs;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        // add new category "All" and add all NFTs to it
+        const allNFTs: any[] = [];
+        for (const category in categoriesNFTs) {
+            allNFTs.push(...categoriesNFTs[category]);
+        }
+
+        categoriesNFTs["All"] = allNFTs;
+
+        res.status(200).send({
+            message: "Successfully retrieved categories and NFTs",
+            data: {
+                categories: categories,
+                categoriesNFTs: categoriesNFTs,
+            },
+        });
+    } catch (error) {
+        res.status(400).send({
+            message: "Cannot Find categories and NFTs",
+        });
     }
-
-    // add new category "All" and add all NFTs to it
-    const allNFTs: any[] = [];
-    for (const category in categoriesNFTs) {
-        allNFTs.push(...categoriesNFTs[category]);
-    }
-
-    categoriesNFTs["All"] = allNFTs;
-
-    res.status(200).send({
-        message: "Successfully retrieved categories and NFTs",
-        data: {
-            categories: categories,
-            categoriesNFTs: categoriesNFTs,
-        },
-    });
-
 });
 
 // delete by NFT Address in a category

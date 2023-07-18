@@ -9,6 +9,7 @@ export enum LISTINGTYPE {
 
 interface NFTModel  {
     nftAddress: string;
+    tokenId: number;
     name: string;
     description: string;
     image?: string | null;
@@ -26,6 +27,7 @@ interface NFTModel  {
     fixedListingId?: number | null;
     auctionListingId?: number | null;
     paymentToken?: string | null;
+    timeStamp: EpochTimeStamp;
 }
 
 

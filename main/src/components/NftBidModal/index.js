@@ -1,43 +1,62 @@
 import React, { useState } from 'react'
-import { bid } from '../../blockchain/mintContracts';
+import { approveUSDT, bid } from '../../blockchain/mintContracts';
 import { useSelector } from 'react-redux';
 import axiosConfig from '../../axiosConfig'
 import { toast } from 'react-toastify';
-import { NFT_ACTIVITIES } from '../../activities';
+import { NFT_ACTIVITIES, USER_ACTIVITIES } from '../../activities';
 
-const index = ({nft, nftAddress, getNftData}) => {
+const index = ({nft, nftAddress, getNftData, getActivity}) => {
     const [price, setPrice] = useState(null);
     const { account } = useSelector(state => state.theme)
 
     const placeBid = async (auctionListingId, price, chainId, account) => {
+      if(price <= nft?.price){
+        toast.error('Bidding Price should be higher than current price');
+        return;
+      }
         const id = toast.loading('Placing Bid')
         try {
+            if(nft?.paymentToken == 'USDT'){
+              await approveUSDT(account, chainId, price);
+            }
             await bid(auctionListingId, price, chainId, account)
-            await axiosConfig.put("/nfts/updatelisting", {nftAddress, price} )
-            await axiosconfig.post("/activity/useractivity", {
-                // userId, activityName, activityData
-                userId: account,
-                activityName: USER_ACTIVITIES.BID_NFT,
+            await axiosConfig.post("/nfts/bidnft", {
+              nftAddress,
+              blockchain: chainId,
+              price,
+              user: account,
+              owner: nft?.owner?.walletAddress,
+              auctionTimeStart: new Date(nft?.auctionTimeStart).getTime() / 1000,
+              auctionTimeEnd: new Date(nft?.auctionTimeEnd).getTime() / 1000,
+              userBidTime: new Date(),
+              auctionListingId: nft?.auctionListingId,
+              paymentToken: nft?.paymentToken,
+            }).then(async (res)=>{
+              await axiosConfig.put("/nfts/updatelisting", {nftAddress, price} )
+              await axiosConfig.post("/activity/useractivity", {
+                  // userId, activityName, activityData
+                  userId: account,
+                  activityName: USER_ACTIVITIES.BID_NFT,
+                  activityData: {
+                      ...res.data.data,
+                      BidAt: new Date()
+                  }
+              })
+              await axiosConfig.post("/activity/nftactivity", {
+                nftId: nftAddress,
                 activityData: {
-                    nftAddress, 
-                    price,
-                    BidAt: new Date()
+                  ...res.data.data,
+                  activity: NFT_ACTIVITIES.BID_NFT,
+                  BidAt: new Date()
                 }
+              })
             })
-            await axiosconfig.post("/activity/nftactivity", {
-                // userId, activityName, activityData
-                userId: account,
-                activityName: NFT_ACTIVITIES.BID_NFT,
-                activityData: {
-                    nftAddress, 
-                    price,
-                    BidAt: new Date()
-                }
-            })
+
             toast.update(id, {
                 render: `Bid Successfully Placed`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true, type: 'success'
             })
             getNftData()
+            getActivity()
         } catch (error) {
             toast.update(id, {
                 render: `${error.message}`, closeOnClick: true, isLoading: false, autoClose: 5000, closeButton: true

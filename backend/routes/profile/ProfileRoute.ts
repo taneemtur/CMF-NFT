@@ -396,5 +396,113 @@ router.put("/verifyuser", async (req: Request, res: Response) => {
     }
 })
 
+// get claim nfts of user
+router.get("/getclaimnfts/:walletAddress", async (req: Request, res: Response) => {
+    const walletAddress = req.params.walletAddress;
+    try {
+        const userBidsRef = db.collection("bids");
+        let bidsQuerySnapshot = await userBidsRef.where("user", "==", walletAddress).where("claimNFT", "==", false).get();
+        
+        if (bidsQuerySnapshot.empty) {
+            bidsQuerySnapshot = await userBidsRef.where("owner", "==", walletAddress).where("claimReward", "==", false).get();
+        }
+
+
+        if (!bidsQuerySnapshot.empty) {
+            const bidsDataArray: any[] = [];
+            
+            // Use Promise.all to await all the NFT data fetch requests
+            const promises = bidsQuerySnapshot.docs.map(async (doc) => {
+                const bids = doc.data(); 
+                const nftRef = db.collection('nfts').doc(bids.nftAddress);
+                const nftDoc = await nftRef.get();
+                bids.nft = nftDoc.data();
+                // user Data
+                const userRef = db.collection('users').doc(bids.user);
+                const userDoc = await userRef.get();
+                bids.userData = userDoc.data();
+                
+                bidsDataArray.push(bids);
+            });
+
+            await Promise.all(promises);
+
+            if(bidsDataArray.length == 0){
+                res.status(200).send({
+                    "data": [],
+                    "message": "No NFTs to claim for the specified wallet address"
+                });
+            }
+
+            res.status(200).send({
+                "data": bidsDataArray,
+                "message": "Claim NFTs found for the specified wallet address"
+            });
+        } else {
+            res.status(200).send({
+                "data": [],
+                "message": "No NFTs to claim for the specified wallet address"
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error getting Claim NFTs"
+        });
+    }
+});
+
+// get claim nfts of user
+router.put("/updatebidnft/:nftAddress", async (req: Request, res: Response) => {
+    const nftAddress = req.params.nftAddress
+    const claim = req.body;
+    const bidsRef = db.collection("bids"); 
+    // Update the document with the specified nftAddress value as the document ID
+    bidsRef
+    .doc(nftAddress)
+    .update(claim)
+    .then(() => {
+        res.status(200).send({
+            "message": "Document updated successfully"
+        });
+    })
+    .catch((error) => {
+        res.status(500).send({
+            "message": "Error updating document"
+        });
+    });
+
+});
+
+router.post("/newsletter", async (req: Request, res: Response) => {
+    const body = req.body;
+    const { email, walletAddress } = body;
+    const userRef = db.collection("newsletter").doc(walletAddress);
+
+    try {
+        // Check if the provided walletAddress exists in the "newsletter" collection
+        const userSnapshot = await userRef.get();
+        if (userSnapshot.exists) {
+            return res.json({
+                message: "User already subscribed to the newsletter.",
+                code: 200
+            }).status(400);
+        }
+        
+        // If the user doesn't exist, add the email to the "newsletter" collection
+        await userRef.set({ email });
+
+        return res.json({
+            message: "Successfully subscribed to the newsletter.",
+            code: 200
+        }).status(200);
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: "Error subscribing to the newsletter.",
+            code: 500
+        }).status(500);
+    }
+});
+
 
 export { router as ProfileRoute }

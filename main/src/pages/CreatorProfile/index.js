@@ -15,6 +15,10 @@ import Main from '../../Layouts/Main'
 import { splitWalletAddress } from '../../utils'
 import NftCard from '../../components/NftCard'
 import NftCardAuction from '../../components/NftCardAuction'
+import { getChainByName } from '../../blockchain/supportedChains'
+import Countdown from 'react-countdown'
+import { claimNFT, claimReward } from '../../blockchain/mintContracts'
+import { toast } from 'react-toastify'
 
 
 
@@ -28,86 +32,13 @@ const CreateProfile = () => {
   const [userLikedNFTs, setUserLikedNFTs] = useState([]);
   const [nfts, setNfts] = useState([]);
   const [userActivities, setUserActivities] = useState([]);
+  const [userClaimNFTs, setUserClaimNFTs] = useState([]);
 
   useEffect(() => {
     if (!account) {
       navigate('/')
     }
   }, [account, navigate])
-
-
-  const activityData = [
-    {
-      title: 'Digital Art Collection',
-      author: 'Panda',
-      time: '1 hours ago',
-      favorite: 'Started Following',
-      image: item1,
-    },
-    {
-      title: 'Skrrt Cobain Official',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: gif1,
-    },
-    {
-      title: 'Wow! That Brain Is Floating',
-      author: 'ButterFly',
-      time: '2 hours ago',
-      favorite: 'Liked by',
-      image: item2,
-    },
-    {
-      title: 'Our Journey Start',
-      author: 'CalvinCarlo',
-      time: '5 hours ago',
-      favorite: 'Listed by',
-      image: item3,
-    },
-    {
-      title: 'BitBears',
-      author: 'ButterFly',
-      time: '8 hours ago',
-      favorite: 'Liked by',
-      image: gif2,
-    },
-    {
-      title: 'Little Kokeshi #13',
-      author: 'ButterFly',
-      time: '10 hours ago',
-      favorite: 'Liked by',
-      image: item4,
-    },
-    {
-      title: 'EVOL Floater',
-      author: 'CutieGirl',
-      time: '13 hours ago',
-      favorite: 'Started Following',
-      image: gif3,
-    },
-    {
-      title: 'Smart Ape Club (SAC) - Limited Edition',
-      author: 'CalvinCarlo',
-      time: '18 hours ago',
-      favorite: 'Listed by',
-      image: gif4,
-    },
-    {
-      title: 'THE SECRET SOCIETY XX #775',
-      author: 'CalvinCarlo',
-      time: '23 hours ago',
-      favorite: 'Listed by',
-      image: gif5,
-    },
-    {
-      title: 'Create Your Own World',
-      author: 'ButterFly',
-      time: '24 hours ago',
-      favorite: 'Liked by',
-      image: item5,
-    },
-  ]
 
 
   const loadFile = async function (event, banner = false) {
@@ -147,9 +78,7 @@ const CreateProfile = () => {
   }
 
   const getUserActivities = async () => {
-    console.log("account", account)
     await axiosConfig.get(`/activity/useractivity/${account}`).then((res) => {
-      console.log(res.data.data)
       setUserActivities(res.data.data)
     }).catch((err) => {
       console.log(err)
@@ -180,32 +109,83 @@ const CreateProfile = () => {
     })
   }
 
-  useEffect(() => {
-    if (account) {
-      getUserNFTs();
+  const getUserClaimNFTs = async () => {
+    await axiosConfig.get(`/profile/getclaimnfts/${account}`).then((res) => {
+      console.log(res.data.data)
+      setUserClaimNFTs(res.data.data)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const claimreward = async (auctionListingId, nftAddress, chainId, ownerUser = 0) => {
+    const id = toast.loading('Claiming NFT Reward');
+    try {
+      await claimReward(auctionListingId, chainId, account)
+      await axiosConfig.put(`/profile/updatebidnft/${nftAddress}`, {claimReward: true})
+      if(ownerUser){
+        toast.update(id, {
+          render: `NFT Claimed`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true
+        })
+      }else{
+        toast.update(id, {
+          render: `Reward Claimed`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true
+        })
+      }
       
+      getUserNFTs()
+      getUserClaimNFTs()
+      getUserOnSale()
+    } catch (error) {
+      toast.update(id, {
+        render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true
+      })
     }
-    return () => {
-      // cleanup
-      setNfts([])
+  }
+
+  const claimnft = async (auctionListingId, nftAddress, chainId) => {
+    const id = toast.loading('Claiming NFT');
+    try {
+      await claimNFT(auctionListingId, chainId, account)
+      await axiosConfig.put(`/profile/updatebidnft/${nftAddress}`, {claimNFT: true})
+      await axiosConfig.put(`/nfts/updatenftowner`, { nftAddress, owner: account });
+      await axiosConfig.put(`/nfts/unlistnft`, { nftAddress })
+      toast.update(id, {
+        render: `NFT Claimed`, closeOnClick: true, type: 'success', isLoading: false, closeButton: true
+      })
+      getUserNFTs()
+      getUserClaimNFTs()
+      getUserOnSale()
+    } catch (error) {
+      toast.update(id, {
+        render: `${error.message}`, closeOnClick: true, type: 'error', isLoading: false, closeButton: true
+      })
     }
-  }, [account])
+  }
+
+  const cancelListing = async (nftAddress) => {
+    await axiosConfig.put("/nfts/unlistnft", {nftAddress})
+  }
 
   useEffect(() => {
     if (account) {
+      getUserNFTs()
       getUserActivities();
       getUserCollection();
       getUserOnSale();
       getUserFollwers();
       getUserLikedNFTs();
+      getUserClaimNFTs();
     }
     return () => {
       // cleanup
+      setNfts([])
       setUserActivities([])
       setCollections([])
       setUserOnSale([])
       setUserFollowers([])
       setUserLikedNFTs([])
+      setUserClaimNFTs([])
     }
   }, [account])
 
@@ -439,6 +419,20 @@ const CreateProfile = () => {
                     About
                   </button>
                 </li>
+                <li className="nav-item" role="presentation">
+                  <button
+                    className="nav-link"
+                    id="claim-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#claim"
+                    type="button"
+                    role="tab"
+                    aria-controls="claim"
+                    aria-selected="false"
+                  >
+                    Claim NFT & Rewards
+                  </button>
+                </li>
               </ul>
 
               <div className="tab-content mt-4 pt-2" id="myTabContent">
@@ -512,13 +506,10 @@ const CreateProfile = () => {
                           <div className="content text-center p-4 mt-n5">
                             <div className="position-relative d-inline-flex">
                               <img
-                                src={collection?.owner.profileImage}
+                                src={collection?.owner.profileImage || client01}
                                 className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
                                 alt=""
                               />
-                              <span className="verified text-primary">
-                                <i className="mdi mdi-check-decagram"></i>
-                              </span>
                             </div>
                             <div className="mt-2">
                               <a
@@ -531,7 +522,7 @@ const CreateProfile = () => {
                               >
                                 {collection?.name}
                               </a>
-                              <p className="text-muted mb-0 small">27 Items</p>
+                              {/* <p className="text-muted mb-0 small">27 Items</p> */}
                             </div>
                           </div>
                         </div>
@@ -623,8 +614,11 @@ const CreateProfile = () => {
 
                               <span className="content ms-3">
                                 <a
-                                  href=""
-                                  onClick={e => e.preventDefault()}
+                                  href={`/nft/${data?.nftAddress}`}
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    navigate(`/nft/${data?.nftAddress}`)
+                                  }}
                                   className="text-dark title mb-0 h6 d-block"
                                 >
                                   {data?.name}
@@ -636,7 +630,7 @@ const CreateProfile = () => {
                                     onClick={e => e.preventDefault()}
                                     className="link fw-bold"
                                   >
-                                    @{data?.author}
+                                    @{data?.price}
                                   </a>
                                 </small>
 
@@ -699,6 +693,296 @@ const CreateProfile = () => {
                       </p>
                     )
                   }
+                </div>
+                {/* if value select claim NFT */}
+                <div
+                  className="tab-pane fade"
+                  id="claim"
+                  role="tabpanel"
+                  aria-labelledby="claim-tab"
+                >
+                  <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
+                    {userClaimNFTs && userClaimNFTs?.map((nft, index) => (
+                    (new Date().getTime()) / 1000 > nft?.auctionTimeEnd && account == nft?.user && nft?.claimNFT == false && nft?.owner != nft?.user ? (
+                      <div key={index} className='mt-5'>
+                        <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
+                          <div className="d-flex justify-content-between">
+                            <div className="img-group">
+                              <a
+                                href={`/profile/${nft?.userData?.walletAddress}`}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  navigate(`/profile/${nft?.userData?.walletAddress}`)
+                                }}
+                                className="user-avatar"
+                              >
+                                <img
+                                  src={nft?.userData?.profileImage || client08}
+                                  alt="user"
+                                  className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
+                                />
+                                <span className="title text-dark h6"> Current User</span>
+                              </a>
+                            </div>
+
+                          </div>
+                    
+                          <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
+                            <a
+                              href={`/nft/${nft?.nftAddress}`}
+                              onClick={e => {
+                                e.preventDefault()
+                                navigate(`/nft/${nft?.nftAddress}`)
+                              }}
+                            >
+                              <img
+                                src={nft?.nft?.image || client08}
+                                className="img-fluid"
+                                alt={nft?.nft?.name}
+                                style={{ width: '100%', height: '250px', objectFit: 'cover', }}
+                              />
+                            </a>
+                            <div
+                              className={`${nft?.id ? '' : 'hide-data'
+                                } position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
+                            >
+                              <i className="uil uil-clock"></i>{' '}
+                            </div>
+                    
+                            {
+                              nft?.nft?.type == 'auction' && (
+                                <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
+                                  <i className="uil uil-clock"></i>{' '}
+                                  <Countdown
+                                    date={new Date(nft?.auctionTimeEnd * 1000)}
+                                    renderer={({ days, hours, minutes, seconds }) => (
+                                      <span>
+                                        {days}:{hours}:{minutes}:{seconds}
+                                      </span>
+                                    )}
+                                  />
+                                </div>
+                              )
+                            }
+                    
+                          </div>
+                    
+                          <div className="card-body content position-relative p-0 mt-3">
+                            <a
+                              href={`/nft/${nft?.nftAddress}`}
+                              onClick={e => {
+                                e.preventDefault()
+                                navigate(`/nft/${nft?.nftAddress}`)
+                              }}
+                              className="title text-dark h6"
+                            >
+                              {nft?.nft?.name}
+                            </a>
+                    
+                            <div className="d-flex justify-content-between mt-2">
+                              <small className="rate fw-bold"> Current Bid: {nft?.price} { nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain) } </small>
+                            </div>
+
+                            <div className="d-flex justify-content-between mt-2">
+                              <button onClick={(e)=>{
+                                e.preventDefault();
+                                claimnft(nft?.auctionListingId, nft?.nftAddress, nft?.blockchain);
+                                cancelListing(nft?.nftAddress)
+                              }} className="btn btn-l btn-pills btn-primary" >Claim NFT</button> 
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>  
+                    ) : (
+                      new Date().getTime() / 1000 > nft?.auctionTimeEnd && account == nft?.owner && nft?.claimReward == false && nft?.owner != nft?.user ? (
+                      <div key={index} className='mt-5'>
+                        <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
+                          <div className="d-flex justify-content-between">
+                            <div className="img-group">
+                              <a
+                                href={`/profile/${nft?.userData?.walletAddress}`}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  navigate(`/profile/${nft?.userData?.walletAddress}`)
+                                }}
+                                className="user-avatar"
+                              >
+                                <img
+                                  src={nft?.userData?.profileImage || client08}
+                                  alt="user"
+                                  className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
+                                />
+                                <span className="title text-dark h6"> Current User</span>
+                              </a>
+                            </div>
+
+                          </div>
+                    
+                          <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
+                            <a
+                              href={`/nft/${nft?.nftAddress}`}
+                              onClick={e => {
+                                e.preventDefault()
+                                navigate(`/nft/${nft?.nftAddress}`)
+                              }}
+                            >
+                              <img
+                                src={nft?.nft?.image || client08}
+                                className="img-fluid"
+                                alt={nft?.nft?.name}
+                                style={{ width: '100%', height: '250px', objectFit: 'cover', }}
+                              />
+                            </a>
+                            <div
+                              className={`${nft?.id ? '' : 'hide-data'
+                                } position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
+                            >
+                              <i className="uil uil-clock"></i>{' '}
+                            </div>
+                    
+                            {
+                              nft?.nft?.type == 'auction' && (
+                                <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
+                                  <i className="uil uil-clock"></i>{' '}
+                                  <Countdown
+                                    date={nft?.auctionTimeEnd}
+                                    renderer={({ days, hours, minutes, seconds }) => (
+                                      <span>
+                                        {days}:{hours}:{minutes}:{seconds}
+                                      </span>
+                                    )}
+                                  />
+                                </div>
+                              )
+                            }
+                    
+                          </div>
+                    
+                          <div className="card-body content position-relative p-0 mt-3">
+                            <a
+                              href={`/nft/${nft?.nftAddress}`}
+                              onClick={e => {
+                                e.preventDefault()
+                                navigate(`/nft/${nft?.nftAddress}`)
+                              }}
+                              className="title text-dark h6"
+                            >
+                              {nft?.nft?.name}
+                            </a>
+                    
+                            <div className="d-flex justify-content-between mt-2">
+                              <small className="rate fw-bold"> Current Bid: {nft?.price} { nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain) } </small>
+                            </div>
+
+                            <div className="d-flex justify-content-between mt-2">
+                              <button onClick={(e)=>{
+                                e.preventDefault();
+                                claimreward(nft?.auctionListingId, nft?.nftAddress, nft?.blockchain);
+                              }} className="btn btn-l btn-pills btn-primary">Claim Reward</button> 
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                      ) : (
+                      new Date().getTime() / 1000 > nft?.auctionTimeEnd && account == nft?.owner && nft?.owner == nft?.user && nft?.claimReward == false && (
+                      <div key={index} className='mt-5'>
+                        <div className="card nft-items nft-primary rounded-md shadow overflow-hidden mb-1 p-3">
+                          <div className="d-flex justify-content-between">
+                            <div className="img-group">
+                              <a
+                                href={`/profile/${nft?.userData?.walletAddress}`}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  navigate(`/profile/${nft?.userData?.walletAddress}`)
+                                }}
+                                className="user-avatar"
+                              >
+                                <img
+                                  src={nft?.userData?.profileImage || client08}
+                                  alt="user"
+                                  className="avatar avatar-sm-sm img-thumbnail border-0 shadow-sm rounded-circle"
+                                />
+                                <span className="title text-dark h6"> Current User</span>
+                              </a>
+                            </div>
+
+                          </div>
+                    
+                          <div className="nft-image rounded-md mt-3 position-relative overflow-hidden">
+                            <a
+                              href={`/nft/${nft?.nftAddress}`}
+                              onClick={e => {
+                                e.preventDefault()
+                                navigate(`/nft/${nft?.nftAddress}`)
+                              }}
+                            >
+                              <img
+                                src={nft?.nft?.image || client08}
+                                className="img-fluid"
+                                alt={nft?.nft?.name}
+                                style={{ width: '100%', height: '250px', objectFit: 'cover', }}
+                              />
+                            </a>
+                            <div
+                              className={`${nft?.id ? '' : 'hide-data'
+                                } position-absolute bottom-0 start-0 m-2 bg-gradient-primary text-white title-dark rounded-pill px-3`}
+                            >
+                              <i className="uil uil-clock"></i>{' '}
+                            </div>
+                    
+                            {
+                              nft?.nft?.type == 'auction' && (
+                                <div className="position-absolute bottom-0 start-0 m-2 h5 bg-gradient-primary text-white title-dark rounded-pill px-3">
+                                  <i className="uil uil-clock"></i>{' '}
+                                  <Countdown
+                                    date={nft?.auctionTimeEnd}
+                                    renderer={({ days, hours, minutes, seconds }) => (
+                                      <span>
+                                        {days}:{hours}:{minutes}:{seconds}
+                                      </span>
+                                    )}
+                                  />
+                                </div>
+                              )
+                            }
+                    
+                          </div>
+                    
+                          <div className="card-body content position-relative p-0 mt-3">
+                            <a
+                              href={`/nft/${nft?.nftAddress}`}
+                              onClick={e => {
+                                e.preventDefault()
+                                navigate(`/nft/${nft?.nftAddress}`)
+                              }}
+                              className="title text-dark h6"
+                            >
+                              {nft?.nft?.name}
+                            </a>
+                    
+                            <div className="d-flex justify-content-between mt-2">
+                              <small className="rate fw-bold"> Current Bid: {nft?.price} { nft?.paymentToken == 'USDT' ? nft?.paymentToken : getChainByName(nft?.blockchain) } </small>
+                            </div>
+
+                            <div className="d-flex justify-content-between mt-2">
+                              <button onClick={(e)=>{
+                                e.preventDefault();
+                                claimreward(nft?.auctionListingId, nft?.nftAddress, nft?.blockchain, 1);
+                                cancelListing(nft?.nftAddress);
+                              }} className="btn btn-l btn-pills btn-primary" >Claim NFT</button> 
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                        )
+                      )
+                    )
+                    ))}
+                  </div>
+
                 </div>
               </div>
             </div>

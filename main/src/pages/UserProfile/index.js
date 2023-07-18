@@ -31,23 +31,6 @@ const UserProfile = () => {
   const { walletAddress } = useParams();
 
 
-  const activityData = [
-    {
-      title: 'THE SECRET SOCIETY XX #775',
-      author: 'CalvinCarlo',
-      time: '23 hours ago',
-      favorite: 'Listed by',
-      image: gif5,
-    },
-    {
-      title: 'Create Your Own World',
-      author: 'ButterFly',
-      time: '24 hours ago',
-      favorite: 'Liked by',
-      image: item5,
-    },
-  ]
-
   const getUserData = async function () {
     await axiosConfig.get(`/profile/user/${walletAddress}`).then((res)=>{
         setUser(res.data.data)
@@ -399,13 +382,10 @@ const UserProfile = () => {
                           <div className="content text-center p-4 mt-n5">
                             <div className="position-relative d-inline-flex">
                               <img
-                                src={collection?.owner.profileImage}
+                                src={collection?.owner.profileImage || client01}
                                 className="avatar avatar-small rounded-pill img-thumbnail shadow-md"
                                 alt=""
                               />
-                              <span className="verified text-primary">
-                                <i className="mdi mdi-check-decagram"></i>
-                              </span>
                             </div>
                             <div className="mt-2">
                               <a
@@ -418,7 +398,6 @@ const UserProfile = () => {
                               >
                                 {collection?.name}
                               </a>
-                              <p className="text-muted mb-0 small">27 Items</p>
                             </div>
                           </div>
                         </div>
@@ -483,9 +462,9 @@ const UserProfile = () => {
                   aria-labelledby="Activites-tab"
                 >
                   <div className="row g-4">
-                    {activityData && activityData?.map(data => {
+                    {userActivities && userActivities?.map(data => {
                       return (
-                        <div className="col-12" key={data?.title}>
+                        <div className="col-12" key={data?.activity}>
                           <div className="card activity activity-primary rounded-md shadow p-4">
                             <div className="d-flex align-items-center">
                               <div className="position-relative">
@@ -510,11 +489,14 @@ const UserProfile = () => {
 
                               <span className="content ms-3">
                                 <a
-                                  href=""
-                                  onClick={e => e.preventDefault()}
+                                  href={`/nft/${data?.nftAddress}`}
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    navigate(`/nft/${data?.nftAddress}`)
+                                  }}
                                   className="text-dark title mb-0 h6 d-block"
                                 >
-                                  {data?.title}
+                                  {data?.name}
                                 </a>
                                 <small className="text-muted d-block mt-1">
                                   {data?.favorite}
@@ -523,7 +505,7 @@ const UserProfile = () => {
                                     onClick={e => e.preventDefault()}
                                     className="link fw-bold"
                                   >
-                                    @{data?.author}
+                                    @{data?.price}
                                   </a>
                                 </small>
 

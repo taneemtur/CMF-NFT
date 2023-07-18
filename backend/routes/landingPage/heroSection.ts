@@ -81,59 +81,78 @@ router.post("/", async (req: Request, res: Response) => {
 
 // get
 router.get("/", async (req: Request, res: Response) => {
-    const herosection = db.collection("landing_page").doc("hero_section");
-    const snapshot = await herosection.get();
-    if (snapshot.exists) {
-        const data = snapshot.data();
-        if (data) {
-            const promises: DocumentData[] = []
-            let heroSectionArray = data.hero_section || [];
-            if (heroSectionArray.length === 0) {
-                return res.json({
-                    message: "No Most Popular Collections",
-                    data: [],
-                }).status(200)
-            } else {
-                heroSectionArray = heroSectionArray.slice(0, 10);
-                heroSectionArray.forEach((nftAddress: string) => {
-                    promises.push(db.collection("nfts").doc(nftAddress).get())
-                })
-                // fetch owner and category from each collection
-                const nfts = await Promise.all(promises);
-                const nftsDataPromises: DocumentData[] = []
-                nfts.forEach(async (nft: DocumentData) => {
-                    nftsDataPromises.push(new Promise(async (res, rej) => {
-                        const collectionRef:any = nft.data()?.collection;
-                        const collection :any= await collectionRef.get();
-                        const ownerRef = nft.data()?.owner;
-                        const owner = await ownerRef.get();
+    try {
+        const herosection = db.collection("landing_page").doc("hero_section");
+        const snapshot = await herosection.get();
+        
+        if (snapshot.exists) {
+            const data = snapshot.data();
+            if (data) {
+                let heroSectionArray: string[] = data.hero_section || [];
+                if (heroSectionArray.length === 0) {
+                    return res.json({
+                        message: "No Most Popular Collections",
+                        data: [],
+                    }).status(200);
+                } else {
+                    heroSectionArray = heroSectionArray.slice(0, 10);
+                    const promises: Promise<any>[] = [];
+                    
+                    heroSectionArray.forEach((nftAddress: string) => {
+                        const nftRef = db.collection("nfts").doc(nftAddress);
+                        promises.push(nftRef.get());
+                    });
 
-                        res({
-                            ...nft.data(),
-                            collection: collection.data(),
-                            owner: owner.data(),
-                        })
-                    }))
-                })
-                Promise.all(nftsDataPromises).then((nftData) => {
+                    const nfts = await Promise.all(promises);
+
+                    const nftsDataPromises: Promise<any>[] = nfts.map(async (nftSnapshot) => {
+                        const nftData = nftSnapshot.data();
+                        if (!nftData) return null;
+
+                        const collectionRef = nftData.collection;
+                        const ownerRef = nftData.owner;
+
+                        const [collectionSnapshot, ownerSnapshot] = await Promise.all([
+                            collectionRef.get(),
+                            ownerRef.get()
+                        ]);
+
+                        const collectionData = collectionSnapshot.data();
+                        const ownerData = ownerSnapshot.data();
+
+                        if (collectionData && ownerData) {
+                            return {
+                                ...nftData,
+                                collection: collectionData,
+                                owner: ownerData,
+                            };
+                        }
+
+                        return null;
+                    });
+
+                    const nftDataArray = await Promise.all(nftsDataPromises);
+                    const validNftsData = nftDataArray.filter((nftData) => nftData !== null);
+
                     return res.json({
                         message: "Most Popular Collections",
-                        data: nftData,
-                    }).status(200)
-                }).catch((error) => {
-                    console.log(error);
-                    return res.json({
-                        message: "error fetching collection data",
-                    }).status(500)
-                })
+                        data: validNftsData,
+                    }).status(200);
+                }
             }
+        } else {
+            return res.json({
+                message: "Most Popular Collections does not exist",
+            }).status(400);
         }
-    } else {
+    } catch (error) {
+        console.log(error);
         return res.json({
-            message: "Most Popular Collections does not exist",
-        }).status(400)
+            message: "Error fetching Most Popular Collections",
+        }).status(500);
     }
-})
+});
+
 
 // delete
 router.delete("/", async (req: Request, res: Response) => {

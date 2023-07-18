@@ -1,8 +1,12 @@
 import express, { Response, Request } from "express";
 import { bucket, db } from "../../utils/Firebase";
 import { LISTINGTYPE, NFTModel } from "../../models/nfts/NFTS";
+import { BidModel } from '../../models/bid/Bids';
 import multer from "multer";
 import { v4 as uuid } from "uuid";
+import { admin } from "../../utils/Firebase";
+import { CollectionModel } from "../../models/collections/Collection";
+import { UserModel } from "../../models/profile/User";
 
 const router = express.Router();
 
@@ -13,24 +17,42 @@ const upload = multer({ storage: storage }).single('file');
 router.post("/createnft", upload, async (req: Request, res: Response) => {
     const body = JSON.parse(req.body.data);
     const file = req.file;
-    const nft: NFTModel = {
-        nftAddress: body.nftAddress,
-        name: body.name,
-        blockchain: body.blockchain,
-        collection: body.collectionAddress,
-        description: body.description,
-        externalLink: body.externalLink,
-        owner: body.owner,
-        price: body.price,
-        supply: body.supply,
-        image: null,
-        auctionTimeEnd: null,
-        auctionTimeStart: null,
-        type: null,
-        listed: false,
-    }
 
     try {
+        const nftsRef = db.collection('nfts');
+        const querySnapshot = await nftsRef
+            .orderBy('timeStamp', 'desc')
+            .limit(1)
+            .get();
+
+        let tokenId;
+        
+        if (!querySnapshot.empty) {
+            tokenId = querySnapshot.docs[0].data().tokenId;
+            tokenId = tokenId + 1;
+        } else {
+            tokenId = 1;
+        }
+
+        const nft: NFTModel = {
+            nftAddress: body.nftAddress,
+            tokenId: tokenId,
+            name: body.name,
+            blockchain: body.blockchain,
+            collection: body.collectionAddress,
+            description: body.description,
+            externalLink: body.externalLink,
+            owner: body.owner,
+            price: body.price,
+            supply: body.supply,
+            image: null,
+            auctionTimeEnd: null,
+            auctionTimeStart: null,
+            type: null,
+            listed: false,
+            timeStamp: new Date().getTime()
+        }
+
         const userRef = db.collection("users").doc(body.owner);
         if (file) {
             const fileMetada = {
@@ -80,6 +102,45 @@ router.post("/createnft", upload, async (req: Request, res: Response) => {
     }
 })
 
+// Create Bid
+router.post("/bidnft", async (req: Request, res: Response) => {
+    const body = req.body;
+    const bid: BidModel = {
+        nftAddress: body.nftAddress,
+        blockchain: body.blockchain,
+        price: body.price,
+        user: body.user,
+        owner: body.owner,
+        auctionTimeStart: body.auctionTimeStart,
+        auctionTimeEnd: body.auctionTimeEnd,
+        userBidTime: body.userBidTime,
+        auctionListingId: body.auctionListingId,
+        paymentToken: body.paymentToken,
+        claimReward: false,
+        claimNFT: false
+    }
+
+    try {
+        const bidRef = db.collection("bids").doc(body.nftAddress);
+        await bidRef.set(bid);
+
+        const nftRef = db.collection("nfts").doc(body.nftAddress);
+        const nftDoc = await nftRef.get();
+        const nft: NFTModel = nftDoc.data() as NFTModel;
+    
+        return res.json({
+            message: "Bid Placed Successfully",
+            data: nft,
+            code: 200
+        }).status(200)    
+    } catch {
+        return res.json({
+            message: "Error Placing Bid",
+            code: 500
+        }).status(500)
+    }
+})
+
 // listNFT
 router.put("/listnft", async (req: Request, res: Response) => {
     const body = req.body;
@@ -91,7 +152,7 @@ router.put("/listnft", async (req: Request, res: Response) => {
     nft.type = listingType;
     nft.auctionTimeStart = startDate;
     nft.auctionTimeEnd = endDate;
-    nft.price = price;
+    nft.price = price; 
     nft.fixedListingId = fixedListingId != undefined ? fixedListingId : null;
     nft.auctionListingId = auctionListingId != undefined ? auctionListingId : null;
     nft.paymentToken = paymentToken;
@@ -390,7 +451,7 @@ router.get("/nft/:nftAddress", async (req: Request, res: Response) => {
 })
 
 // Get all NFTS
-router.get("/:start/:end", async (req: Request, res: Response) => {
+router.get("/explore/:start/:end", async (req: Request, res: Response) => {
     const start = parseInt(req.params.start);
     const end = parseInt(req.params.end);
     const nftsRef = db.collection("nfts");
@@ -786,11 +847,11 @@ router.get("/getauctionednfts/:userAddress", async (req: Request, res: Response)
 })
 
 // Get all NFTS of a user
-router.get("/getnfts/:userAddress", async (req: Request, res: Response) => {
-    const userAddress = req.params.userAddress;
+router.get("/getnfts/:walletAddress", async (req: Request, res: Response) => {
+    const walletAddress = req.params.walletAddress;
     try {
         const nftsRef = db.collection("nfts");
-        const userRef = db.collection("users").doc(userAddress);
+        const userRef = db.collection("users").doc(walletAddress);
         const query = nftsRef.where("owner", "==", userRef);
         const querySnapshot = await query.get();
         const promises: Promise<NFTModel>[] = [];
@@ -827,6 +888,7 @@ router.get("/getnfts/:userAddress", async (req: Request, res: Response) => {
             console.log(err);
             return res.json({
                 message: "Error Fetching NFTs",
+
             }).status(500)
         })
     } catch {
@@ -835,6 +897,9 @@ router.get("/getnfts/:userAddress", async (req: Request, res: Response) => {
         }).status(500)
     }
 })
+
+
+
 
 // get listed nfts
 router.get("/getlistednfts/:walletAddress", async (req: Request, res: Response) => {
@@ -887,6 +952,8 @@ router.get("/getlistednfts/:walletAddress", async (req: Request, res: Response) 
         }).status(500)
     }
 })
+
+
 router.get("/getlistednfts", async (req: Request, res: Response) => {
     try {
         const nftsRef = db.collection("nfts");
